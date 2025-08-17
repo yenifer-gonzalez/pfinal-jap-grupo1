@@ -48,6 +48,4 @@ document.addEventListener("DOMContentLoaded", function(){
 
     updateUserInterface();
     setupLogout();
-    console.log('Index page initialized');
-    
 });

@@ -119,6 +119,4 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    console.log('Init.js loaded for page:', currentPage);
-    console.log('User logged in:', isUserLoggedIn());
 });
