@@ -1,33 +1,31 @@
-// === GESTIÓN DE SESIÓN ===
+document.addEventListener("DOMContentLoaded", function () {
+  // Relleno de data para hacer la pèticion Web
+  // URL fija para la categoría 101 de autos
 
-// Función para verificar sesión activa
-function checkUserSession() {
-    const user = localStorage.getItem('currentUser');
-    const sessionExpiry = localStorage.getItem('sessionExpiry');
-    
-    if (!user || !sessionExpiry) {
-        redirectToLogin();
-        return false;
+  const url = PRODUCTS_URL + "101" + EXT_TYPE;
+
+  getJSONData(url).then(function (resultObj) {
+    if (resultObj.status === "ok") {
+      const productos = resultObj.data.products;
+      mostrarProductos(productos);
     }
-    
-    const now = new Date().getTime();
-    if (now >= parseInt(sessionExpiry)) {
-        // Sesión expirada
-        clearSession();
-        redirectToLogin();
-        return false;
-    }
-    
-    return true;
-}
+  });
+});
 
-// Función para limpiar sesión
-function clearSession() {
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('sessionExpiry');
-}
+function mostrarProductos(productos) {
+  let html = "";
 
-// Función para redireccionar al login
-function redirectToLogin() {
-    window.location.href = 'login.html';
+  productos.forEach((producto) => {
+    html += `
+      <div>
+        <h3>${producto.name}</h3>
+        <p>${producto.description}</p>
+        <p>Precio: ${producto.currency} ${producto.cost}</p>
+        <p>Vendidos: ${producto.soldCount}</p>
+        <img src="${producto.image}" alt="${producto.description}">
+      </div>
+    `;
+  });
+
+  document.getElementById("product-list-container").innerHTML = html;
 }
