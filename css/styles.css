@@ -1,44 +1,43 @@
 :root {
   /* Colores de Marca */
-  --color-primary-orange: #ff8c00; /* Naranja principal (botones, enlaces) */
-  --color-primary-dark: #e67e00; /* Naranja hover/activo */
-  --color-secondary-orange: #ffa500; /* Naranja secundario (iconos) */
-  --color-secondary-blue: #274653; /* Color secundario: azul */
-
+  --color-primary-orange: #FF8C00;        /* Naranja principal (botones, enlaces) */
+  --color-primary-dark: #E67E00;          /* Naranja hover/activo */
+  --color-secondary-orange: #FFA500;      /* Naranja secundario (iconos) */
+  
   /* Colores de Fondo */
-  --bg-gradient-start: #fff8dc; /* Beige claro (inicio del gradiente) */
-  --bg-gradient-middle: #ffe4b5; /* Durazno suave (medio del gradiente) */
-  --bg-gradient-end: #f0e68c; /* Amarillo pálido (final del gradiente) */
-  --card-background: #ffffff; /* Blanco para tarjetas */
-  --card-background-alt: #f8f8f8; /* Gris muy claro para cards alternativas */
-
+  --bg-gradient-start: #FFF8DC;           /* Beige claro (inicio del gradiente) */
+  --bg-gradient-middle: #FFE4B5;          /* Durazno suave (medio del gradiente) */
+  --bg-gradient-end: #F0E68C;             /* Amarillo pálido (final del gradiente) */
+  --card-background: #FFFFFF;             /* Blanco para tarjetas */
+  --card-background-alt: #F8F8F8;         /* Gris muy claro para cards alternativas */
+  
   /* Colores de Texto */
-  --text-primary: #333333; /* Negro suave para títulos */
-  --text-secondary: #666666; /* Gris medio para descripciones */
-  --text-tertiary: #999999; /* Gris claro para texto menor */
-  --text-muted: #cccccc; /* Gris muy claro para placeholders */
-
+  --text-primary: #333333;                /* Negro suave para títulos */
+  --text-secondary: #666666;              /* Gris medio para descripciones */
+  --text-tertiary: #999999;               /* Gris claro para texto menor */
+  --text-muted: #CCCCCC;                  /* Gris muy claro para placeholders */
+  
   /* Colores de Interfaz */
-  --border-light: #e0e0e0; /* Bordes suaves */
-  --border-medium: #cccccc; /* Bordes medios */
-  --shadow-light: rgba(0, 0, 0, 0.1); /* Sombra suave */
-  --shadow-medium: rgba(0, 0, 0, 0.15); /* Sombra media */
+  --border-light: #E0E0E0;                /* Bordes suaves */
+  --border-medium: #CCCCCC;               /* Bordes medios */
+  --shadow-light: rgba(0,0,0,0.1);        /* Sombra suave */
+  --shadow-medium: rgba(0,0,0,0.15);      /* Sombra media */
 
   /* Tipografía */
-  --font-family-primary: "Poppins", sans-serif;
-  --font-size-h1: 32px; /* Título "Autos" */
-  --font-size-h2: 24px; /* Títulos de sección */
-  --font-size-h3: 18px; /* Nombres de productos */
-  --font-size-body: 16px; /* Texto normal */
-  --font-size-small: 14px; /* Descripciones, precios */
-  --font-size-xs: 12px; /* Texto muy pequeño */
-  --font-weight-bold: 700; /* Títulos principales */
+  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-h1: 32px;        /* Título "Autos" */
+  --font-size-h2: 24px;        /* Títulos de sección */
+  --font-size-h3: 18px;        /* Nombres de productos */
+  --font-size-body: 16px;      /* Texto normal */
+  --font-size-small: 14px;     /* Descripciones, precios */
+  --font-size-xs: 12px;        /* Texto muy pequeño */
+  --font-weight-bold: 700;     /* Títulos principales */
   --font-weight-semibold: 600; /* Nombres de productos, botones */
-  --font-weight-medium: 500; /* Subtítulos */
-  --font-weight-regular: 400; /* Texto normal */
-  --line-height-tight: 1.2; /* Títulos */
-  --line-height-normal: 1.5; /* Texto normal */
-  --line-height-loose: 1.6; /* Párrafos largos */
+  --font-weight-medium: 500;   /* Subtítulos */
+  --font-weight-regular: 400;  /* Texto normal */
+  --line-height-tight: 1.2;   /* Títulos */
+  --line-height-normal: 1.5;  /* Texto normal */
+  --line-height-loose: 1.6;   /* Párrafos largos */
 
   /* Espaciado */
   --space-xs: 4px;
@@ -50,9 +49,9 @@
   --space-3xl: 64px;
 
   /* Bordes */
-  --border-radius-sm: 6px; /* Campos de input */
-  --border-radius-md: 12px; /* Botones, tarjetas pequeñas */
-  --border-radius-lg: 16px; /* Tarjetas principales, modales */
+  --border-radius-sm: 6px;     /* Campos de input */
+  --border-radius-md: 12px;    /* Botones, tarjetas pequeñas */
+  --border-radius-lg: 16px;    /* Tarjetas principales, modales */
 
   /* Dimensiones */
   --container-max-width: 1200px;
@@ -94,8 +93,8 @@ nav a {
   height: 50vh;
   padding: 5em inherit;
   margin-bottom: 0;
-  background-color: #53c0fb;
-  background: url("../img/cover_back.png");
+  background-color: #53C0FB;
+  background: url('../img/cover_back.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -135,12 +134,12 @@ footer {
 }
 
 footer p {
-  margin-bottom: 0.25rem;
+  margin-bottom: .25rem;
 }
 
 .site-header a {
   color: white;
-  transition: ease-in-out color 0.15s;
+  transition: ease-in-out color .15s;
 }
 
 .site-header .dropdown-menu a {
@@ -148,7 +147,7 @@ footer p {
 }
 
 .dropzone {
-  border: 2px dashed #0087f7;
+  border: 2px dashed #0087F7;
   border-radius: 5px;
   background: white;
 }
@@ -312,7 +311,7 @@ a.custom-card:hover {
 }
 
 .products-main {
-  background: #f5f5f5;
+  background: #F5F5F5;
   min-height: calc(100vh - var(--header-height));
   padding: var(--space-xl) 0;
 }
@@ -620,37 +619,37 @@ a.custom-card:hover {
     height: auto;
     padding: var(--space-md);
   }
-
+  
   .main-nav {
     order: 3;
     width: 100%;
     justify-content: center;
     margin-top: var(--space-md);
   }
-
+  
   .filters-container {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-md);
   }
-
+  
   .filters-left .page-title {
     font-size: 2rem;
     margin-bottom: var(--space-md);
   }
-
+  
   .filters-right {
     width: 100%;
     justify-content: flex-start;
     gap: var(--space-sm);
   }
-
+  
   .filter-select,
   .filter-input {
     min-width: 75px;
     width: 85px;
   }
-
+  
   .products-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--space-md);
@@ -662,17 +661,17 @@ a.custom-card:hover {
     flex-direction: column;
     width: 100%;
   }
-
+  
   .filter-select,
   .filter-input {
     width: 100%;
     min-width: unset;
   }
-
+  
   .products-grid {
     grid-template-columns: 1fr;
   }
-
+  
   .pagination {
     flex-wrap: wrap;
   }
