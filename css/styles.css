@@ -562,6 +562,57 @@ a.custom-card:hover {
   color: #dc3545;
 }
 
+/* === LOADING SKELETON === */
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-card {
+  background: var(--card-background);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow-light);
+  margin-bottom: var(--space-lg);
+}
+
+.skeleton-image {
+  height: 200px;
+  background: var(--card-background-alt);
+}
+
+.skeleton-content {
+  padding: var(--space-md);
+}
+
+.skeleton-title {
+  height: 20px;
+  border-radius: 4px;
+  margin-bottom: var(--space-sm);
+}
+
+.skeleton-text {
+  height: 14px;
+  border-radius: 4px;
+  margin-bottom: var(--space-xs);
+  width: 80%;
+}
+
+.skeleton-text:last-child {
+  width: 60%;
+}
+
 /* === RESPONSIVE PRODUCTS  === */
 @media (max-width: 768px) {
   .header-container {
