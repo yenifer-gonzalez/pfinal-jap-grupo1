@@ -56,6 +56,16 @@ const productsPerPage = 9;
 const productsCache = new Map();
 const CACHE_DURATION = 5 * 60 * 1000;
 
+// Función completa para renderizar página con productos y paginación
+function renderPage() {
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const productsToShow = filteredProducts.slice(startIndex, endIndex);
+  
+  mostrarProductos(productsToShow);
+  setupPagination();
+}
+
 // Versión mejorada de la función original con cache y error handling
 async function fetchProducts(categoryId = 101) {
   try {
@@ -81,19 +91,11 @@ async function fetchProducts(categoryId = 101) {
     const resultObj = await getJSONData(url);
 
     if (resultObj.status === "ok") {
-      // Guardar en cache (AÑADIDO)
-      productsCache.set(cacheKey, {
-        data: resultObj.data,
-        timestamp: Date.now(),
-      });
-
       const productos = resultObj.data.products;
       currentProducts = productos;
       filteredProducts = [...productos];
 
-      // Función original mejorada
-      mostrarProductos(filteredProducts.slice(0, productsPerPage));
-      setupPagination(); // AÑADIDO
+      renderPage();
     }
   } catch (error) {
     showError("Error al cargar productos"); // AÑADIDO
@@ -196,9 +198,8 @@ function applyFilters() {
   }
 
   filteredProducts = filtered;
-  currentPage = 1; // Resetear a primera página
-  displayProducts();
-  setupPagination();
+  currentPage = 1;
+  renderPage(); 
 }
 
 // Función para ordenar productos
@@ -279,8 +280,7 @@ function setupPagination() {
 // Función para ir a una página específica
 function goToPage(page) {
   currentPage = page;
-  displayProducts();
-  setupPagination();
+  renderPage(); 
 }
 
 // === FUNCIONES DE UTILIDAD ===
