@@ -57,7 +57,7 @@ const productsCache = new Map();
 const CACHE_DURATION = 5 * 60 * 1000;
 
 // Versión mejorada de la función original con cache y error handling
-async function fetchProductsEnhanced(categoryId = 101) {
+async function fetchProducts(categoryId = 101) {
     try {
         // Verificar cache primero (AÑADIDO)
         const cacheKey = `products_${categoryId}`;
