@@ -36,7 +36,7 @@
             </div>
 
             <!-- Formulario - Usuario y Contraseña  -->
-            <form onsubmit="handleSubmit(event)">
+            <form>
               <div class="mb-3">
                 <label for="username" class="form-label">Usuario</label>
                 <input
@@ -49,21 +49,22 @@
               </div>
               <div class="mb-3">
                 <label for="password" class="form-label">Contraseña</label>
-                <div class="input-group">
+                <div class="position-relative">
                   <input
                     type="password"
-                    class="form-control"
+                    class="form-control pr-eye"
                     id="password"
-                    placeholder="*************"
+                    placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
                     required
                   />
-                  <span
-                    class="input-group-text"
-                    id="togglePass"
-                    style="cursor: pointer"
+                  <button
+                    type="button"
+                    class="eye-abs"
+                    onclick="changeEye(this)"
+                    aria-label="Mostrar/ocultar contraseña"
                   >
                     <i class="bi bi-eye" id="eyeIcon"></i>
-                  </span>
+                  </button>
                 </div>
               </div>
 

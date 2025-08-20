@@ -108,6 +108,7 @@ body {
 }
 
 .form-label {
+  color: var(--color-secondary-blue);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-h3);
 }
@@ -131,15 +132,47 @@ body {
 
 .form-check-label,
 a.small {
+  color: var(--color-secondary-blue);
   font-size: 0.9rem;
 }
 
 .forgot-link {
   color: var(--color-secondary-blue);
   font-size: 0.9rem;
+  user-select: none;
 }
 
 .forgot-link:hover {
-  color: var(--color-secondary-dark);
-  text-decoration: underline !important;
+  color: var(--color-primary-orange);
+}
+
+.pr-eye {
+  padding-right: 3rem;
+}
+
+.eye-abs {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  padding: 0.25rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-secondary-blue);
+}
+
+.form-check-label {
+  user-select: none;
+}
+
+.form-check-input:checked {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.form-check-input:focus {
+  border-color: var(--color-primary-orange);
+  box-shadow: 0 0 0 0.1rem rgba(255, 140, 0, 0.45);
 }

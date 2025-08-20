@@ -40,18 +40,28 @@ function clearSession() {
 
 // === VALIDACIÓN DE FORMULARIO ===
 
-function handleSubmit(event) {
-  event.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("form");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    handleSubmit();
+  });
 
-  let user = document.getElementById("username");
-
-  createSession(user.value);
   checkActiveSession();
-}
+});
 
 // === FUNCIONALIDADES DE LA INTERFAZ ===
 // Función para alternar visibilidad de contraseña
-// Función para manejar el envío del formulario
+
+function changeEye() {
+  const pass = document.getElementById("password");
+  const icon = document.getElementById("eyeIcon");
+  const showing = pass.type === "text";
+
+  pass.type = showing ? "password" : "text";
+  icon.classList.toggle("bi-eye", showing);
+  icon.classList.toggle("bi-eye-slash", !showing);
+}
 
 // === INICIALIZACIÓN ===
 
