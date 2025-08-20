@@ -19,6 +19,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
     />
     <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/login.css" />
   </head>
@@ -36,7 +37,7 @@
             </div>
 
             <!-- Formulario - Usuario y Contraseña  -->
-            <form>
+            <form onsubmit="handleSubmit(event)">
               <div class="mb-3">
                 <label for="username" class="form-label">Usuario</label>
                 <input

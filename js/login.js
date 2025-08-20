@@ -40,15 +40,14 @@ function clearSession() {
 
 // === VALIDACIÓN DE FORMULARIO ===
 
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("form");
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    handleSubmit();
-  });
+function handleSubmit(event) {
+  event.preventDefault();
 
+  let user = document.getElementById("username");
+
+  createSession(user.value);
   checkActiveSession();
-});
+}
 
 // === FUNCIONALIDADES DE LA INTERFAZ ===
 // Función para alternar visibilidad de contraseña
