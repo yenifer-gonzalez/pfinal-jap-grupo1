@@ -27,6 +27,7 @@
 
   /* Tipografía */
   --font-family-primary: "Poppins", sans-serif;
+  --font-family-secondary: "Raleway", sans-serif;
   --font-size-h1: 32px; /* Título "Autos" */
   --font-size-h2: 24px; /* Títulos de sección */
   --font-size-h3: 18px; /* Nombres de productos */

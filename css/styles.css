@@ -1,3 +1,8 @@
+body {
+  background: linear-gradient(to bottom, #fffaf5 0%, #e8f1f5 60%, #d8e3e9 100%);
+  font-family: var(--font-family-primary) !important;
+}
+
 .jumbotron,
 .card-body,
 .container,
@@ -192,8 +197,9 @@ a.custom-card:hover {
 /* === ESTILOS DE PRODUCTOS === */
 
 .main-header {
-  background: var(--text-primary);
-  color: white;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(6px);
+  color: var(--color-primary-orange);
   height: var(--header-height);
   position: sticky;
   top: 0;
@@ -211,16 +217,11 @@ a.custom-card:hover {
 }
 
 .header-logo .logo-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--color-primary-orange);
-  border-radius: var(--border-radius-sm);
+  width: 70px;
+  height: 70px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  text-decoration: none;
-  font-weight: var(--font-weight-bold);
 }
 
 .main-nav {
@@ -229,7 +230,7 @@ a.custom-card:hover {
 }
 
 .nav-link {
-  color: white;
+  color: var(--color-primary-orange);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
   transition: color 0.2s ease;
@@ -237,22 +238,34 @@ a.custom-card:hover {
 
 .nav-link.active,
 .nav-link:hover {
-  color: var(--color-primary-orange);
+  color: var(--color-secondary-blue);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
+  border: 1px solid var(--color-primary-orange);
   border-radius: 50%;
-  background: var(--color-primary-orange);
-  border: none;
+  color: var(--color-primary-orange);
+  background-color: transparent;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
   cursor: pointer;
 }
 
-.products-main {
-  background: #f5f5f5;
-  min-height: calc(100vh - var(--header-height));
-  padding: var(--space-xl) 0;
+.user-avatar:hover {
+  background-color: var(--color-primary-orange);
+  color: #fff;
+}
+
+.btn-check:focus + .btn,
+.btn:focus {
+  box-shadow: none;
 }
 
 .products-container {
@@ -280,10 +293,11 @@ a.custom-card:hover {
 }
 
 .filters-left .page-title {
+  font-family: var(--font-family-secondary);
   margin-bottom: 0;
-  font-size: 2.5rem;
+  font-size: 4rem;
   font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
+  color: var(--color-secondary-blue);
 }
 
 .filters-right {
@@ -396,9 +410,10 @@ a.custom-card:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  font-size: 16px;
+  font-size: 28px;
   transition: all 0.2s ease;
+  color: var(--color-primary-orange);
+  box-shadow: var(--shadow-light);
 }
 
 .favorite-btn:hover {
@@ -411,9 +426,10 @@ a.custom-card:hover {
 }
 
 .product-name {
+  font-family: var(--font-family-secondary);
   font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary-blue);
   line-height: var(--line-height-tight);
   margin-bottom: var(--space-sm);
 }
@@ -444,12 +460,14 @@ a.custom-card:hover {
 }
 
 .product-price {
+  font-family: var(--font-family-secondary);
   font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--color-primary-orange);
 }
 
 .product-stats {
+  font-family: var(--font-family-secondary);
   font-size: var(--font-size-xs);
   color: var(--text-tertiary);
 }
