@@ -47,7 +47,7 @@ function redirectToLogin() {
   window.location.href = "login.html";
 }
 
-// === VARIABLES GLOBALES (AÑADIDO) ===
+// === VARIABLES GLOBALES ===
 // Agregadas para soportar paginación y filtrado
 let currentProducts = [];
 let filteredProducts = [];
@@ -69,19 +69,19 @@ function renderPage() {
 // Versión mejorada de la función original con cache y error handling
 async function fetchProducts(categoryId = 101) {
   try {
-    // Verificar cache primero (AÑADIDO)
+    // Verificar cache primero
     const cacheKey = `products_${categoryId}`;
     const cached = productsCache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
       currentProducts = cached.data.products || [];
       filteredProducts = [...currentProducts];
-      mostrarProductos(filteredProducts.slice(0, productsPerPage));
-      setupPagination();
+      populateFilters(); // AÑADIDO: Poblar filtros con datos
+      renderPage();
       return;
     }
 
-    // Mostrar loading skeleton (AÑADIDO)
+    // Mostrar loading skeleton
     showLoadingSkeleton();
 
     // Lógica original
@@ -95,10 +95,17 @@ async function fetchProducts(categoryId = 101) {
       currentProducts = productos;
       filteredProducts = [...productos];
 
+      // Guardar en cache
+      productsCache.set(cacheKey, {
+        data: resultObj.data,
+        timestamp: Date.now()
+      });
+
+      populateFilters(); //Poblar filtros con datos reales
       renderPage();
     }
   } catch (error) {
-    showError("Error al cargar productos"); // AÑADIDO
+    showError("Error al cargar productos"); 
   }
 }
 
@@ -118,7 +125,7 @@ function mostrarProductos(productos) {
   let html = "";
 
   productos.forEach((producto) => {
-    // generacion de as tarjetas de productos
+    // generacion de las tarjetas de productos
     html += `
             <div class="product-card" data-product-id="${
               producto.id
@@ -158,43 +165,131 @@ function mostrarProductos(productos) {
 }
 
 // === FUNCIONES DE FILTRADO Y ORDENAMIENTO ===
-// AGREGADO: Filtros por precio, marca y modelo con optimización
+// MEJORADO: Filtros optimizados para trabajar con datos reales de la API
 
-// Función para aplicar filtros
-function applyFilters() {
-  let filtered = [...currentProducts];
+// Función para extraer marca del nombre del producto
+function extractBrand(productName) {
+  const brands = ['chevrolet', 'fiat', 'suzuki', 'peugeot', 'bugatti', 'toyota', 'hyundai', 'volkswagen', 'ford', 'honda'];
+  const nameLower = productName.toLowerCase();
+  
+  for (const brand of brands) {
+    if (nameLower.includes(brand)) {
+      return brand;
+    }
+  }
+  return null;
+}
 
-  // Filtro de precio
-  const priceFilter = document.getElementById("priceFilter")?.value;
-  if (priceFilter && priceFilter !== "sortFilter") {
-    if (priceFilter.includes("-")) {
-      const [min, max] = priceFilter
-        .split("-")
-        .map((p) => parseInt(p.replace(/\D/g, "")));
-      filtered = filtered.filter((product) => {
-        const price = product.cost;
-        if (priceFilter.includes("+")) {
-          return price >= min;
-        }
-        return price >= min && price <= max;
-      });
+// Función para extraer modelo del nombre del producto
+function extractModel(productName) {
+  // Extraer la segunda palabra como modelo (después de la marca)
+  const words = productName.split(' ');
+  if (words.length >= 2) {
+    return words[1].toLowerCase();
+  }
+  return null;
+}
+
+// Función para poblar filtros dinámicamente basado en productos actuales
+function populateFilters() {
+  const brands = new Set();
+  const models = new Set();
+  
+  currentProducts.forEach(product => {
+    const brand = extractBrand(product.name);
+    const model = extractModel(product.name);
+    
+    if (brand) brands.add(brand);
+    if (model) models.add(model);
+  });
+
+  // Poblar filtro de marcas
+  const brandFilter = document.getElementById("brandFilter");
+  if (brandFilter) {
+    const currentValue = brandFilter.value;
+    brandFilter.innerHTML = '<option value="">Marca</option>';
+    
+    Array.from(brands).sort().forEach(brand => {
+      const option = document.createElement('option');
+      option.value = brand;
+      option.textContent = brand.charAt(0).toUpperCase() + brand.slice(1);
+      brandFilter.appendChild(option);
+    });
+    
+    // Restaurar valor seleccionado si existía
+    if (currentValue && brands.has(currentValue)) {
+      brandFilter.value = currentValue;
     }
   }
 
-  // Filtro de marca (ejemplo básico)
-  const brandFilter = document.getElementById("brandFilter")?.value;
-  if (brandFilter) {
-    filtered = filtered.filter((product) =>
-      product.name.toLowerCase().includes(brandFilter.toLowerCase())
-    );
+  // Poblar filtro de modelos
+  const modelFilter = document.getElementById("modelFilter");
+  if (modelFilter) {
+    const currentValue = modelFilter.value;
+    modelFilter.innerHTML = '<option value="">Modelo</option>';
+    
+    Array.from(models).sort().forEach(model => {
+      const option = document.createElement('option');
+      option.value = model;
+      option.textContent = model.charAt(0).toUpperCase() + model.slice(1);
+      modelFilter.appendChild(option);
+    });
+    
+    // Restaurar valor seleccionado si existía
+    if (currentValue && models.has(currentValue)) {
+      modelFilter.value = currentValue;
+    }
+  }
+}
+
+// Función para aplicar filtros 
+function applyFilters() {
+  let filtered = [...currentProducts];
+
+  // Filtro de precio 
+  const priceFilter = document.getElementById("priceFilter")?.value;
+  if (priceFilter && priceFilter !== "") {
+    if (priceFilter.includes("+")) {
+      const min = parseInt(priceFilter.replace(/\D/g, ""));
+      filtered = filtered.filter((product) => product.cost >= min);
+    } else if (priceFilter.includes("-")) {
+      const [min, max] = priceFilter.split("-").map(p => parseInt(p.replace(/\D/g, "")));
+      filtered = filtered.filter((product) => 
+        product.cost >= min && product.cost <= max
+      );
+    }
   }
 
-  // Filtro de modelo (ejemplo básico)
+  // Filtro de marca - usa extracción dinámica
+  const brandFilter = document.getElementById("brandFilter")?.value;
+  if (brandFilter && brandFilter !== "") {
+    filtered = filtered.filter((product) => {
+      const productBrand = extractBrand(product.name);
+      return productBrand === brandFilter;
+    });
+  }
+
+  // Filtro de modelo - usa extracción dinámica
   const modelFilter = document.getElementById("modelFilter")?.value;
-  if (modelFilter) {
-    filtered = filtered.filter((product) =>
-      product.name.toLowerCase().includes(modelFilter.toLowerCase())
-    );
+  if (modelFilter && modelFilter !== "") {
+    filtered = filtered.filter((product) => {
+      const productModel = extractModel(product.name);
+      return productModel === modelFilter;
+    });
+  }
+
+  // Filtros de km y año - mantener como prototipos no funcionales
+  const kilometersFilter = document.getElementById("kilometersFilter")?.value;
+  const yearFilter = document.getElementById("yearFilter")?.value;
+  
+  // Estos filtros no se aplican porque los datos no los contienen
+  // Pero se mantienen para futura implementación
+  if (kilometersFilter && kilometersFilter !== "") {
+    console.log("Filtro de kilómetros seleccionado:", kilometersFilter, "(No implementado - datos no disponibles)");
+  }
+  
+  if (yearFilter && yearFilter !== "") {
+    console.log("Filtro de año seleccionado:", yearFilter, "(No implementado - datos no disponibles)");
   }
 
   filteredProducts = filtered;
@@ -364,7 +459,7 @@ function toggleFavorite(event, productId) {
 
 // === FUNCIONES DE CONFIGURACIÓN ===
 
-// Función para configurar los filtros
+// Función para configurar los filtros 
 function setupFilters() {
   const brandFilter = document.getElementById("brandFilter");
   const modelFilter = document.getElementById("modelFilter");
@@ -377,15 +472,40 @@ function setupFilters() {
   const debouncedApplyFilters = debounce(applyFilters, 300);
 
   // Agregar event listeners a todos los filtros
-  if (brandFilter)
-    brandFilter.addEventListener("change", debouncedApplyFilters);
-  if (modelFilter)
+  if (brandFilter) {
+    brandFilter.addEventListener("change", () => {
+      debouncedApplyFilters();
+      // Actualizar modelos cuando cambie la marca
+      updateModelFilter();
+    });
+  }
+  
+  if (modelFilter) {
     modelFilter.addEventListener("change", debouncedApplyFilters);
-  if (priceFilter)
+  }
+  
+  if (priceFilter) {
     priceFilter.addEventListener("change", debouncedApplyFilters);
-  if (kilometersFilter)
-    kilometersFilter.addEventListener("change", debouncedApplyFilters);
-  if (yearFilter) yearFilter.addEventListener("change", debouncedApplyFilters);
+  }
+  
+  // Filtros de km y año - solo visual, no funcionales
+  if (kilometersFilter) {
+    kilometersFilter.addEventListener("change", (e) => {
+      if (e.target.value) {
+        console.log(`Filtro de kilómetros seleccionado: ${e.target.value} (Prototipo - no funcional)`);
+      }
+      debouncedApplyFilters();
+    });
+  }
+  
+  if (yearFilter) {
+    yearFilter.addEventListener("change", (e) => {
+      if (e.target.value) {
+        console.log(`Filtro de año seleccionado: ${e.target.value} (Prototipo - no funcional)`);
+      }
+      debouncedApplyFilters();
+    });
+  }
 
   if (clearFiltersBtn) {
     clearFiltersBtn.addEventListener("click", () => {
@@ -395,8 +515,47 @@ function setupFilters() {
       if (priceFilter) priceFilter.value = "";
       if (kilometersFilter) kilometersFilter.value = "";
       if (yearFilter) yearFilter.value = "";
+      
+      // Repoblar filtros con todos los datos
+      populateFilters();
       applyFilters(); // Aplicar inmediatamente al limpiar
     });
+  }
+}
+
+// Función para actualizar filtro de modelos basado en marca seleccionada
+function updateModelFilter() {
+  const brandFilter = document.getElementById("brandFilter");
+  const modelFilter = document.getElementById("modelFilter");
+  
+  if (!brandFilter || !modelFilter) return;
+  
+  const selectedBrand = brandFilter.value;
+  const models = new Set();
+  
+  // Filtrar productos por marca seleccionada y extraer modelos
+  currentProducts.forEach(product => {
+    const productBrand = extractBrand(product.name);
+    if (!selectedBrand || productBrand === selectedBrand) {
+      const model = extractModel(product.name);
+      if (model) models.add(model);
+    }
+  });
+  
+  // Actualizar opciones del filtro de modelo
+  const currentValue = modelFilter.value;
+  modelFilter.innerHTML = '<option value="">Modelo</option>';
+  
+  Array.from(models).sort().forEach(model => {
+    const option = document.createElement('option');
+    option.value = model;
+    option.textContent = model.charAt(0).toUpperCase() + model.slice(1);
+    modelFilter.appendChild(option);
+  });
+  
+  // Restaurar valor si sigue siendo válido
+  if (currentValue && models.has(currentValue)) {
+    modelFilter.value = currentValue;
   }
 }
 
@@ -420,11 +579,11 @@ function setupUserAvatar() {
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
-  // Verificar sesión antes de continuar (AÑADIDO)
+  // Verificar sesión antes de continuar 
   if (!checkUserSession()) return;
 
   try {
-    // Configurar filtros (AÑADIDO)
+    // Configurar filtros 
     setupFilters();
     setupUserAvatar();
 
