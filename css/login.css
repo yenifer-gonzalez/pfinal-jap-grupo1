@@ -67,16 +67,33 @@ body {
   color: white;
 }
 
-.form-check-label,
-a.small {
-  color: var(--color-secondary-blue);
-  font-size: 0.9rem;
+.form-check {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin-bottom: var(--space-xl);
+  font-size: var(--font-size-small);
+}
+
+.card-body .form-check {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 20px; /* Force minimum gap */
+}
+
+.link-secondary {
+  color: var(--text-secondary);
+  text-decoration: none;
 }
 
 .forgot-link {
-  color: var(--color-secondary-blue);
-  font-size: 0.9rem;
-  user-select: none;
+  color: var(--color-primary-orange);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .forgot-link:hover {
@@ -102,6 +119,9 @@ a.small {
 
 .form-check-label {
   user-select: none;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
 }
 
 .form-check-input:checked {
