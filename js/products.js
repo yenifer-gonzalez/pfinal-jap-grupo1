@@ -15,6 +15,25 @@
 
 // === GESTIÓN DE SESIÓN Y SEGURIDAD ===
 
+function updateUserInterface() {
+  const usernameDisplay = document.getElementById("usernameDisplay");
+
+  const user = getCurrentUser();
+  usernameDisplay.textContent = user?.username;
+}
+
+function setupLogout() {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+        logout();
+      }
+    });
+  }
+}
+
 // Función para verificar sesión activa
 function checkUserSession() {
   const user = localStorage.getItem("currentUser");
@@ -61,7 +80,7 @@ function renderPage() {
   const startIndex = (currentPage - 1) * productsPerPage;
   const endIndex = startIndex + productsPerPage;
   const productsToShow = filteredProducts.slice(startIndex, endIndex);
-  
+
   mostrarProductos(productsToShow);
   setupPagination();
 }
@@ -98,14 +117,14 @@ async function fetchProducts(categoryId = 101) {
       // Guardar en cache
       productsCache.set(cacheKey, {
         data: resultObj.data,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       populateFilters(); //Poblar filtros con datos reales
       renderPage();
     }
   } catch (error) {
-    showError("Error al cargar productos"); 
+    showError("Error al cargar productos");
   }
 }
 
@@ -141,21 +160,22 @@ function mostrarProductos(productos) {
                     })">♡</button>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-name">${producto.name}</h3>
-                    <p class="product-description">${producto.description}</p>
+                  <h3 class="product-name">${producto.name}</h3>
+                  <p class="product-description">${producto.description}</p>
+                  <div class="product-wrapper">
+                    <div class="product-stats">
+                      <span class="product-sold">${
+                        producto.soldCount
+                      } vendidos</span>
+                    </div>
                     <div class="product-meta">
-                        <span class="product-category">Auto</span>
-                        <span class="product-price">${
-                          producto.currency
-                        } ${new Intl.NumberFormat("es-UY").format(
+                      <span class="product-price">${
+                        producto.currency
+                      } ${new Intl.NumberFormat("es-UY").format(
       producto.cost
     )}</span>
                     </div>
-                    <div class="product-stats">
-                        <span class="product-sold">${
-                          producto.soldCount
-                        } vendidos</span>
-                    </div>
+                  </div>
                 </div>
             </div>
         `;
@@ -169,9 +189,20 @@ function mostrarProductos(productos) {
 
 // Función para extraer marca del nombre del producto
 function extractBrand(productName) {
-  const brands = ['chevrolet', 'fiat', 'suzuki', 'peugeot', 'bugatti', 'toyota', 'hyundai', 'volkswagen', 'ford', 'honda'];
+  const brands = [
+    "chevrolet",
+    "fiat",
+    "suzuki",
+    "peugeot",
+    "bugatti",
+    "toyota",
+    "hyundai",
+    "volkswagen",
+    "ford",
+    "honda",
+  ];
   const nameLower = productName.toLowerCase();
-  
+
   for (const brand of brands) {
     if (nameLower.includes(brand)) {
       return brand;
@@ -183,7 +214,7 @@ function extractBrand(productName) {
 // Función para extraer modelo del nombre del producto
 function extractModel(productName) {
   // Extraer la segunda palabra como modelo (después de la marca)
-  const words = productName.split(' ');
+  const words = productName.split(" ");
   if (words.length >= 2) {
     return words[1].toLowerCase();
   }
@@ -194,11 +225,11 @@ function extractModel(productName) {
 function populateFilters() {
   const brands = new Set();
   const models = new Set();
-  
-  currentProducts.forEach(product => {
+
+  currentProducts.forEach((product) => {
     const brand = extractBrand(product.name);
     const model = extractModel(product.name);
-    
+
     if (brand) brands.add(brand);
     if (model) models.add(model);
   });
@@ -207,15 +238,18 @@ function populateFilters() {
   const brandFilter = document.getElementById("brandFilter");
   if (brandFilter) {
     const currentValue = brandFilter.value;
-    brandFilter.innerHTML = '<option value="">Marca</option>';
-    
-    Array.from(brands).sort().forEach(brand => {
-      const option = document.createElement('option');
-      option.value = brand;
-      option.textContent = brand.charAt(0).toUpperCase() + brand.slice(1);
-      brandFilter.appendChild(option);
-    });
-    
+    brandFilter.innerHTML =
+      '<option value="" disabled selected hidden>Marca</option>';
+
+    Array.from(brands)
+      .sort()
+      .forEach((brand) => {
+        const option = document.createElement("option");
+        option.value = brand;
+        option.textContent = brand.charAt(0).toUpperCase() + brand.slice(1);
+        brandFilter.appendChild(option);
+      });
+
     // Restaurar valor seleccionado si existía
     if (currentValue && brands.has(currentValue)) {
       brandFilter.value = currentValue;
@@ -226,15 +260,18 @@ function populateFilters() {
   const modelFilter = document.getElementById("modelFilter");
   if (modelFilter) {
     const currentValue = modelFilter.value;
-    modelFilter.innerHTML = '<option value="">Modelo</option>';
-    
-    Array.from(models).sort().forEach(model => {
-      const option = document.createElement('option');
-      option.value = model;
-      option.textContent = model.charAt(0).toUpperCase() + model.slice(1);
-      modelFilter.appendChild(option);
-    });
-    
+    modelFilter.innerHTML =
+      '<option value="" disabled selected hidden>Modelo</option>';
+
+    Array.from(models)
+      .sort()
+      .forEach((model) => {
+        const option = document.createElement("option");
+        option.value = model;
+        option.textContent = model.charAt(0).toUpperCase() + model.slice(1);
+        modelFilter.appendChild(option);
+      });
+
     // Restaurar valor seleccionado si existía
     if (currentValue && models.has(currentValue)) {
       modelFilter.value = currentValue;
@@ -242,20 +279,22 @@ function populateFilters() {
   }
 }
 
-// Función para aplicar filtros 
+// Función para aplicar filtros
 function applyFilters() {
   let filtered = [...currentProducts];
 
-  // Filtro de precio 
+  // Filtro de precio
   const priceFilter = document.getElementById("priceFilter")?.value;
   if (priceFilter && priceFilter !== "") {
     if (priceFilter.includes("+")) {
       const min = parseInt(priceFilter.replace(/\D/g, ""));
       filtered = filtered.filter((product) => product.cost >= min);
     } else if (priceFilter.includes("-")) {
-      const [min, max] = priceFilter.split("-").map(p => parseInt(p.replace(/\D/g, "")));
-      filtered = filtered.filter((product) => 
-        product.cost >= min && product.cost <= max
+      const [min, max] = priceFilter
+        .split("-")
+        .map((p) => parseInt(p.replace(/\D/g, "")));
+      filtered = filtered.filter(
+        (product) => product.cost >= min && product.cost <= max
       );
     }
   }
@@ -281,20 +320,28 @@ function applyFilters() {
   // Filtros de km y año - mantener como prototipos no funcionales
   const kilometersFilter = document.getElementById("kilometersFilter")?.value;
   const yearFilter = document.getElementById("yearFilter")?.value;
-  
+
   // Estos filtros no se aplican porque los datos no los contienen
   // Pero se mantienen para futura implementación
   if (kilometersFilter && kilometersFilter !== "") {
-    console.log("Filtro de kilómetros seleccionado:", kilometersFilter, "(No implementado - datos no disponibles)");
+    console.log(
+      "Filtro de kilómetros seleccionado:",
+      kilometersFilter,
+      "(No implementado - datos no disponibles)"
+    );
   }
-  
+
   if (yearFilter && yearFilter !== "") {
-    console.log("Filtro de año seleccionado:", yearFilter, "(No implementado - datos no disponibles)");
+    console.log(
+      "Filtro de año seleccionado:",
+      yearFilter,
+      "(No implementado - datos no disponibles)"
+    );
   }
 
   filteredProducts = filtered;
   currentPage = 1;
-  renderPage(); 
+  renderPage();
 }
 
 // Función para ordenar productos
@@ -375,7 +422,7 @@ function setupPagination() {
 // Función para ir a una página específica
 function goToPage(page) {
   currentPage = page;
-  renderPage(); 
+  renderPage();
 }
 
 // === FUNCIONES DE UTILIDAD ===
@@ -449,9 +496,11 @@ function toggleFavorite(event, productId) {
   if (isFavorite) {
     favoriteBtn.textContent = "♡";
     favoriteBtn.style.color = "";
+    favoriteBtn.classList.remove("toggle-fav");
   } else {
     favoriteBtn.textContent = "♥";
     favoriteBtn.style.color = "var(--color-primary-orange)";
+    favoriteBtn.classList.add("toggle-fav");
   }
 
   // Aquí podrías guardar los favoritos en localStorage o enviar al servidor
@@ -459,7 +508,7 @@ function toggleFavorite(event, productId) {
 
 // === FUNCIONES DE CONFIGURACIÓN ===
 
-// Función para configurar los filtros 
+// Función para configurar los filtros
 function setupFilters() {
   const brandFilter = document.getElementById("brandFilter");
   const modelFilter = document.getElementById("modelFilter");
@@ -479,29 +528,33 @@ function setupFilters() {
       updateModelFilter();
     });
   }
-  
+
   if (modelFilter) {
     modelFilter.addEventListener("change", debouncedApplyFilters);
   }
-  
+
   if (priceFilter) {
     priceFilter.addEventListener("change", debouncedApplyFilters);
   }
-  
+
   // Filtros de km y año - solo visual, no funcionales
   if (kilometersFilter) {
     kilometersFilter.addEventListener("change", (e) => {
       if (e.target.value) {
-        console.log(`Filtro de kilómetros seleccionado: ${e.target.value} (Prototipo - no funcional)`);
+        console.log(
+          `Filtro de kilómetros seleccionado: ${e.target.value} (Prototipo - no funcional)`
+        );
       }
       debouncedApplyFilters();
     });
   }
-  
+
   if (yearFilter) {
     yearFilter.addEventListener("change", (e) => {
       if (e.target.value) {
-        console.log(`Filtro de año seleccionado: ${e.target.value} (Prototipo - no funcional)`);
+        console.log(
+          `Filtro de año seleccionado: ${e.target.value} (Prototipo - no funcional)`
+        );
       }
       debouncedApplyFilters();
     });
@@ -515,7 +568,7 @@ function setupFilters() {
       if (priceFilter) priceFilter.value = "";
       if (kilometersFilter) kilometersFilter.value = "";
       if (yearFilter) yearFilter.value = "";
-      
+
       // Repoblar filtros con todos los datos
       populateFilters();
       applyFilters(); // Aplicar inmediatamente al limpiar
@@ -527,65 +580,51 @@ function setupFilters() {
 function updateModelFilter() {
   const brandFilter = document.getElementById("brandFilter");
   const modelFilter = document.getElementById("modelFilter");
-  
+
   if (!brandFilter || !modelFilter) return;
-  
+
   const selectedBrand = brandFilter.value;
   const models = new Set();
-  
+
   // Filtrar productos por marca seleccionada y extraer modelos
-  currentProducts.forEach(product => {
+  currentProducts.forEach((product) => {
     const productBrand = extractBrand(product.name);
     if (!selectedBrand || productBrand === selectedBrand) {
       const model = extractModel(product.name);
       if (model) models.add(model);
     }
   });
-  
+
   // Actualizar opciones del filtro de modelo
   const currentValue = modelFilter.value;
   modelFilter.innerHTML = '<option value="">Modelo</option>';
-  
-  Array.from(models).sort().forEach(model => {
-    const option = document.createElement('option');
-    option.value = model;
-    option.textContent = model.charAt(0).toUpperCase() + model.slice(1);
-    modelFilter.appendChild(option);
-  });
-  
+
+  Array.from(models)
+    .sort()
+    .forEach((model) => {
+      const option = document.createElement("option");
+      option.value = model;
+      option.textContent = model.charAt(0).toUpperCase() + model.slice(1);
+      modelFilter.appendChild(option);
+    });
+
   // Restaurar valor si sigue siendo válido
   if (currentValue && models.has(currentValue)) {
     modelFilter.value = currentValue;
   }
 }
 
-// Función para configurar el avatar del usuario
-function setupUserAvatar() {
-  const userAvatar = document.getElementById("userAvatar");
-  const userData = localStorage.getItem("currentUser");
-
-  if (userData) {
-    const user = JSON.parse(userData);
-    userAvatar.title = `Usuario: ${user.username}`;
-
-    // Agregar funcionalidad de logout
-    userAvatar.addEventListener("click", () => {
-      if (confirm("¿Deseas cerrar sesión?")) {
-        clearSession();
-        redirectToLogin();
-      }
-    });
-  }
-}
-
 document.addEventListener("DOMContentLoaded", async function () {
-  // Verificar sesión antes de continuar 
+  // Verificar sesión antes de continuar
   if (!checkUserSession()) return;
 
   try {
-    // Configurar filtros 
+    // Inicialización de dropdown
+    updateUserInterface();
+    setupLogout();
+
+    // Configurar filtros
     setupFilters();
-    setupUserAvatar();
 
     // Lógica original de obtención de datos
     await fetchProducts(101);
