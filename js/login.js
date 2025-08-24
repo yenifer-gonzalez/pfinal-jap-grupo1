@@ -43,7 +43,14 @@ function clearSession() {
 function handleSubmit(event) {
   event.preventDefault();
 
+  let remember = document.getElementById("remember");
   let user = document.getElementById("username");
+
+  if (remember.checked) {
+    localStorage.setItem("rememberMe", user.value);
+  } else {
+    localStorage.removeItem("rememberMe");
+  }
 
   createSession(user.value);
   checkActiveSession();
@@ -66,4 +73,11 @@ function changeEye() {
 
 document.addEventListener("DOMContentLoaded", () => {
   checkActiveSession();
+
+  let user = document.getElementById("username");
+  let email = localStorage.getItem("rememberMe");
+
+  if (email) {
+    user.value = email;
+  }
 });

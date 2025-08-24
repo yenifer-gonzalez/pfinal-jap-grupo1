@@ -68,20 +68,7 @@ body {
 }
 
 .form-check {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  width: 100% !important;
-  margin-bottom: var(--space-xl);
   font-size: var(--font-size-small);
-}
-
-.card-body .form-check {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  width: 100% !important;
-  gap: 20px; /* Force minimum gap */
 }
 
 .link-secondary {
@@ -122,6 +109,11 @@ body {
   display: flex;
   align-items: center;
   margin-bottom: 0;
+}
+
+.form-check-input {
+  margin: 0;
+  margin-right: 5px;
 }
 
 .form-check-input:checked {
