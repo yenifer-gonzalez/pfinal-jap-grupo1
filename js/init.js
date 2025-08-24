@@ -88,15 +88,10 @@ function logout() {
 
 // Función para verificar autenticación en páginas protegidas
 function requireAuthentication() {
-  const currentPage = window.location.pathname.split("/").pop();
-  const publicPages = ["login.html"];
-
-  // Si la página actual no es pública y no hay sesión, redireccionar
-  if (!publicPages.includes(currentPage) && !isUserLoggedIn()) {
+  if (!isUserLoggedIn()) {
     window.location.href = "login.html";
     return false;
   }
-
   return true;
 }
 
@@ -106,21 +101,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // Verificar autenticación al cargar cualquier página
   const currentPage = window.location.pathname.split("/").pop();
 
-  // Solo aplicar verificación de autenticación en páginas específicas
-  const protectedPages = [
-    "products.html",
-    "product-info.html",
-    "cart.html",
-    "categories.html",
-    "sell.html",
-    "my-profile.html",
-    "index.html",
-    "",
-  ];
-
-  if (protectedPages.includes(currentPage)) {
+  // Páginas que no requieren autenticación
+  const publicPages = ["login.html"];
+  
+  // Aplicar verificación de autenticación solo si NO es una página pública
+  if (!publicPages.includes(currentPage)) {
     if (!requireAuthentication()) {
-      return;
+      return; // Detener ejecución si no hay sesión válida
     }
   }
 

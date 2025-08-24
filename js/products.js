@@ -34,37 +34,8 @@ function setupLogout() {
   }
 }
 
-// Función para verificar sesión activa
-function checkUserSession() {
-  const user = localStorage.getItem("currentUser");
-  const sessionExpiry = localStorage.getItem("sessionExpiry");
-
-  if (!user || !sessionExpiry) {
-    redirectToLogin();
-    return false;
-  }
-
-  const now = new Date().getTime();
-  if (now >= parseInt(sessionExpiry)) {
-    // Sesión expirada
-    clearSession();
-    redirectToLogin();
-    return false;
-  }
-
-  return true;
-}
-
-// Función para limpiar sesión
-function clearSession() {
-  localStorage.removeItem("currentUser");
-  localStorage.removeItem("sessionExpiry");
-}
-
-// Función para redireccionar al login
-function redirectToLogin() {
-  window.location.href = "login.html";
-}
+// Session control is handled globally by init.js
+// Removed redundant session functions
 
 // === VARIABLES GLOBALES ===
 // Agregadas para soportar paginación y filtrado
@@ -615,9 +586,8 @@ function updateModelFilter() {
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
-  // Verificar sesión antes de continuar
-  if (!checkUserSession()) return;
-
+  // Session control is handled globally by init.js
+  
   try {
     // Inicialización de dropdown
     updateUserInterface();
