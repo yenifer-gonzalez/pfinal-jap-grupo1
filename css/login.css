@@ -104,6 +104,15 @@ body {
   color: var(--color-secondary-blue);
 }
 
+#error-user,
+#error-pass {
+  font-size: var(--font-size-xs);
+  padding-top: 3px;
+  padding-left: 5px;
+  margin-bottom: 0;
+  color: red;
+}
+
 .form-check-label {
   user-select: none;
   display: flex;
@@ -124,4 +133,18 @@ body {
 .form-check-input:focus {
   border-color: var(--color-primary-orange);
   box-shadow: 0 0 0 0.1rem rgba(255, 140, 0, 0.45);
+}
+
+/* === RESPONSIVE  === */
+
+/* === Estándar  === */
+@media (max-width: 1366px) {
+}
+
+/* === Tablet  === */
+@media (max-width: 768px) {
+}
+
+/* === Smartphone  === */
+@media (max-width: 320px) {
 }

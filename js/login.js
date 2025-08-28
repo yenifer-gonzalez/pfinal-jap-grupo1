@@ -43,8 +43,30 @@ function clearSession() {
 function handleSubmit(event) {
   event.preventDefault();
 
+  const user = document.getElementById("username");
+  const pass = document.getElementById("password");
+  const errorUser = document.getElementById("error-user");
+  const errorPass = document.getElementById("error-pass");
+  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!user.value) {
+    errorUser.innerText = "Por favor, ingrese un email.";
+    return;
+  } else if (!regexEmail.test(user.value)) {
+    errorUser.innerText = "Por favor, ingrese un email válido.";
+    return;
+  } else {
+    errorUser.innerText = "";
+  }
+
+  if (!pass.value) {
+    errorPass.innerText = "Por favor, ingrese una contraseña.";
+    return;
+  } else {
+    errorPass.innerText = "";
+  }
+
   let remember = document.getElementById("remember");
-  let user = document.getElementById("username");
 
   if (remember.checked) {
     localStorage.setItem("rememberMe", user.value);
