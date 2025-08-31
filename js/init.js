@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Páginas que no requieren autenticación
   const publicPages = ["login.html"];
-  
+
   // Aplicar verificación de autenticación solo si NO es una página pública
   if (!publicPages.includes(currentPage)) {
     if (!requireAuthentication()) {
@@ -115,5 +115,45 @@ document.addEventListener("DOMContentLoaded", function () {
   if (currentPage === "login.html" && isUserLoggedIn()) {
     window.location.href = "index.html";
     return;
+  }
+
+  // === UI GLOBAL: NAV y FILTROS ===
+  const navSidebar = document.getElementById("navSidebar");
+  const filtersSidebar = document.getElementById("filtersSidebar");
+  const overlay = document.getElementById("overlay");
+
+  // Botón hamburguesa
+  const menuBtn = document.getElementById("menuButton");
+  if (menuBtn && navSidebar && overlay) {
+    menuBtn.addEventListener("click", () => {
+      navSidebar.classList.add("show");
+      navSidebar.classList.remove("hidden");
+      overlay.classList.remove("hidden");
+    });
+  }
+
+  // Abrir filtros desde el label
+  const filtersLabel = document.querySelector(".filters-label");
+  if (filtersLabel && filtersSidebar && overlay) {
+    filtersLabel.addEventListener("click", () => {
+      filtersSidebar.classList.add("show");
+      filtersSidebar.classList.remove("hidden");
+      overlay.classList.remove("hidden");
+    });
+  }
+
+  // Cerrar al tocar overlay
+  if (overlay) {
+    overlay.addEventListener("click", () => {
+      if (navSidebar) {
+        navSidebar.classList.remove("show");
+        navSidebar.classList.add("hidden");
+      }
+      if (filtersSidebar) {
+        filtersSidebar.classList.remove("show");
+        filtersSidebar.classList.add("hidden");
+      }
+      overlay.classList.add("hidden");
+    });
   }
 });
