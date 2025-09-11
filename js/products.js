@@ -1,18 +1,3 @@
-// CAMBIOS REALIZADOS:
-// - Mantenida la lógica original de fetcheo con getJSONData()
-// - Conservada la función mostrarProductos() como base
-// - Actualizado el contenedor de "product-list-container" a "productsContainer"
-// - Mejorada la estructura HTML de las tarjetas de producto
-//
-// FUNCIONALIDADES AGREGADAS:
-// - Gestión de sesión y seguridad
-// - Sistema de paginación completo
-// - Filtros avanzados (precio, marca, modelo)
-// - Interacciones de usuario (favoritos, click en productos)
-// - Optimización de rendimiento con debounce
-// - Manejo de estados de carga y errores
-// - Formateo profesional de precios
-
 // === GESTIÓN DE SESIÓN Y SEGURIDAD ===
 
 function updateUserInterface() {
@@ -64,9 +49,12 @@ function collectFilters() {
   // buscar por ID cada par de selects/buttons.
   const $ = (id) => document.getElementById(id);
   return {
-    brand: [$("brandFilter"), $("brandFilterM")].filter(Boolean), // filter(Boolean) para quitar nulos si alguno no existe en la página.
+    search: [$("searchFilter"), $("searchFilterM")].filter(Boolean),
+    brand: [$("brandFilter"), $("brandFilterM")].filter(Boolean), 
     model: [$("modelFilter"), $("modelFilterM")].filter(Boolean),
-    price: [$("priceFilter"), $("priceFilterM")].filter(Boolean),
+    minPrice: [$("minPriceFilter"), $("minPriceFilterM")].filter(Boolean),
+    maxPrice: [$("maxPriceFilter"), $("maxPriceFilterM")].filter(Boolean),
+    sort: [$("sortFilter"), $("sortFilterM")].filter(Boolean),
     km: [$("kilometersFilter"), $("kilometersFilterM")].filter(Boolean),
     year: [$("yearFilter"), $("yearFilterM")].filter(Boolean),
     clear: [$("clearFilters"), $("clearFiltersMobile")].filter(Boolean),
@@ -140,22 +128,31 @@ async function fetchProducts(categoryId = 101) {
   }
 }
 
-// ===================================================================
-// CAMBIOS REALIZADOS:
-// - Mantenida la lógica original de iteración con forEach
-// - Conservado el mapeo de datos: producto.name, producto.description, etc.
-// - CAMBIADO: Estructura HTML básica por tarjetas
-// - CAMBIADO: ID del contenedor de "product-list-container" a "productsContainer"
-// - AGREGADO: Clases CSS para estilos
-// - AGREGADO: Funcionalidades de click y favoritos
-// - AGREGADO: Lazy loading de imágenes
-// ===================================================================
-
 // Función original mejorada para trabajar con paginación
 function mostrarProductos(productos) {
   let html = "";
 
+  // Obtener término de búsqueda para highlighting
+  const val = (arr, fallbackId) =>
+    FILTERS && arr
+      ? firstVal(arr)
+      : document.getElementById(fallbackId)?.value || "";
+  
+  const search = val(FILTERS?.search, "searchFilter");
+  const searchTerm = search && search.trim() !== "" ? search.trim() : null;
+
   productos.forEach((producto) => {
+    // Función para resaltar términos de búsqueda
+    const highlightText = (text, term) => {
+      if (!term) return text;
+      const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return text.replace(regex, '<mark>$1</mark>');
+    };
+
+    // Aplicar highlighting si hay búsqueda
+    const highlightedName = highlightText(producto.name, searchTerm);
+    const highlightedDescription = highlightText(producto.description, searchTerm);
+
     // generacion de las tarjetas de productos
     html += `
             <div class="product-card" data-product-id="${
@@ -172,8 +169,8 @@ function mostrarProductos(productos) {
                     })">♡</button>
                 </div>
                 <div class="product-info">
-                  <h3 class="product-name">${producto.name}</h3>
-                  <p class="product-description">${producto.description}</p>
+                  <h3 class="product-name">${highlightedName}</h3>
+                  <p class="product-description">${highlightedDescription}</p>
                   <div class="product-wrapper">
                     <div class="product-stats">
                       <span class="product-sold">${
@@ -286,6 +283,20 @@ function populateFilters() {
   });
 }
 
+// Función para ordenar productos (CONSIGNA PUNTO 2)
+function sortProducts(products, sortType) {
+  switch (sortType) {
+    case "price-asc":
+      return products.sort((a, b) => a.cost - b.cost);
+    case "price-desc":
+      return products.sort((a, b) => b.cost - a.cost);
+    case "relevance":
+      return products.sort((a, b) => b.soldCount - a.soldCount);
+    default:
+      return products;
+  }
+}
+
 // Función para aplicar filtros
 function applyFilters() {
   let filtered = [...currentProducts];
@@ -295,23 +306,35 @@ function applyFilters() {
       ? firstVal(arr)
       : document.getElementById(fallbackId)?.value || "";
 
-  const price = val(FILTERS?.price, "priceFilter");
+  // Nuevos filtros según consigna
+  const search = val(FILTERS?.search, "searchFilter");
   const brand = val(FILTERS?.brand, "brandFilter");
   const model = val(FILTERS?.model, "modelFilter");
+  const minPrice = val(FILTERS?.minPrice, "minPriceFilter");
+  const maxPrice = val(FILTERS?.maxPrice, "maxPriceFilter");
+  const sort = val(FILTERS?.sort, "sortFilter");
+  
+  // Filtros antiguos (mantener por compatibilidad)
   const km = val(FILTERS?.km, "kilometersFilter");
   const year = val(FILTERS?.year, "yearFilter");
 
-  // Filtro de precio
-  if (price) {
-    if (price.includes("+")) {
-      const min = parseInt(price.replace(/\D/g, ""));
-      filtered = filtered.filter((p) => p.cost >= min);
-    } else if (price.includes("-")) {
-      const [min, max] = price
-        .split("-")
-        .map((n) => parseInt(n.replace(/\D/g, "")));
-      filtered = filtered.filter((p) => p.cost >= min && p.cost <= max);
-    }
+  // Filtro de búsqueda (DESAFÍO)
+  if (search && search.trim() !== "") {
+    const searchTerm = search.toLowerCase().trim();
+    filtered = filtered.filter(product => {
+      const nameMatch = product.name.toLowerCase().includes(searchTerm);
+      const descriptionMatch = product.description.toLowerCase().includes(searchTerm);
+      return nameMatch || descriptionMatch;
+    });
+  }
+
+  // Filtro de precio mínimo y máximo (CONSIGNA PUNTO 2)
+  if (minPrice && !isNaN(minPrice)) {
+    filtered = filtered.filter((p) => p.cost >= parseInt(minPrice));
+  }
+  
+  if (maxPrice && !isNaN(maxPrice)) {
+    filtered = filtered.filter((p) => p.cost <= parseInt(maxPrice));
   }
 
   // Filtro de marca - usa extracción dinámica
@@ -324,33 +347,18 @@ function applyFilters() {
     filtered = filtered.filter((p) => extractModel(p.name) === model);
   }
 
-  // KM y Año
+  // Aplicar ordenamiento (CONSIGNA PUNTO 2)
+  if (sort) {
+    filtered = sortProducts(filtered, sort);
+  }
+
+  // KM y Año (mantener logs informativos)
   if (km) console.log("KM:", km, "(no implementado por falta de datos)");
   if (year) console.log("Año:", year, "(no implementado por falta de datos)");
 
   filteredProducts = filtered;
   currentPage = 1;
   renderPage();
-}
-
-// Función para ordenar productos
-function sortProducts(products, sortBy) {
-  const sorted = [...products];
-
-  switch (sortBy) {
-    case "name-asc":
-      return sorted.sort((a, b) => a.name.localeCompare(b.name));
-    case "name-desc":
-      return sorted.sort((a, b) => b.name.localeCompare(a.name));
-    case "price-asc":
-      return sorted.sort((a, b) => a.cost - b.cost);
-    case "price-desc":
-      return sorted.sort((a, b) => b.cost - a.cost);
-    case "sold-desc":
-      return sorted.sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0));
-    default:
-      return sorted;
-  }
 }
 
 // === FUNCIONES DE PAGINACIÓN ===
@@ -501,6 +509,38 @@ function toggleFavorite(event, productId) {
 function setupFilters() {
   const debouncedApply = debounce(applyFilters, 250);
 
+  // Búsqueda (DESAFÍO)
+  (FILTERS.search || []).forEach((el) =>
+    el.addEventListener("input", (e) => {
+      mirror(FILTERS.search, e.target);
+      debouncedApply();
+    })
+  );
+
+  // Precio mínimo (CONSIGNA PUNTO 2)
+  (FILTERS.minPrice || []).forEach((el) =>
+    el.addEventListener("input", (e) => {
+      mirror(FILTERS.minPrice, e.target);
+      debouncedApply();
+    })
+  );
+
+  // Precio máximo (CONSIGNA PUNTO 2)
+  (FILTERS.maxPrice || []).forEach((el) =>
+    el.addEventListener("input", (e) => {
+      mirror(FILTERS.maxPrice, e.target);
+      debouncedApply();
+    })
+  );
+
+  // Ordenamiento (CONSIGNA PUNTO 2)
+  (FILTERS.sort || []).forEach((el) =>
+    el.addEventListener("change", (e) => {
+      mirror(FILTERS.sort, e.target);
+      debouncedApply();
+    })
+  );
+
   // Marca
   (FILTERS.brand || []).forEach((el) =>
     el.addEventListener("change", (e) => {
@@ -518,15 +558,7 @@ function setupFilters() {
     })
   );
 
-  // Precio
-  (FILTERS.price || []).forEach((el) =>
-    el.addEventListener("change", (e) => {
-      mirror(FILTERS.price, e.target);
-      debouncedApply();
-    })
-  );
-
-  // KM y Año (placeholder)
+  // KM y Año (mantener por compatibilidad)
   (FILTERS.km || []).forEach((el) =>
     el.addEventListener("change", (e) => {
       mirror(FILTERS.km, e.target);
@@ -540,13 +572,16 @@ function setupFilters() {
     })
   );
 
-  // Limpiar (los dos botones)
+  // Limpiar (los dos botones) - ACTUALIZADO para nuevos filtros
   (FILTERS.clear || []).forEach((btn) =>
     btn.addEventListener("click", () => {
       [
+        ...FILTERS.search,
+        ...FILTERS.minPrice,
+        ...FILTERS.maxPrice,
+        ...FILTERS.sort,
         ...FILTERS.brand,
         ...FILTERS.model,
-        ...FILTERS.price,
         ...FILTERS.km,
         ...FILTERS.year,
       ].forEach((el) => el && (el.value = ""));

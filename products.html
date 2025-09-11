@@ -107,6 +107,9 @@
     <aside id="filtersSidebar" class="sidebar left hidden">
       <div class="sidebar-content">
         <div class="filters-controls vertical">
+          <!-- Campo de búsqueda móvil -->
+          <input type="search" class="filter-input search-input" id="searchFilterM" placeholder="Buscar productos...">
+
           <select class="filter-select" id="brandFilterM">
             <option value="">Marca</option>
           </select>
@@ -115,14 +118,17 @@
             <option value="">Modelo</option>
           </select>
 
-          <select class="filter-select" id="priceFilterM">
-            <option value="" disabled selected hidden>Precio</option>
-            <option value="0-5000">$0 - $5,000</option>
-            <option value="5000-10000">$5,000 - $10,000</option>
-            <option value="10000-20000">$10,000 - $20,000</option>
-            <option value="20000-30000">$20,000 - $30,000</option>
-            <option value="30000-50000">$30,000 - $50,000</option>
-            <option value="50000+">$50,000+</option>
+          <!-- Filtros de precio mín/máx móvil -->
+          <input type="number" class="filter-input" id="minPriceFilterM" placeholder="Precio mín." min="0">
+          
+          <input type="number" class="filter-input" id="maxPriceFilterM" placeholder="Precio máx." min="0">
+
+          <!-- Filtro de ordenamiento móvil -->
+          <select class="filter-select" id="sortFilterM">
+            <option value="">Ordenar</option>
+            <option value="price-asc">Precio: menor a mayor</option>
+            <option value="price-desc">Precio: mayor a menor</option>
+            <option value="relevance-desc">Más vendidos</option>
           </select>
 
           <select class="filter-select" id="kilometersFilterM">
@@ -168,6 +174,9 @@
               <div class="filters-label">Filtros</div>
 
               <div class="filters-controls">
+                <!-- Campo de búsqueda (DESAFÍO) -->
+                <input type="search" class="filter-input search-input" id="searchFilter" placeholder="Buscar productos...">
+
                 <select class="filter-select" id="brandFilter">
                   <option value="">Marca</option>
                   <!-- Las opciones se cargarán dinámicamente desde la API -->
@@ -178,14 +187,17 @@
                   <!-- Las opciones se cargarán dinámicamente desde la API -->
                 </select>
 
-                <select class="filter-select" id="priceFilter">
-                  <option value="" disabled selected hidden>Precio</option>
-                  <option value="0-5000">$0 - $5,000</option>
-                  <option value="5000-10000">$5,000 - $10,000</option>
-                  <option value="10000-20000">$10,000 - $20,000</option>
-                  <option value="20000-30000">$20,000 - $30,000</option>
-                  <option value="30000-50000">$30,000 - $50,000</option>
-                  <option value="50000+">$50,000+</option>
+                <!-- Filtros de precio mín/máx (CONSIGNA PUNTO 2) -->
+                <input type="number" class="filter-input" id="minPriceFilter" placeholder="Precio mín." min="0">
+                
+                <input type="number" class="filter-input" id="maxPriceFilter" placeholder="Precio máx." min="0">
+
+                <!-- Filtro de ordenamiento (CONSIGNA PUNTO 2) -->
+                <select class="filter-select" id="sortFilter">
+                  <option value="">Ordenar</option>
+                  <option value="price-asc">Precio: menor a mayor</option>
+                  <option value="price-desc">Precio: mayor a menor</option>
+                  <option value="relevance-desc">Más vendidos</option>
                 </select>
 
                 <select class="filter-select" id="kilometersFilter">

@@ -310,15 +310,28 @@ a.custom-card:hover {
 
 .filter-select,
 .filter-input {
-  padding: 6px 10px;
-  min-width: 80px;
-  width: 90px;
+  padding: var(--space-sm) var(--space-md);
+  min-width: 120px;
   border: 1px solid var(--border-light);
   border-radius: var(--border-radius-sm);
-  font-size: 12px;
-  background: transparent;
-  color: var(--color-secondary-blue);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: var(--font-size-small);
+}
+
+.search-input {
+  min-width: 180px;
+}
+
+.search-input::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button;
+  cursor: pointer;
+}
+
+/* Estilo para resaltado de búsqueda */
+mark {
+  background-color: rgba(255, 140, 0, 0.3);
+  color: var(--text-primary);
+  padding: 1px 2px;
+  border-radius: 2px;
 }
 
 .filter-select:focus,
