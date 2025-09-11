@@ -131,6 +131,10 @@ document.addEventListener("DOMContentLoaded", function (e) {
   getJSONData(CATEGORIES_URL).then(function (resultObj) {
     if (resultObj.status === "ok") {
       currentCategoriesArray = resultObj.data;
+      // Guardar el array de categorías en localStorage para que products.js pueda acceder a los nombres
+      try {
+        localStorage.setItem("categoriesArray", JSON.stringify(resultObj.data));
+      } catch (e) {}
       showCategoriesList();
       //sortAndShowCategories(ORDER_ASC_BY_NAME, resultObj.data);
     }
