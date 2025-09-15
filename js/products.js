@@ -631,8 +631,40 @@ document.addEventListener("DOMContentLoaded", async function () {
     FILTERS = collectFilters();
     setupFilters();
 
-    // Lógica original de obtención de datos
-    await fetchProducts(101);
+    // CAMBIO: Ahora se obtiene el id de categoría desde localStorage (clave 'catID')
+    // Esto permite que el listado de productos se adapte a la categoría seleccionada por el usuario.
+    // Si no existe, se usa 101 como valor por defecto (autos).
+    let categoryId = localStorage.getItem("catID");
+    if (!categoryId) {
+      // Si no existe, usar 101 como fallback
+      categoryId = 101;
+    }
+    // === CAMBIO: Actualización dinámica del título de la categoría ===
+    // 1. Se obtiene el elemento del título de la categoría (h1 con id 'categoryTitle').
+    // 2. Se intenta recuperar el nombre de la categoría desde un array guardado en localStorage ('categoriesArray'),
+    //    que debería contener todas las categorías disponibles (esto lo puede guardar categories.js al cargar las categorías).
+    // 3. Si se encuentra la categoría por id, se usa su nombre real.
+    // 4. Si no se encuentra, se usan nombres por defecto para los ids conocidos (101, 102, 103),
+    //    y para cualquier otro id se muestra 'Categoría <id>' como fallback.
+    // 5. Finalmente, se actualiza el texto del título en la página para reflejar la categoría seleccionada.
+    const categoryTitle = document.getElementById("categoryTitle");
+    let categoryName = "";
+    try {
+      const categoriesRaw = localStorage.getItem("categoriesArray");
+      if (categoriesRaw) {
+        const categories = JSON.parse(categoriesRaw);
+        // Buscar el nombre de la categoría por id (comparando como string para evitar errores de tipo)
+        const found = categories.find(cat => String(cat.id) === String(categoryId));
+        if (found && found.name) categoryName = found.name;
+      }
+    } catch (e) {}
+    // Si no se encuentra el nombre, mostrar 'Otros'
+    if (!categoryName) {
+      categoryName = "Otros";
+    }
+    if (categoryTitle) categoryTitle.textContent = categoryName;
+
+    await fetchProducts(categoryId);
   } catch (error) {
     showError("Error al inicializar la página");
   }
