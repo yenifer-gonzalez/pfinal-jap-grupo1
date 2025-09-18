@@ -162,14 +162,14 @@ document.addEventListener("DOMContentLoaded", function () {
       overlay.classList.add("hidden");
     });
   }
-});
 
-// REACCIONAR AL RESIZE (cerrar filtros si vuelvo a desktop)
-window.addEventListener("resize", () => {
-  // Si dejo de estar en mobile y el sidebar de filtros está abierto, se cierra
-  if (!isMobile() && filtersSidebar?.classList.contains("show")) {
-    filtersSidebar.classList.remove("show");
-    filtersSidebar.classList.add("hidden");
-    overlay?.classList.add("hidden");
-  }
+  // REACCIONAR AL RESIZE (cerrar filtros si vuelvo a desktop)
+  window.addEventListener("resize", () => {
+    // Si dejo de estar en mobile y el sidebar de filtros está abierto, se cierra
+    if (!isMobile() && filtersSidebar?.classList.contains("show")) {
+      filtersSidebar.classList.remove("show");
+      filtersSidebar.classList.add("hidden");
+      overlay?.classList.add("hidden");
+    }
+  });
 });
