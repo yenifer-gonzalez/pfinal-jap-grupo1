@@ -95,8 +95,13 @@ function requireAuthentication() {
   return true;
 }
 
-// === INICIALIZACIÓN GLOBAL ===
+// ==== HELPER GLOBAL ====
+// Función para detectar si estamos en mobile (pantallas <= 767px)
+function isMobile() {
+  return window.matchMedia("(max-width: 767px)").matches;
+}
 
+// === INICIALIZACIÓN GLOBAL ===
 document.addEventListener("DOMContentLoaded", function () {
   // Verificar autenticación al cargar cualquier página
   const currentPage = window.location.pathname.split("/").pop();
@@ -136,6 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const filtersLabel = document.querySelector(".filters-label");
   if (filtersLabel && filtersSidebar && overlay) {
     filtersLabel.addEventListener("click", () => {
+      if (!isMobile()) return; // Evitar que se abra en desktop
       filtersSidebar.classList.add("show");
       filtersSidebar.classList.remove("hidden");
       overlay.classList.remove("hidden");
@@ -155,5 +161,15 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       overlay.classList.add("hidden");
     });
+  }
+});
+
+// REACCIONAR AL RESIZE (cerrar filtros si vuelvo a desktop)
+window.addEventListener("resize", () => {
+  // Si dejo de estar en mobile y el sidebar de filtros está abierto, se cierra
+  if (!isMobile() && filtersSidebar?.classList.contains("show")) {
+    filtersSidebar.classList.remove("show");
+    filtersSidebar.classList.add("hidden");
+    overlay?.classList.add("hidden");
   }
 });

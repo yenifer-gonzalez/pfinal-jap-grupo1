@@ -108,7 +108,12 @@
       <div class="sidebar-content">
         <div class="filters-controls vertical">
           <!-- Campo de búsqueda móvil -->
-          <input type="search" class="filter-input search-input" id="searchFilterM" placeholder="Buscar productos...">
+          <input
+            type="search"
+            class="filter-input search-input"
+            id="searchFilterM"
+            placeholder="Buscar productos..."
+          />
 
           <select class="filter-select" id="brandFilterM">
             <option value="">Marca</option>
@@ -119,42 +124,34 @@
           </select>
 
           <!-- Filtros de precio mín/máx móvil -->
-          <input type="number" class="filter-input" id="minPriceFilterM" placeholder="Precio mín." min="0">
-          
-          <input type="number" class="filter-input" id="maxPriceFilterM" placeholder="Precio máx." min="0">
+          <input
+            type="number"
+            class="filter-input"
+            id="minPriceFilterM"
+            placeholder="Precio mín."
+            min="0"
+          />
+
+          <input
+            type="number"
+            class="filter-input"
+            id="maxPriceFilterM"
+            placeholder="Precio máx."
+            min="0"
+          />
 
           <!-- Filtro de ordenamiento móvil -->
           <select class="filter-select" id="sortFilterM">
             <option value="">Ordenar</option>
             <option value="price-asc">Precio: menor a mayor</option>
             <option value="price-desc">Precio: mayor a menor</option>
-            <option value="relevance-desc">Más vendidos</option>
+            <option value="relevance">Más vendidos</option>
           </select>
 
-          <select class="filter-select" id="kilometersFilterM">
-            <option value="" disabled selected hidden>Km</option>
-            <option value="0-10000">0 - 10,000 km</option>
-            <option value="10000-30000">10,000 - 30,000 km</option>
-            <option value="30000-50000">30,000 - 50,000 km</option>
-            <option value="50000-80000">50,000 - 80,000 km</option>
-            <option value="80000-120000">80,000 - 120,000 km</option>
-            <option value="120000+">120,000+ km</option>
-          </select>
-
-          <select class="filter-select" id="yearFilterM">
-            <option value="" disabled selected hidden>Año</option>
-            <option value="2024-2025">2024 - 2025</option>
-            <option value="2022-2023">2022 - 2023</option>
-            <option value="2020-2021">2020 - 2021</option>
-            <option value="2018-2019">2018 - 2019</option>
-            <option value="2015-2017">2015 - 2017</option>
-            <option value="2010-2014">2010 - 2014</option>
-          </select>
+          <button class="filters-reset" id="clearFiltersMobile">
+            Limpiar todo
+          </button>
         </div>
-
-        <button class="filters-reset" id="clearFiltersMobile">
-          Limpiar todo
-        </button>
       </div>
     </aside>
 
@@ -175,52 +172,54 @@
 
               <div class="filters-controls">
                 <!-- Campo de búsqueda (DESAFÍO) -->
-                <input type="search" class="filter-input search-input" id="searchFilter" placeholder="Buscar productos...">
+                <div class="filters-row filters-row-top">
+                  <input
+                    type="search"
+                    class="filter-input search-input"
+                    id="searchFilter"
+                    placeholder="Buscar productos..."
+                  />
 
-                <select class="filter-select" id="brandFilter">
-                  <option value="">Marca</option>
-                  <!-- Las opciones se cargarán dinámicamente desde la API -->
-                </select>
+                  <select class="filter-select" id="brandFilter">
+                    <option value="">Marca</option>
+                    <!-- Las opciones se cargarán dinámicamente desde la API -->
+                  </select>
 
-                <select class="filter-select" id="modelFilter">
-                  <option value="">Modelo</option>
-                  <!-- Las opciones se cargarán dinámicamente desde la API -->
-                </select>
-
+                  <select class="filter-select" id="modelFilter">
+                    <option value="">Modelo</option>
+                    <!-- Las opciones se cargarán dinámicamente desde la API -->
+                  </select>
+                </div>
                 <!-- Filtros de precio mín/máx (CONSIGNA PUNTO 2) -->
-                <input type="number" class="filter-input" id="minPriceFilter" placeholder="Precio mín." min="0">
-                
-                <input type="number" class="filter-input" id="maxPriceFilter" placeholder="Precio máx." min="0">
+                <div class="filters-row filters-row-bottom">
+                  <input
+                    type="number"
+                    class="filter-input"
+                    id="minPriceFilter"
+                    placeholder="Precio mín."
+                    min="0"
+                  />
 
-                <!-- Filtro de ordenamiento (CONSIGNA PUNTO 2) -->
-                <select class="filter-select" id="sortFilter">
-                  <option value="">Ordenar</option>
-                  <option value="price-asc">Precio: menor a mayor</option>
-                  <option value="price-desc">Precio: mayor a menor</option>
-                  <option value="relevance-desc">Más vendidos</option>
-                </select>
+                  <input
+                    type="number"
+                    class="filter-input"
+                    id="maxPriceFilter"
+                    placeholder="Precio máx."
+                    min="0"
+                  />
 
-                <select class="filter-select" id="kilometersFilter">
-                  <option value="" disabled selected hidden>Km</option>
-                  <option value="0-10000">0 - 10,000 km</option>
-                  <option value="10000-30000">10,000 - 30,000 km</option>
-                  <option value="30000-50000">30,000 - 50,000 km</option>
-                  <option value="50000-80000">50,000 - 80,000 km</option>
-                  <option value="80000-120000">80,000 - 120,000 km</option>
-                  <option value="120000+">120,000+ km</option>
-                </select>
+                  <!-- Filtro de ordenamiento (CONSIGNA PUNTO 2) -->
+                  <select class="filter-select" id="sortFilter">
+                    <option value="">Ordenar</option>
+                    <option value="price-asc">Precio: menor a mayor</option>
+                    <option value="price-desc">Precio: mayor a menor</option>
+                    <option value="relevance">Más vendidos</option>
+                  </select>
 
-                <select class="filter-select" id="yearFilter">
-                  <option value="" disabled selected hidden>Año</option>
-                  <option value="2024-2025">2024 - 2025</option>
-                  <option value="2022-2023">2022 - 2023</option>
-                  <option value="2020-2021">2020 - 2021</option>
-                  <option value="2018-2019">2018 - 2019</option>
-                  <option value="2015-2017">2015 - 2017</option>
-                  <option value="2010-2014">2010 - 2014</option>
-                </select>
-
-                <button class="filters-reset" id="clearFilters">Limpiar</button>
+                  <button class="filters-reset" id="clearFilters">
+                    Limpiar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -262,6 +261,5 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/init.js"></script>
     <script src="js/products.js"></script>
-    <script src="js/product-info.js"></script>
   </body>
 </html>

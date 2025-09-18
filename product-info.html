@@ -144,9 +144,7 @@
             </div>
 
             <div id="pi-thumbs" class="pi-thumbs">
-              <button class="pi-thumb is-active" data-index="0">
-                <img src="img/prod50921_2.jpg" alt="Miniatura 1" />
-              </button>
+              <!-- El JS inyecta acá los <button class="pi-thumb"> ... -->
             </div>
           </div>
 
@@ -169,31 +167,10 @@
             <h1 id="pi-title" class="pi-title"></h1>
 
             <!-- Descripción -->
-            <p id="pi-description" class="pi-description">
-              
-            </p>
+            <p id="pi-description" class="pi-description"></p>
 
             <!-- Precio -->
             <div id="pi-price" class="pi-price"></div>
-
-            <!-- Controles -->
-            <div class="pi-controls">
-              <div class="pi-field">
-                <label for="pi-color">Color</label>
-                <select id="pi-color">
-                  <option value="" disabled selected>
-                    Selecciona un color
-                  </option>
-                </select>
-              </div>
-
-              <div class="pi-field">
-                <label for="pi-mileage">Kilometraje</label>
-                <select id="pi-mileage">
-                  <option value="" disabled selected>Selecciona km</option>
-                </select>
-              </div>
-            </div>
 
             <!-- Acciones -->
             <div class="pi-actions">
@@ -225,6 +202,8 @@
         </div>
       </section>
     </main>
+
+    <!-- ======= Productos relacionados ======= -->
 
     <!-- Footer -->
     <footer class="text-muted">

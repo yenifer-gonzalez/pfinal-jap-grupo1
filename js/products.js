@@ -28,9 +28,6 @@ function setupLogout() {
   });
 }
 
-// Session control is handled globally by init.js
-// Removed redundant session functions
-
 // === VARIABLES GLOBALES ===
 // Agregadas para soportar paginación y filtrado
 let currentProducts = [];
@@ -50,13 +47,11 @@ function collectFilters() {
   const $ = (id) => document.getElementById(id);
   return {
     search: [$("searchFilter"), $("searchFilterM")].filter(Boolean),
-    brand: [$("brandFilter"), $("brandFilterM")].filter(Boolean), 
+    brand: [$("brandFilter"), $("brandFilterM")].filter(Boolean),
     model: [$("modelFilter"), $("modelFilterM")].filter(Boolean),
     minPrice: [$("minPriceFilter"), $("minPriceFilterM")].filter(Boolean),
     maxPrice: [$("maxPriceFilter"), $("maxPriceFilterM")].filter(Boolean),
     sort: [$("sortFilter"), $("sortFilterM")].filter(Boolean),
-    km: [$("kilometersFilter"), $("kilometersFilterM")].filter(Boolean),
-    year: [$("yearFilter"), $("yearFilterM")].filter(Boolean),
     clear: [$("clearFilters"), $("clearFiltersMobile")].filter(Boolean),
   };
 }
@@ -137,7 +132,7 @@ function mostrarProductos(productos) {
     FILTERS && arr
       ? firstVal(arr)
       : document.getElementById(fallbackId)?.value || "";
-  
+
   const search = val(FILTERS?.search, "searchFilter");
   const searchTerm = search && search.trim() !== "" ? search.trim() : null;
 
@@ -145,13 +140,19 @@ function mostrarProductos(productos) {
     // Función para resaltar términos de búsqueda
     const highlightText = (text, term) => {
       if (!term) return text;
-      const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-      return text.replace(regex, '<mark>$1</mark>');
+      const regex = new RegExp(
+        `(${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+        "gi"
+      );
+      return text.replace(regex, "<mark>$1</mark>");
     };
 
     // Aplicar highlighting si hay búsqueda
     const highlightedName = highlightText(producto.name, searchTerm);
-    const highlightedDescription = highlightText(producto.description, searchTerm);
+    const highlightedDescription = highlightText(
+      producto.description,
+      searchTerm
+    );
 
     // generacion de las tarjetas de productos
     html += `
@@ -313,17 +314,15 @@ function applyFilters() {
   const minPrice = val(FILTERS?.minPrice, "minPriceFilter");
   const maxPrice = val(FILTERS?.maxPrice, "maxPriceFilter");
   const sort = val(FILTERS?.sort, "sortFilter");
-  
-  // Filtros antiguos (mantener por compatibilidad)
-  const km = val(FILTERS?.km, "kilometersFilter");
-  const year = val(FILTERS?.year, "yearFilter");
 
   // Filtro de búsqueda (DESAFÍO)
   if (search && search.trim() !== "") {
     const searchTerm = search.toLowerCase().trim();
-    filtered = filtered.filter(product => {
+    filtered = filtered.filter((product) => {
       const nameMatch = product.name.toLowerCase().includes(searchTerm);
-      const descriptionMatch = product.description.toLowerCase().includes(searchTerm);
+      const descriptionMatch = product.description
+        .toLowerCase()
+        .includes(searchTerm);
       return nameMatch || descriptionMatch;
     });
   }
@@ -332,7 +331,7 @@ function applyFilters() {
   if (minPrice && !isNaN(minPrice)) {
     filtered = filtered.filter((p) => p.cost >= parseInt(minPrice));
   }
-  
+
   if (maxPrice && !isNaN(maxPrice)) {
     filtered = filtered.filter((p) => p.cost <= parseInt(maxPrice));
   }
@@ -351,10 +350,6 @@ function applyFilters() {
   if (sort) {
     filtered = sortProducts(filtered, sort);
   }
-
-  // KM y Año (mantener logs informativos)
-  if (km) console.log("KM:", km, "(no implementado por falta de datos)");
-  if (year) console.log("Año:", year, "(no implementado por falta de datos)");
 
   filteredProducts = filtered;
   currentPage = 1;
@@ -558,20 +553,6 @@ function setupFilters() {
     })
   );
 
-  // KM y Año (mantener por compatibilidad)
-  (FILTERS.km || []).forEach((el) =>
-    el.addEventListener("change", (e) => {
-      mirror(FILTERS.km, e.target);
-      debouncedApply();
-    })
-  );
-  (FILTERS.year || []).forEach((el) =>
-    el.addEventListener("change", (e) => {
-      mirror(FILTERS.year, e.target);
-      debouncedApply();
-    })
-  );
-
   // Limpiar (los dos botones) - ACTUALIZADO para nuevos filtros
   (FILTERS.clear || []).forEach((btn) =>
     btn.addEventListener("click", () => {
@@ -582,8 +563,6 @@ function setupFilters() {
         ...FILTERS.sort,
         ...FILTERS.brand,
         ...FILTERS.model,
-        ...FILTERS.km,
-        ...FILTERS.year,
       ].forEach((el) => el && (el.value = ""));
       populateFilters();
       applyFilters();
@@ -654,7 +633,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (categoriesRaw) {
         const categories = JSON.parse(categoriesRaw);
         // Buscar el nombre de la categoría por id (comparando como string para evitar errores de tipo)
-        const found = categories.find(cat => String(cat.id) === String(categoryId));
+        const found = categories.find(
+          (cat) => String(cat.id) === String(categoryId)
+        );
         if (found && found.name) categoryName = found.name;
       }
     } catch (e) {}
