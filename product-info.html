@@ -179,13 +179,22 @@
                   <span id="pi-qty-label" class="pi-qty-label">Cantidad</span>
                   <div class="pi-qty">
                     <button type="button" aria-label="Disminuir">–</button>
-                    <input id="pi-qty" type="number" min="1" value="1" />
+                    <input
+                      id="pi-qty"
+                      type="number"
+                      min="1"
+                      max="10"
+                      step="1"
+                      value="1"
+                      readonly
+                    />
                     <button type="button" aria-label="Aumentar">+</button>
                   </div>
                 </div>
 
                 <button id="pi-add" class="pi-btn-cart">
-                  <i class="bi bi-cart-plus"></i> Agregar al carrito
+                  <i class="bi bi-cart-plus"></i>
+                  <span class="btn-cart-text">Agregar al carrito</span>
                 </button>
                 <button
                   id="pi-fav"
@@ -204,6 +213,144 @@
     </main>
 
     <!-- ======= Productos relacionados ======= -->
+    <section
+      id="related"
+      class="section-divider"
+      aria-labelledby="related-title"
+    >
+      <h2 id="related-title">Productos relacionados</h2>
+
+      <div id="related-grid">
+        <article class="related-item">
+          <a href="#">
+            <img
+              src="img/prod40281_1.jpg"
+              alt="Nombre del producto relacionado"
+            />
+            <h3 class="related-name">Nombre de producto</h3>
+          </a>
+        </article>
+
+        <article class="related-item">
+          <a href="#">
+            <img
+              src="img/prod50741_1.jpg"
+              alt="Nombre del producto relacionado"
+            />
+            <h3 class="related-name">Nombre de producto</h3>
+          </a>
+        </article>
+
+        <article class="related-item">
+          <a href="#">
+            <img
+              src="img/prod50921_1.jpg"
+              alt="Nombre del producto relacionado"
+            />
+            <h3 class="related-name">Nombre de producto</h3>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <!-- ======= Reseñas ======= -->
+    <section
+      id="reviews"
+      class="section-divider"
+      aria-labelledby="reviews-title"
+    >
+      <h2 id="reviews-title">Opiniones</h2>
+
+      <div class="reviews-layout">
+        <div class="reviews-cta">
+          <p><strong>¿Qué te pareció este producto?</strong></p>
+          <a href="#write-review" id="open-review" class="btn-write-review"
+            >Escribir una reseña</a
+          >
+        </div>
+
+        <!-- Columna derecha: listado de opiniones -->
+        <div class="reviews-list" id="reviews-list">
+          <!-- Reseña -->
+          <article class="review-item">
+            <header class="review-header">
+              <span class="review-user">Juan Pérez</span>
+              <time class="review-date" datetime="2025-02-15">15/02/2025</time>
+            </header>
+
+            <!-- Estrellas - reemplazar por estrellas de bootstrap -->
+            <div class="review-rating" aria-label="Calificación: 4 de 5">
+              ★★★★☆
+            </div>
+            <p class="review-text">
+              Muy buen producto, llegó rápido y la calidad es excelente.
+            </p>
+          </article>
+
+          <article class="review-item">
+            <header class="review-header">
+              <span class="review-user">Ana Gómez</span>
+              <time class="review-date" datetime="2025-02-10">10/02/2025</time>
+            </header>
+            <div class="review-rating" aria-label="Calificación: 5 de 5">
+              ★★★★★
+            </div>
+            <p class="review-text">
+              Superó mis expectativas. Lo volvería a comprar.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= Escribir reseña (formulario) ======= -->
+    <section
+      id="write-review"
+      class="section-divider"
+      aria-labelledby="write-review-title"
+    >
+      <h2 id="write-review-title">Escribir una reseña</h2>
+
+      <div class="review-product-header">
+        <img
+          src="img/prod60804_1.jpg"
+          alt="Imagen del producto"
+          class="review-product-thumb"
+        />
+        <div class="review-product-info">
+          <p class="review-product-question">¿Qué te pareció este producto?</p>
+          <p class="review-product-name" id="review-product-name">
+            Nombre del producto
+          </p>
+        </div>
+      </div>
+
+      <!-- Formulario  -->
+      <form id="review-form" action="#" method="post">
+        <label for="rating">Calificación (1 a 5)</label>
+        <select id="rating" name="rating" required>
+          <option value="" selected disabled>Selecciona</option>
+          <option value="5">★★★★★ (5)</option>
+          <option value="4">★★★★☆ (4)</option>
+          <option value="3">★★★☆☆ (3)</option>
+          <option value="2">★★☆☆☆ (2)</option>
+          <option value="1">★☆☆☆☆ (1)</option>
+        </select>
+
+        <!-- Comentario -->
+        <label for="comment">Cuéntanos más sobre este producto</label>
+        <textarea
+          id="comment"
+          name="comment"
+          rows="5"
+          required
+          placeholder="Escribe tu experiencia..."
+        ></textarea>
+
+        <!-- Enviar -->
+        <button type="submit">Enviar</button>
+      </form>
+    </section>
 
     <!-- Footer -->
     <footer class="text-muted">

@@ -114,6 +114,90 @@ async function loadProductInfo() {
   }
 }
 
+// Swipe izquierda/derecha en la galería
+(function enableSwipeOnCarousel() {
+  const area = document.querySelector(".pi-carousel");
+  if (!area) return;
+
+  let startX = 0,
+    startY = 0,
+    dx = 0,
+    dragging = false;
+  const THRESHOLD = 50;
+
+  const getPoint = (e) => ("touches" in e && e.touches[0]) || e;
+
+  const onDown = (e) => {
+    const p = getPoint(e);
+    startX = p.clientX;
+    startY = p.clientY;
+    dx = 0;
+    dragging = true;
+  };
+
+  const onMove = (e) => {
+    if (!dragging) return;
+    const p = getPoint(e);
+    const dy = p.clientY - startY;
+    dx = p.clientX - startX;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      e.preventDefault();
+    }
+  };
+
+  const onUp = () => {
+    if (!dragging) return;
+    dragging = false;
+
+    if (Math.abs(dx) > THRESHOLD) {
+      if (dx < 0) {
+        setMainImage(galleryState.index + 1);
+      } else {
+        setMainImage(galleryState.index - 1);
+      }
+    }
+  };
+
+  if ("PointerEvent" in window) {
+    area.addEventListener("pointerdown", onDown);
+    area.addEventListener("pointermove", onMove, { passive: false });
+    area.addEventListener("pointerup", onUp);
+    area.addEventListener("pointercancel", onUp);
+    area.addEventListener("pointerleave", onUp);
+  } else {
+    area.addEventListener("touchstart", onDown, { passive: true });
+    area.addEventListener("touchmove", onMove, { passive: false });
+    area.addEventListener("touchend", onUp);
+    area.addEventListener("touchcancel", onUp);
+  }
+})();
+
+// === INPUT DE CANTIDAD ===
+function setupQuantityControls() {
+  const minusBtn = document.querySelector(
+    '.pi-qty button[aria-label="Disminuir"]'
+  );
+  const plusBtn = document.querySelector(
+    '.pi-qty button[aria-label="Aumentar"]'
+  );
+  const input = document.getElementById("pi-qty");
+
+  if (!input) return;
+
+  const min = parseInt(input.min) || 1;
+  const max = parseInt(input.max) || 10;
+
+  minusBtn.addEventListener("click", () => {
+    let val = parseInt(input.value);
+    if (val > min) input.value = val - 1;
+  });
+
+  plusBtn.addEventListener("click", () => {
+    let val = parseInt(input.value);
+    if (val < max) input.value = val + 1;
+  });
+}
 // === INICIALIZACIÓN ===
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -121,4 +205,6 @@ document.addEventListener("DOMContentLoaded", function () {
   updateUserInterface();
   setupLogout();
   loadProductInfo();
+
+  setupQuantityControls();
 });
