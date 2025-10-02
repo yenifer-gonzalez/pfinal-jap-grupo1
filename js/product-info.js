@@ -122,6 +122,7 @@ async function loadProductInfo() {
       reviewThumb.src = product.images[0];
       reviewThumb.alt = `Imagen de ${product.name}`;
     }
+    renderRelatedProducts(product.relatedProducts);
   } else {
     showError("No se pudo cargar la información del producto");
   }
@@ -301,6 +302,31 @@ async function loadProductComments(productId) {
         No se pudieron cargar las opiniones. Intenta nuevamente más tarde.
       </div>`;
   }
+}
+
+// Carga y render de Productos Relacionados
+function renderRelatedProducts(relatedProducts) {
+  const container = document.getElementById("related-grid");
+  container.innerHTML = ""; // Limpiamos contenido previo
+
+  relatedProducts.forEach(product => {
+    const card = document.createElement("div");
+    card.classList.add("related-item");
+
+    card.innerHTML = `
+    <a href="product-info.html" data-id="${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+    <h3 class="related-name">${product.name}</h3>
+    </a>
+    `;
+
+    card.addEventListener("click", () => {
+      localStorage.setItem("selectedProduct", product.id);
+      window.location.href = "product-info.html";
+    });
+
+    container.appendChild(card);
+  });
 }
 
 // === INICIALIZACIÓN ===
