@@ -92,6 +92,9 @@ async function loadProductInfo() {
     return;
   }
 
+  // CARGAR COMENTARIOS
+  loadProductComments(productId);
+
   const url = `https://japceibal.github.io/emercado-api/products/${productId}.json`;
   const resultObj = await getJSONData(url);
 
@@ -109,6 +112,16 @@ async function loadProductInfo() {
     document.getElementById("pi-sold").textContent = product.soldCount;
     // Inicializar galería con las imágenes del producto
     setupGallery(product.images);
+
+    // Completar encabezado del formulario de reseña
+    const reviewName = document.getElementById("review-product-name");
+    if (reviewName) reviewName.textContent = product.name;
+
+    const reviewThumb = document.querySelector(".review-product-thumb");
+    if (reviewThumb && Array.isArray(product.images) && product.images[0]) {
+      reviewThumb.src = product.images[0];
+      reviewThumb.alt = `Imagen de ${product.name}`;
+    }
   } else {
     showError("No se pudo cargar la información del producto");
   }
@@ -198,6 +211,98 @@ function setupQuantityControls() {
     if (val < max) input.value = val + 1;
   });
 }
+
+// Estrellas con Bootstrap Icons
+function starsHTML(score, max = 5) {
+  const full = Math.floor(score);
+  const hasHalf = score - full >= 0.5;
+  const icons = [];
+
+  for (let i = 1; i <= max; i++) {
+    if (i <= full) {
+      icons.push('<i class="bi bi-star-fill" aria-hidden="true"></i>');
+    } else if (i === full + 1 && hasHalf) {
+      icons.push('<i class="bi bi-star-half" aria-hidden="true"></i>');
+    } else {
+      icons.push('<i class="bi bi-star" aria-hidden="true"></i>');
+    }
+  }
+  return icons.join("");
+}
+
+function formatDate(dstr) {
+  try {
+    const [datePart] = String(dstr).split(" ");
+    const [yyyy, mm, dd] = datePart.split("-");
+    if (yyyy && mm && dd) return `${dd}/${mm}/${yyyy}`;
+  } catch (e) {}
+  return dstr || "";
+}
+
+function reviewItemHTML({ user, dateTime, score, description }) {
+  const safeUser = user || "Usuario";
+  const safeText = description || "";
+  const safeDate = formatDate(dateTime || "");
+
+  return `
+    <article class="review-item">
+      <header class="review-header">
+        <span class="review-user">${safeUser}</span>
+        <time class="review-date" datetime="${
+          dateTime || ""
+        }">${safeDate}</time>
+      </header>
+      <div class="review-rating" aria-label="Calificación: ${score} de 5">
+        ${starsHTML(Number(score) || 0)}
+      </div>
+      <p class="review-text">${safeText}</p>
+    </article>
+  `;
+}
+
+// Carga y render de comentarios
+async function loadProductComments(productId) {
+  const list = document.getElementById("reviews-list");
+  if (!list) return;
+
+  list.innerHTML = `
+    <div class="loading-state">Cargando opiniones…</div>
+  `;
+
+  const url = `https://japceibal.github.io/emercado-api/products_comments/${productId}.json`;
+
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const comments = await resp.json();
+
+    if (!Array.isArray(comments) || comments.length === 0) {
+      list.innerHTML = `
+        <div class="error-state" style="color:var(--text-secondary);">
+          Aún no hay opiniones para este producto.
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = comments
+      .map((c) =>
+        reviewItemHTML({
+          user: c.user,
+          dateTime: c.dateTime,
+          score: c.score,
+          description: c.description,
+        })
+      )
+      .join("");
+  } catch (err) {
+    console.error("Error cargando comentarios:", err);
+    list.innerHTML = `
+      <div class="error-state">
+        No se pudieron cargar las opiniones. Intenta nuevamente más tarde.
+      </div>`;
+  }
+}
+
 // === INICIALIZACIÓN ===
 
 document.addEventListener("DOMContentLoaded", function () {
