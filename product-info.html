@@ -7,6 +7,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <title>eMercado - Todo lo que busques está aquí</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -266,17 +267,51 @@
         </div>
       </div>
 
-      <!-- Formulario  -->
+      <!-- Formulario y Calificación  --> 
       <form id="review-form" action="#" method="post">
         <label for="rating">Calificación (1 a 5)</label>
-        <select id="rating" name="rating" required>
-          <option value="" selected disabled>Selecciona</option>
-          <option value="5">★★★★★ (5)</option>
-          <option value="4">★★★★☆ (4)</option>
-          <option value="3">★★★☆☆ (3)</option>
-          <option value="2">★★☆☆☆ (2)</option>
-          <option value="1">★☆☆☆☆ (1)</option>
-        </select>
+        <div class="valoracion">
+        <!-- Estrella 1 -->
+        <button>
+            <i class="fas fa-star"></i>
+        </button>
+        <!-- Estrella 2 -->
+        <button>
+            <i class="fas fa-star"></i>
+        </button>
+        <!-- Estrella 3 -->
+        <button>
+            <i class="fas fa-star"></i>
+        </button>
+        <!-- Estrella 4 -->
+        <button>
+            <i class="fas fa-star"></i>
+        </button>
+
+        <!-- Estrella 5 -->
+        <button>
+            <i class="fas fa-star"></i>
+        </button>
+
+    </div>
+
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         <!-- Comentario -->
         <label for="comment">Cuéntanos más sobre este producto</label>
