@@ -207,4 +207,47 @@ document.addEventListener("DOMContentLoaded", function () {
     updateUserInterface();
     setupLogout();
   }
+
+  // === THEME TOGGLE INITIALIZATION ===
+  // Aplicar tema guardado y configurar el toggle
+  applySavedTheme();
+  setupThemeToggle();
 });
+
+// === GESTIÓN DEL THEME TOGGLE ===
+
+// Función para configurar el botón de cambio de tema
+function setupThemeToggle() {
+  const themeToggle = document.getElementById('theme-toggle');
+  if (!themeToggle) return;
+  
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+  });
+}
+
+// Función para aplicar el tema guardado al cargar la página
+function applySavedTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
+
+// Función para actualizar el icono según el tema activo
+function updateThemeIcon(theme) {
+  const themeToggle = document.getElementById('theme-toggle');
+  if (!themeToggle) return;
+  
+  const icon = themeToggle.querySelector('i');
+  
+  if (theme === 'dark') {
+    icon.className = 'fas fa-sun';  // Mostrar sol en modo oscuro
+  } else {
+    icon.className = 'fas fa-moon'; // Mostrar luna en modo claro
+  }
+}
