@@ -309,6 +309,106 @@ function renderRelatedProducts(relatedProducts) {
   });
 }
 
+// === DESAFÍO: AGREGAR CALIFICACIÓN LOCALMENTE ===
+
+function setupReviewForm() {
+  const form = document.getElementById("review-form");
+  if (!form) return;
+
+  form.addEventListener("submit", function(e) {
+    e.preventDefault(); // Evitar envío real del formulario
+
+    // Obtener datos del formulario
+    const ratingSelect = document.getElementById("rating");
+    const commentTextarea = document.getElementById("comment");
+    
+    const score = ratingSelect.value;
+    const description = commentTextarea.value.trim();
+
+    // Validar que se hayan completado los campos
+    if (!score || !description) {
+      alert("Por favor completa todos los campos");
+      return;
+    }
+
+    // Obtener usuario actual de la sesión
+    const currentUser = getCurrentUser();
+    const username = currentUser?.username || "Usuario Anónimo";
+
+    // Crear fecha actual en formato compatible
+    const now = new Date();
+    const dateTime = now.toISOString().split('T')[0] + " " + 
+                     now.toTimeString().split(' ')[0];
+
+    // Crear objeto de nueva calificación
+    const newReview = {
+      user: username,
+      dateTime: dateTime,
+      score: parseInt(score),
+      description: description
+    };
+
+    // Agregar la calificación a la lista
+    addReviewToList(newReview);
+
+    // Limpiar el formulario
+    form.reset();
+
+    // Mostrar mensaje de éxito
+    showSuccessMessage();
+  });
+}
+
+function addReviewToList(review) {
+  const list = document.getElementById("reviews-list");
+  if (!list) return;
+
+  // Verificar si hay mensaje de "no hay opiniones" y eliminarlo
+  const emptyState = list.querySelector('.error-state');
+  if (emptyState) {
+    list.innerHTML = '';
+  }
+
+  // Crear el HTML de la nueva calificación usando la función existente
+  const reviewHTML = reviewItemHTML(review);
+
+  // Agregar al inicio de la lista (más reciente primero)
+  list.insertAdjacentHTML('afterbegin', reviewHTML);
+
+  // Agregar animación de entrada
+  const newReviewElement = list.firstElementChild;
+  newReviewElement.style.animation = 'fadeIn 0.5s ease-in';
+}
+
+function showSuccessMessage() {
+  // Crear mensaje temporal de éxito
+  const message = document.createElement('div');
+  message.className = 'success-message';
+  message.textContent = '✓ Tu calificación ha sido agregada exitosamente';
+  message.style.cssText = `
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4caf50;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    font-weight: 500;
+    animation: slideDown 0.3s ease-out;
+  `;
+
+  document.body.appendChild(message);
+
+  // Eliminar mensaje después de 3 segundos
+  setTimeout(() => {
+    message.style.animation = 'fadeOut 0.3s ease-out';
+    setTimeout(() => message.remove(), 300);
+  }, 3000);
+}
+
 // === INICIALIZACIÓN ===
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -317,4 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
   loadProductInfo();
 
   setupQuantityControls();
+  
+  // DESAFÍO: Configurar formulario de calificación
+  setupReviewForm();
 });
