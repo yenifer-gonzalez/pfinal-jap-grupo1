@@ -1,32 +1,5 @@
-// === GESTIÓN DE SESIÓN Y SEGURIDAD ===
-
-function updateUserInterface() {
-  const usernameDisplay = document.getElementById("usernameDisplay");
-  const sidebarUsername = document.getElementById("sidebarUsername");
-  const user = getCurrentUser();
-
-  const name = user?.username || "";
-  if (usernameDisplay) usernameDisplay.textContent = name;
-  if (sidebarUsername) sidebarUsername.textContent = name;
-}
-
-function setupLogout() {
-  const logoutButtons = document.querySelectorAll("[data-logout], #logoutBtn");
-  const navSidebar = document.getElementById("navSidebar");
-  const overlay = document.getElementById("overlay");
-
-  logoutButtons.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
-        // cerrar UI
-        if (navSidebar) navSidebar.classList.remove("show");
-        if (overlay) overlay.classList.add("hidden");
-        logout();
-      }
-    });
-  });
-}
+// === FUNCIONALIDAD ESPECÍFICA DE PRODUCTS ===
+// Las funciones updateUserInterface() y setupLogout() están centralizadas en init.js
 
 // === VARIABLES GLOBALES ===
 // Agregadas para soportar paginación y filtrado
@@ -600,12 +573,9 @@ function updateModelFilter() {
 
 document.addEventListener("DOMContentLoaded", async function () {
   // Session control is handled globally by init.js
+  // updateUserInterface() and setupLogout() are now in init.js
 
   try {
-    // Inicialización de dropdown
-    updateUserInterface();
-    setupLogout();
-
     // Configurar filtros
     FILTERS = collectFilters();
     setupFilters();

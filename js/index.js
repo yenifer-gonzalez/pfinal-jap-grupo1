@@ -1,23 +1,5 @@
-// === GESTIÓN DE INTERFAZ DE USUARIO ===
-
-function updateUserInterface() {
-  const usernameDisplay = document.getElementById("usernameDisplay");
-
-  const user = getCurrentUser();
-  usernameDisplay.textContent = user?.username;
-}
-
-function setupLogout() {
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
-        logout();
-      }
-    });
-  }
-}
+// === FUNCIONALIDAD ESPECÍFICA DE INDEX ===
+// Las funciones updateUserInterface() y setupLogout() están centralizadas en init.js
 
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("autos").addEventListener("click", function () {
@@ -32,7 +14,4 @@ document.addEventListener("DOMContentLoaded", function () {
     localStorage.setItem("catID", 103);
     window.location = "products.html";
   });
-
-  updateUserInterface();
-  setupLogout();
 });

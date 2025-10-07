@@ -9,24 +9,8 @@ let PESO_SYMBOL = "UYU ";
 let PERCENTAGE_SYMBOL = "%";
 let MSG = "FUNCIONALIDAD NO IMPLEMENTADA";
 
-function updateUserInterface() {
-  const usernameDisplay = document.getElementById("usernameDisplay");
-
-  const user = getCurrentUser();
-  usernameDisplay.textContent = user?.username;
-}
-
-function setupLogout() {
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
-        logout();
-      }
-    });
-  }
-}
+// === FUNCIONALIDAD ESPECÍFICA DE SELL ===
+// Las funciones updateUserInterface() y setupLogout() están centralizadas en init.js
 
 //Función que se utiliza para actualizar los costos de publicación
 function updateTotalCosts() {
@@ -51,8 +35,8 @@ function updateTotalCosts() {
 //que el documento se encuentra cargado, es decir, se encuentran todos los
 //elementos HTML presentes.
 document.addEventListener("DOMContentLoaded", function (e) {
-  updateUserInterface();
-  setupLogout();
+  // Session control is handled globally by init.js
+  // updateUserInterface() and setupLogout() are now in init.js
 
   document
     .getElementById("productCountInput")
