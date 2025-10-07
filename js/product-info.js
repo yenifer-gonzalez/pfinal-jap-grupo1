@@ -311,6 +311,36 @@ function renderRelatedProducts(relatedProducts) {
 
 // === DESAFÍO: AGREGAR CALIFICACIÓN LOCALMENTE ===
 
+// Función para limpiar el username (quitar dominio del email)
+function cleanUsername(username) {
+  if (!username) return "Usuario Anónimo";
+  
+  // Si contiene @, tomar solo la parte antes del @
+  if (username.includes('@')) {
+    return username.split('@')[0];
+  }
+  
+  return username;
+}
+
+// Función para verificar si el usuario ya comentó
+function hasUserAlreadyReviewed(username) {
+  const list = document.getElementById("reviews-list");
+  if (!list) return false;
+  
+  // Obtener todas las calificaciones existentes
+  const existingReviews = list.querySelectorAll('.review-user');
+  
+  // Verificar si el usuario ya tiene una calificación
+  for (const reviewUser of existingReviews) {
+    if (reviewUser.textContent.trim() === username) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 function setupReviewForm() {
   const form = document.getElementById("review-form");
   if (!form) return;
@@ -331,9 +361,16 @@ function setupReviewForm() {
       return;
     }
 
-    // Obtener usuario actual de la sesión
+    // Obtener usuario actual de la sesión y limpiar el username
     const currentUser = getCurrentUser();
-    const username = currentUser?.username || "Usuario Anónimo";
+    const rawUsername = currentUser?.username || "Usuario Anónimo";
+    const username = cleanUsername(rawUsername);
+
+    // Verificar si el usuario ya hizo una calificación
+    if (hasUserAlreadyReviewed(username)) {
+      alert("Ya has calificado este producto. Solo puedes hacer una calificación por producto.");
+      return;
+    }
 
     // Crear fecha actual en formato compatible
     const now = new Date();
@@ -354,9 +391,34 @@ function setupReviewForm() {
     // Limpiar el formulario
     form.reset();
 
+    // Deshabilitar el formulario para evitar múltiples envíos
+    disableReviewForm("Ya has calificado este producto");
+
     // Mostrar mensaje de éxito
     showSuccessMessage();
   });
+}
+
+// Función para deshabilitar el formulario después de enviar
+function disableReviewForm(message) {
+  const form = document.getElementById("review-form");
+  if (!form) return;
+  
+  const ratingSelect = document.getElementById("rating");
+  const commentTextarea = document.getElementById("comment");
+  const submitBtn = form.querySelector('button[type="submit"]');
+  
+  if (ratingSelect) ratingSelect.disabled = true;
+  if (commentTextarea) {
+    commentTextarea.disabled = true;
+    commentTextarea.placeholder = message;
+  }
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Ya has calificado";
+    submitBtn.style.opacity = "0.6";
+    submitBtn.style.cursor = "not-allowed";
+  }
 }
 
 function addReviewToList(review) {
@@ -409,6 +471,21 @@ function showSuccessMessage() {
   }, 3000);
 }
 
+// Función para verificar al cargar si el usuario ya comentó
+function checkIfUserAlreadyReviewed() {
+  // Esperar un momento para que se carguen los comentarios
+  setTimeout(() => {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    const username = cleanUsername(currentUser.username);
+    
+    if (hasUserAlreadyReviewed(username)) {
+      disableReviewForm("Ya has calificado este producto");
+    }
+  }, 1000); // Esperar 1 segundo para que se carguen los comentarios de la API
+}
+
 // === INICIALIZACIÓN ===
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -420,4 +497,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // DESAFÍO: Configurar formulario de calificación
   setupReviewForm();
+  
+  // Verificar si el usuario ya comentó este producto
+  checkIfUserAlreadyReviewed();
 });
