@@ -1,6 +1,15 @@
+html {
+  transition: background 200ms ease, color 200ms ease;
+}
+
 body {
-  background: linear-gradient(to bottom, #fffaf5 0%, #e8f1f5 60%, #d8e3e9 100%);
-  font-family: var(--font-family-primary) !important;
+  background: linear-gradient(
+    180deg,
+    var(--bg-gradient-start) 0%,
+    var(--bg-gradient-middle) 60%,
+    var(--bg-gradient-end) 100%
+  );
+  font-family: var(--font-family-primary);
 }
 
 .jumbotron,
@@ -175,9 +184,9 @@ a.custom-card:hover {
 /* === ESTILOS DE PRODUCTOS === */
 
 .main-header {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--header-bg);
+  color: var(--header-text);
   backdrop-filter: blur(6px);
-  color: var(--color-primary-orange);
   height: var(--header-height);
   position: sticky;
   top: 0;
@@ -215,7 +224,7 @@ a.custom-card:hover {
 
 .nav-link.active,
 .nav-link:hover {
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   text-decoration: underline;
   text-underline-offset: 6px;
   text-decoration-thickness: 2px;
@@ -272,7 +281,7 @@ a.custom-card:hover {
   margin-bottom: 0;
   font-size: 4rem;
   font-weight: var(--font-weight-bold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
 }
 
 .filters-right {
@@ -342,7 +351,7 @@ mark {
 }
 
 .filter-select.has-value {
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
 }
 
 .filters-reset {
@@ -441,7 +450,7 @@ mark {
   font-family: var(--font-family-secondary);
   font-size: var(--font-size-h3);
   font-weight: var(--font-weight-bold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   line-height: var(--line-height-tight);
   margin-bottom: var(--space-sm);
 }
@@ -645,7 +654,7 @@ footer a {
 }
 
 footer a:hover {
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   text-decoration: underline;
 }
 
@@ -784,7 +793,7 @@ footer a:hover {
   padding: 10px 12px;
   border-radius: 10px;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   text-decoration: none;
   transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
@@ -841,21 +850,12 @@ footer a:hover {
   border-color: var(--color-primary-orange);
 }
 
-/* ============================ PRODUCT-INFO  ============================ */
+/* ============================ PRODUCT INFO  ============================ */
 .pi-container {
   position: relative;
   max-width: var(--container-max-width);
   margin: 0 auto;
   padding: var(--space-xl) var(--space-lg);
-  background: transparent;
-}
-
-.pi-container::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: #fff;
-  z-index: -1;
 }
 
 .pi-card {
@@ -895,7 +895,7 @@ footer a:hover {
   background: none;
   border: none;
   padding: 0;
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   font-weight: var(--font-weight-medium);
   display: inline-flex;
   align-items: center;
@@ -1012,7 +1012,7 @@ footer a:hover {
 
 /* Título y descripción */
 .pi-title {
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   font-size: clamp(28px, 4.5vw, 44px);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
@@ -1119,7 +1119,7 @@ footer a:hover {
   place-items: center;
   font-size: 18px;
   line-height: 1;
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   cursor: pointer;
 }
 
@@ -1135,7 +1135,7 @@ footer a:hover {
   width: 100%;
   text-align: center;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   padding: 0;
   appearance: textfield;
   padding: 0;
@@ -1224,7 +1224,7 @@ footer a:hover {
   font-family: var(--font-family-secondary);
   font-size: var(--font-size-h1);
   font-weight: var(--font-weight-bold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   margin: 0 0 var(--space-lg);
 }
 
@@ -1261,7 +1261,7 @@ footer a:hover {
 .related-name {
   font-size: var(--font-size-h3);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   padding: var(--space-md);
   margin: 0;
   line-height: var(--line-height-tight);
@@ -1278,7 +1278,7 @@ footer a:hover {
   font-family: var(--font-family-secondary);
   font-size: var(--font-size-h1);
   font-weight: var(--font-weight-bold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   margin: 0 0 var(--space-lg);
 }
 
@@ -1320,9 +1320,9 @@ footer a:hover {
 }
 
 .btn-write-review:hover {
-  background: var(--color-secondary-blue);
+  background: var(--color-secondary);
   color: #fff;
-  border: 1px solid var(--color-secondary-blue);
+  border: 1px solid var(--color-secondary);
 }
 
 .btn-write-review:active {
@@ -1353,7 +1353,7 @@ footer a:hover {
 
 .review-user {
   font-weight: var(--font-weight-semibold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
 }
 
 .review-date {
@@ -1384,7 +1384,7 @@ footer a:hover {
   font-family: var(--font-family-secondary);
   font-size: var(--font-size-h1);
   font-weight: var(--font-weight-bold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   margin: 0 0 var(--space-lg);
 }
 
@@ -1412,7 +1412,7 @@ footer a:hover {
 
 .review-product-info .review-product-name {
   font-weight: var(--font-weight-semibold);
-  color: var(--color-secondary-blue);
+  color: var(--color-secondary);
   margin: 0;
 }
 

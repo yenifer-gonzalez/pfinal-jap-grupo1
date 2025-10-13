@@ -3,13 +3,17 @@
   --color-primary-orange: #ff8c00; /* Naranja principal (botones, enlaces) */
   --color-primary-dark: #e67e00; /* Naranja hover/activo */
   --color-secondary-orange: #ffa500; /* Naranja secundario (iconos) */
-  --color-secondary-blue: #274653; /* Color secundario: azul */
+  --color-secondary: #274653; /* Color secundario: azul */
   --color-secondary-dark: #1a272d; /* Color secundario más oscuro para hover */
 
+  /* Color del Header */
+  --header-bg: rgba(255, 255, 255, 0.7);
+  --header-text: var(--color-primary-orange);
+
   /* Colores de Fondo */
-  --bg-gradient-start: #fff8dc; /* Beige claro (inicio del gradiente) */
-  --bg-gradient-middle: #ffe4b5; /* Durazno suave (medio del gradiente) */
-  --bg-gradient-end: #f0e68c; /* Amarillo pálido (final del gradiente) */
+  --bg-gradient-start: #fffaf5;
+  --bg-gradient-middle: #e8f1f5;
+  --bg-gradient-end: #d8e3e9;
   --card-background: #ffffff; /* Blanco para tarjetas */
   --card-background-alt: #f8f8f8; /* Gris muy claro para cards alternativas */
 
@@ -60,4 +64,49 @@
   --container-max-width: 1200px;
   --product-card-width: 280px;
   --header-height: 64px;
+
+  /* Login */
+  --bg-warm-1: #ffd19a; /* naranja claro intermedio */
+  --bg-warm-2: #ffead1; /* beige anaranjado suave */
+  --icon-nudge-y: 1px;
+}
+
+/* ==== Tema oscuro==== */
+:root[data-theme="dark"] {
+  /* Fondo general */
+  --bg-gradient-start: #0f1417;
+  --bg-gradient-middle: #101a20;
+  --bg-gradient-end: #0d1b22;
+
+  /* Texto  */
+  --text-primary: #f8f9fa;
+  --text-secondary: #d8dee5;
+  --text-tertiary: #b8c2cc;
+  --text-muted: #8fa1b2;
+
+  /* Marca */
+  --color-primary-orange: #ff9a1a;
+  --color-primary-dark: #e07f00;
+  --color-secondary-orange: #ffb347;
+  --color-secondary: #f8f9fa;
+
+  /* Superficies y bordes */
+  --card-background: #274653;
+  --card-background-alt: #1c2d35;
+  --border-light: #2f4956;
+  --border-medium: #3a5563;
+  --shadow-light: rgba(0, 0, 0, 0.45);
+  --shadow-medium: rgba(0, 0, 0, 0.6);
+
+  /* Header */
+  --header-bg: #0f141780;
+  --header-text: #f8f9fa;
+
+  /* Links del nav */
+  --nav-link-color: #ffffff;
+  --nav-link-hover: #77bdf2;
+
+  /* Botones y superficies auxiliares */
+  --btn-surface: #2a1e10;
+  --fav-surface: #1c2d35;
 }
