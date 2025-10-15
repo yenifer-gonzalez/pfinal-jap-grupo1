@@ -107,7 +107,7 @@
 .profile-panel-header h2 {
   margin: 0 0 var(--space-lg);
   font-family: var(--font-family-secondary);
-  font-size: var(--font-size-h1);
+  font-size: 2.5rem;
   font-weight: var(--font-weight-bold);
   color: var(--color-secondary);
 }
@@ -200,6 +200,7 @@
 .form-row {
   display: grid;
   gap: var(--space-sm);
+  font-size: 1.05rem;
 }
 
 .form-row label {
@@ -289,12 +290,70 @@
   }
 
   .profile-photo-row {
-    grid-template-columns: 140px 1fr;
+    grid-template-columns: 120px 1fr;
+    align-items: start;
+    gap: 14px;
+  }
+
+  .profile-photo-box {
+    width: 120px;
+    height: 120px;
+  }
+
+  .photo-actions.vertical {
+    margin-top: 0;
+  }
+
+  .photo-actions.vertical button {
+    min-width: 100px;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+
+  #profileForm {
+    grid-template-columns: 1fr;
   }
 
   #email,
   #phone {
     width: 100%;
+  }
+
+  .form-row label {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-panel {
+    padding: 20px;
+  }
+
+  .profile-panel-header h2 {
+    font-size: 2rem;
+  }
+
+  .profile-tab-btn {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+
+  .form-row input {
+    padding: 10px;
+    font-size: 0.98rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  #btnSaveProfile,
+  #btnResetProfile {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.98rem;
   }
 }
 
@@ -306,23 +365,79 @@
   .profile-photo-row {
     grid-template-columns: 1fr;
     justify-items: start;
+    gap: 10px;
   }
 
   .profile-photo-box {
-    width: 140px;
-    height: 140px;
+    width: 120px;
+    height: 120px;
   }
 
   .photo-actions {
-    width: 100%;
+    width: auto;
   }
 
-  .photo-actions button {
-    flex: 1 1 auto;
+  .photo-actions.vertical button {
+    min-width: 96px;
+    padding: 6px 10px;
+    font-size: 13px;
   }
 
   #profileSidebarName {
     font-size: var(--font-size-body);
+  }
+}
+
+@media (max-width: 425px) {
+  .profile-panel {
+    padding: 16px;
+  }
+
+  .profile-panel-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .profile-tab-btn {
+    font-size: 0.9rem;
+  }
+
+  .form-row input {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+
+  #btnSaveProfile {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .profile-panel,
+  .profile-sidebar .profile-card {
+    border-radius: 12px;
+  }
+
+  .profile-panel {
+    padding: 12px;
+  }
+
+  .profile-photo-box {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-panel-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .form-row label {
+    font-size: 0.95rem;
+  }
+
+  .photo-actions.vertical button {
+    min-width: 90px;
+    font-size: 12px;
+    padding: 5px 8px;
   }
 }
 
@@ -353,13 +468,63 @@
   background: var(--card-background-alt);
 }
 
-:root[data-theme="dark"] #btnPhotoRemove {
+:root[data-theme="dark"] #profileForm input[type="text"],
+:root[data-theme="dark"] #profileForm input[type="email"],
+:root[data-theme="dark"] #profileForm input[type="tel"] {
+  background: var(--card-background-alt);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+}
+
+:root[data-theme="dark"] #profileForm input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+:root[data-theme="dark"] #profileForm input:focus {
+  border-color: var(--color-primary-orange);
+  box-shadow: 0 0 0 2px rgba(255, 154, 26, 0.18);
+  outline: none;
+}
+
+:root[data-theme="dark"] #btnResetProfile {
+  background: var(--color-secondary-dark);
+  color: #fff;
+  border-color: var(--color-secondary-dark);
+}
+:root[data-theme="dark"] #btnResetProfile:hover {
+  filter: brightness(1.06);
+  color: #fff;
+}
+
+:root[data-theme="dark"] .profile-tab-btn {
   background: var(--card-background);
-  color: var(--color-secondary);
+  border-color: var(--border-medium);
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .profile-tab-btn:hover {
+  background: var(--card-background-alt);
+  color: var(--color-primary-orange);
   border-color: var(--border-medium);
 }
 
-:root[data-theme="dark"] #btnPhotoRemove:hover {
-  background: var(--border-medium);
+:root[data-theme="dark"] .profile-tab-btn.active {
+  background: rgba(255, 154, 26, 0.12);
   color: var(--color-primary-orange);
+  border-color: var(--border-medium);
+}
+
+:root[data-theme="dark"] #btnPhotoRemove {
+  background: var(--color-secondary-dark);
+  color: #fff;
+  border-color: var(--color-secondary-dark);
+}
+
+:root[data-theme="dark"] #btnPhotoRemove:hover {
+  filter: brightness(1.06);
+}
+
+:root[data-theme="dark"] #btnPhotoEdit:hover {
+  background: var(--color-primary-dark);
 }

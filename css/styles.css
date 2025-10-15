@@ -1836,44 +1836,35 @@ footer a:hover {
   }
 }
 /* === Estrellitas === */
-
 :root {
   --color-inactivo: #5f5050;
   --color-hover: #ffa400;
 }
+
 .valoracion {
   display: flex;
   flex-direction: row-reverse;
   justify-content: left;
 }
-.valoracion button {
-  background-color: initial;
+
+.valoracion .star-btn {
+  background-color: transparent;
   border: 0;
   color: var(--color-inactivo);
   transition: 1s all;
 }
-.valoracion button:hover {
+
+.valoracion .star-btn:hover {
   cursor: pointer;
   color: var(--color-hover);
   transform: rotate(360deg);
 }
-button:nth-child(1):hover ~ button {
-  color: var(--color-hover);
-  transform: rotate(360deg);
-}
-button:nth-child(2):hover ~ button {
-  color: var(--color-hover);
-  transform: rotate(360deg);
-}
-button:nth-child(3):hover ~ button {
-  color: var(--color-hover);
-  transform: rotate(360deg);
-}
-button:nth-child(4):hover ~ button {
-  color: var(--color-hover);
-  transform: rotate(360deg);
-}
-button:nth-child(5):hover ~ button {
+
+.valoracion .star-btn:nth-child(1):hover ~ .star-btn,
+.valoracion .star-btn:nth-child(2):hover ~ .star-btn,
+.valoracion .star-btn:nth-child(3):hover ~ .star-btn,
+.valoracion .star-btn:nth-child(4):hover ~ .star-btn,
+.valoracion .star-btn:nth-child(5):hover ~ .star-btn {
   color: var(--color-hover);
   transform: rotate(360deg);
 }
