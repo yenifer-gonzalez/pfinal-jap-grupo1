@@ -1,0 +1,365 @@
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 1px, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Contenedor principal */
+.profile-container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+/* --------- Sidebar izquierdo --------- */
+.profile-sidebar .profile-card {
+  background: var(--card-background);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 2px 8px var(--shadow-light);
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-md));
+}
+
+.profile-avatar {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto var(--space-md);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  background: var(--card-background-alt);
+  box-shadow: 0 2px 6px var(--shadow-light);
+}
+
+#profileSidebarName {
+  margin: 0 0 var(--space-lg);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+/* Botones de navegación del perfil */
+.profile-nav {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.profile-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-light);
+  background: #fff;
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-semibold);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    transform 0.1s ease;
+  cursor: pointer;
+}
+
+.profile-tab-btn:hover {
+  background: #fff4e6;
+  border-color: var(--color-primary-orange);
+  color: var(--color-primary-orange);
+}
+
+.profile-tab-btn.active {
+  background: rgba(255, 140, 0, 0.12);
+  border-color: var(--color-primary-orange);
+  color: var(--color-primary-orange);
+}
+
+/* --------- Panel derecho (contenido) --------- */
+.profile-content {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.profile-panel {
+  background: var(--card-background);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 2px 8px var(--shadow-light);
+  padding: var(--space-xl) var(--space-xl);
+}
+
+.profile-panel-header h2 {
+  margin: 0 0 var(--space-lg);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+/* Foto + acciones */
+.profile-photo-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: var(--space-lg);
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.profile-photo-box {
+  width: 180px;
+  height: 180px;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-medium);
+  background: var(--card-background-alt);
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.profile-photo-box img,
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: inherit;
+}
+
+.profile-photo-box img[src*="img_perfil"],
+.profile-avatar img[src*="img_perfil"] {
+  transform: translateY(10px);
+}
+
+.photo-actions.vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.photo-actions.vertical button {
+  min-width: 110px;
+  padding: 8px 0;
+  font-size: 14px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-light);
+  line-height: 1.2;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+/* Editar = primario */
+#btnPhotoEdit {
+  background: var(--color-primary-orange);
+  color: #fff;
+  border-color: var(--color-primary-orange);
+}
+
+#btnPhotoEdit:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Eliminar = secundario */
+#btnPhotoRemove {
+  background: var(--card-background-alt);
+  color: var(--color-secondary);
+  border-color: var(--border-light);
+}
+
+#btnPhotoRemove:hover {
+  background: var(--border-light);
+  color: var(--color-secondary-dark);
+}
+
+/* --------- Formulario de datos --------- */
+#profileForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg) var(--space-xl);
+}
+
+.form-row {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.form-row label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-orange);
+}
+
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="tel"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-sm);
+  background: #fff;
+  color: var(--text-primary);
+  font-size: var(--font-size-body);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-row input:focus {
+  outline: none;
+  border-color: var(--color-primary-orange);
+  box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-top: var(--space-sm);
+}
+
+.form-actions button {
+  border-radius: var(--border-radius-md);
+  padding: 12px 16px;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease, color 0.2s ease,
+    border-color 0.2s ease;
+  border: 1px solid var(--border-light);
+  background: #fff;
+  color: var(--color-secondary);
+}
+
+#btnSaveProfile {
+  background: var(--color-primary-orange);
+  color: #fff;
+  border-color: var(--color-primary-orange);
+}
+
+#btnSaveProfile:hover {
+  background: var(--color-primary-dark);
+}
+
+#btnResetProfile:hover {
+  background: #fff4e6;
+  color: var(--color-primary-orange);
+  border-color: var(--color-primary-orange);
+}
+
+/* --------- Placeholders --------- */
+.security-placeholder,
+.settings-placeholder {
+  background: var(--card-background-alt);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-lg);
+  color: var(--text-secondary);
+}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width: 1040px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  .profile-sidebar .profile-card {
+    position: static;
+    top: auto;
+  }
+
+  #profileForm {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-photo-row {
+    grid-template-columns: 140px 1fr;
+  }
+
+  #email,
+  #phone {
+    width: 100%;
+  }
+}
+
+@media (max-width: 595px) {
+  .profile-container {
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .profile-photo-row {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .profile-photo-box {
+    width: 140px;
+    height: 140px;
+  }
+
+  .photo-actions {
+    width: 100%;
+  }
+
+  .photo-actions button {
+    flex: 1 1 auto;
+  }
+
+  #profileSidebarName {
+    font-size: var(--font-size-body);
+  }
+}
+
+/* ============================ DARK THEME ============================ */
+:root[data-theme="dark"] .profile-tab-btn {
+  background: var(--card-background);
+  border-color: var(--border-light);
+}
+
+:root[data-theme="dark"] .profile-tab-btn:hover {
+  background: #1f2c33;
+}
+
+:root[data-theme="dark"] .profile-panel {
+  background: var(--card-background);
+}
+
+:root[data-theme="dark"] .profile-photo-box {
+  background: var(--card-background-alt);
+}
+
+:root[data-theme="dark"] .photo-actions button {
+  background: var(--card-background);
+}
+
+:root[data-theme="dark"] .security-placeholder,
+:root[data-theme="dark"] .settings-placeholder {
+  background: var(--card-background-alt);
+}
+
+:root[data-theme="dark"] #btnPhotoRemove {
+  background: var(--card-background);
+  color: var(--color-secondary);
+  border-color: var(--border-medium);
+}
+
+:root[data-theme="dark"] #btnPhotoRemove:hover {
+  background: var(--border-medium);
+  color: var(--color-primary-orange);
+}

@@ -6,7 +6,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <title>eMercado - Productos</title>
+    <title>eMercado - Mi perfil</title>
+    <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -26,6 +27,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/my-profile.css" />
 
     <!-- Preload de recursos -->
     <link rel="preconnect" href="https://japceibal.github.io" />
@@ -33,6 +35,7 @@
   </head>
 
   <body>
+    <!-- ======= Header ======= -->
     <header class="main-header">
       <div class="header-container">
         <div class="header-logo">
@@ -40,10 +43,11 @@
             <img src="img/logo-jap.svg" alt="logo-jap" class="logo-img" />
           </a>
         </div>
+
         <nav class="main-nav">
           <a href="index.html" class="nav-link">Inicio</a>
           <a href="categories.html" class="nav-link">Categorías</a>
-          <a href="products.html" class="nav-link active">Productos</a>
+          <a href="products.html" class="nav-link">Productos</a>
           <a href="sell.html" class="nav-link">Vender</a>
         </nav>
 
@@ -65,7 +69,12 @@
               aria-labelledby="userDropdown"
             >
               <li>
-                <a class="dropdown-item" href="my-profile.html">Mi perfil</a>
+                <a
+                  class="dropdown-item active"
+                  aria-current="page"
+                  href="my-profile.html"
+                  >Mi perfil</a
+                >
               </li>
               <li><a class="dropdown-item" href="cart.html">Mi carrito</a></li>
               <li><hr class="dropdown-divider" /></li>
@@ -77,27 +86,233 @@
             </ul>
           </div>
         </div>
+
         <button id="menuButton" class="btn menu-toggle" aria-label="Abrir menú">
           <i class="bi bi-list"></i>
         </button>
       </div>
     </header>
 
+    <!-- Sidebar navegación responsive -->
+    <aside id="navSidebar" class="sidebar right hidden">
+      <div class="sidebar-content">
+        <div class="user-info">
+          <i class="bi bi-person-circle"></i>
+          <p id="sidebarUsername">example@gmail.com</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="index.html">Inicio</a>
+          <a href="categories.html">Categorías</a>
+          <a href="products.html">Productos</a>
+          <a href="sell.html">Vender</a>
+          <a href="my-profile.html" class="active">Mi perfil</a>
+        </nav>
+        <hr />
+        <a href="#" class="sidebar-logout" data-logout>
+          <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- Overlay para el sidebar -->
+    <div id="overlay" class="overlay hidden"></div>
+
+    <!-- ======= Main ======= -->
+    <main class="profile-container" aria-labelledby="profile-title">
+      <h1 id="profile-title" class="visually-hidden">Mi perfil</h1>
+
+      <section class="profile-layout">
+        <!-- Columna izquierda: avatar + nombre + tabs -->
+        <aside class="profile-sidebar" aria-label="Panel de usuario">
+          <div class="profile-card">
+            <div class="profile-avatar">
+              <img
+                id="profileAvatar"
+                src="img/img_perfil.png"
+                alt="Foto de perfil"
+              />
+            </div>
+            <p id="profileSidebarName">Nombre Apellido</p>
+
+            <nav class="profile-nav" aria-label="Secciones del perfil">
+              <button
+                id="tab-data"
+                class="profile-tab-btn active"
+                type="button"
+                data-target="panel-data"
+              >
+                <i class="bi bi-person-lines-fill me-2"></i> Mis datos
+              </button>
+              <button
+                id="tab-security"
+                class="profile-tab-btn"
+                type="button"
+                data-target="panel-security"
+              >
+                <i class="bi bi-shield-lock me-2"></i> Seguridad
+              </button>
+              <button
+                id="tab-settings"
+                class="profile-tab-btn"
+                type="button"
+                data-target="panel-settings"
+              >
+                <i class="bi bi-gear me-2"></i> Configuración
+              </button>
+            </nav>
+          </div>
+        </aside>
+
+        <!-- Columna derecha: contenido -->
+        <section class="profile-content">
+          <!-- Panel: Mis datos (default) -->
+          <article
+            id="panel-data"
+            class="profile-panel"
+            aria-labelledby="panel-data-title"
+          >
+            <header class="profile-panel-header">
+              <h2 id="panel-data-title">Datos del usuario</h2>
+            </header>
+
+            <!-- Foto + acciones -->
+            <div class="profile-photo-row">
+              <div class="profile-photo-box">
+                <img
+                  id="profilePhotoPreview"
+                  src="img/img_perfil.png"
+                  alt="Foto actual del usuario"
+                />
+              </div>
+
+              <div class="photo-actions vertical">
+                <input
+                  id="profilePhotoInput"
+                  type="file"
+                  accept="image/*"
+                  hidden
+                />
+                <button
+                  id="btnPhotoEdit"
+                  class="btn-photo btn-sm"
+                  type="button"
+                >
+                  Editar
+                </button>
+                <button
+                  id="btnPhotoRemove"
+                  class="btn-photo btn-sm"
+                  type="button"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+
+            <!-- Formulario de datos -->
+            <form id="profileForm" action="#" method="post" novalidate>
+              <div class="form-row">
+                <label for="firstName">Nombre</label>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  autocomplete="given-name"
+                />
+              </div>
+
+              <div class="form-row">
+                <label for="lastName">Apellido</label>
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  autocomplete="family-name"
+                />
+              </div>
+
+              <div class="form-row">
+                <label for="email">Mail</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  autocomplete="email"
+                  placeholder="example@gmail.com"
+                />
+              </div>
+
+              <div class="form-row">
+                <label for="phone">Número de celular</label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autocomplete="tel"
+                  placeholder="+598 99123456"
+                />
+              </div>
+
+              <div class="form-actions">
+                <button id="btnSaveProfile" type="submit">
+                  Guardar cambios
+                </button>
+                <button id="btnResetProfile" type="reset">Restablecer</button>
+              </div>
+            </form>
+          </article>
+
+          <!-- ========= Panel: Seguridad ========= -->
+          <article
+            id="panel-security"
+            class="profile-panel"
+            aria-labelledby="panel-security-title"
+            hidden
+          >
+            <header class="profile-panel-header">
+              <h2 id="panel-security-title">Seguridad</h2>
+            </header>
+
+            <div class="security-placeholder">
+              <p>Opciones para cambiar contraseña, activar 2FA, etc.</p>
+            </div>
+          </article>
+
+          <!-- ========= Panel: Configuración ========= -->
+          <article
+            id="panel-settings"
+            class="profile-panel"
+            aria-labelledby="panel-settings-title"
+            hidden
+          >
+            <header class="profile-panel-header">
+              <h2 id="panel-settings-title">Configuración</h2>
+            </header>
+
+            <!-- Placeholder de contenido -->
+            <div class="settings-placeholder">
+              <p>Preferencias de idioma, tema, notificaciones, etc.</p>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <!-- ======= Footer ======= -->
     <footer class="text-muted">
       <div class="container">
-        <p class="float-end">
-          <a href="#">Volver arriba</a>
-        </p>
         <p>
           Este sitio forma parte de
           <a href="https://jovenesaprogramar.edu.uy/" target="_blank"
-            >Jovenes a Programar</a
+            >Jóvenes a Programar</a
           >
         </p>
+        <p class="float-end"><a href="#">Volver arriba</a></p>
       </div>
     </footer>
 
-    <!-- Floating Theme Toggle Button -->
     <button
       id="theme-toggle"
       class="theme-toggle-btn"
