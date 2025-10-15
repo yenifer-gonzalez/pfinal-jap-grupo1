@@ -6,24 +6,8 @@ let currentSortCriteria = undefined;
 let minCount = undefined;
 let maxCount = undefined;
 
-function updateUserInterface() {
-  const usernameDisplay = document.getElementById("usernameDisplay");
-
-  const user = getCurrentUser();
-  usernameDisplay.textContent = user?.username;
-}
-
-function setupLogout() {
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
-        logout();
-      }
-    });
-  }
-}
+// === FUNCIONALIDAD ESPECÍFICA DE CATEGORIES ===
+// Las funciones updateUserInterface() y setupLogout() están centralizadas en init.js
 
 function sortCategories(criteria, array) {
   let result = [];
@@ -125,8 +109,8 @@ function sortAndShowCategories(sortCriteria, categoriesArray) {
 //que el documento se encuentra cargado, es decir, se encuentran todos los
 //elementos HTML presentes.
 document.addEventListener("DOMContentLoaded", function (e) {
-  updateUserInterface();
-  setupLogout();
+  // Session control is handled globally by init.js
+  // updateUserInterface() and setupLogout() are now in init.js
 
   getJSONData(CATEGORIES_URL).then(function (resultObj) {
     if (resultObj.status === "ok") {

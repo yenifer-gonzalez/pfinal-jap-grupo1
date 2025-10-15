@@ -1,25 +1,5 @@
-// === GESTIÓN DE INTERFAZ DE USUARIO ===
-
-function updateUserInterface() {
-  const usernameDisplay = document.getElementById("usernameDisplay");
-  
-  const user = getCurrentUser();
-  if (usernameDisplay && user) {
-    usernameDisplay.textContent = user.username;
-  }
-}
-
-function setupLogout() {
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
-        logout();
-      }
-    });
-  }
-}
+// === FUNCIONALIDAD ESPECÍFICA DE CART ===
+// Las funciones updateUserInterface() y setupLogout() están centralizadas en init.js
 
 // === FUNCIONALIDAD DEL CARRITO ===
 
@@ -27,6 +7,5 @@ function setupLogout() {
 
 document.addEventListener("DOMContentLoaded", function () {
   // Session control is handled globally by init.js
-  updateUserInterface();
-  setupLogout();
+  // updateUserInterface() and setupLogout() are now in init.js
 });

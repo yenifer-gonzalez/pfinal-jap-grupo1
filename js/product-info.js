@@ -1,25 +1,5 @@
-// === GESTIÓN DE INTERFAZ DE USUARIO ===
-
-function updateUserInterface() {
-  const usernameDisplay = document.getElementById("usernameDisplay");
-
-  const user = getCurrentUser();
-  if (usernameDisplay && user) {
-    usernameDisplay.textContent = user.username;
-  }
-}
-
-function setupLogout() {
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
-        logout();
-      }
-    });
-  }
-}
+// === FUNCIONALIDAD ESPECÍFICA DE PRODUCT-INFO ===
+// Las funciones updateUserInterface() y setupLogout() están centralizadas en init.js
 
 // === FUNCIONALIDAD DE INFORMACIÓN DEL PRODUCTO ===
 
@@ -329,13 +309,195 @@ function renderRelatedProducts(relatedProducts) {
   });
 }
 
+// === DESAFÍO: AGREGAR CALIFICACIÓN LOCALMENTE ===
+
+// Función para limpiar el username (quitar dominio del email)
+function cleanUsername(username) {
+  if (!username) return "Usuario Anónimo";
+  
+  // Si contiene @, tomar solo la parte antes del @
+  if (username.includes('@')) {
+    return username.split('@')[0];
+  }
+  
+  return username;
+}
+
+// Función para verificar si el usuario ya comentó
+function hasUserAlreadyReviewed(username) {
+  const list = document.getElementById("reviews-list");
+  if (!list) return false;
+  
+  // Obtener todas las calificaciones existentes
+  const existingReviews = list.querySelectorAll('.review-user');
+  
+  // Verificar si el usuario ya tiene una calificación
+  for (const reviewUser of existingReviews) {
+    if (reviewUser.textContent.trim() === username) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function setupReviewForm() {
+  const form = document.getElementById("review-form");
+  if (!form) return;
+
+  form.addEventListener("submit", function(e) {
+    e.preventDefault(); // Evitar envío real del formulario
+
+    // Obtener datos del formulario
+    const ratingSelect = document.getElementById("rating");
+    const commentTextarea = document.getElementById("comment");
+    
+    const score = ratingSelect.value;
+    const description = commentTextarea.value.trim();
+
+    // Validar que se hayan completado los campos
+    if (!score || !description) {
+      alert("Por favor completa todos los campos");
+      return;
+    }
+
+    // Obtener usuario actual de la sesión y limpiar el username
+    const currentUser = getCurrentUser();
+    const rawUsername = currentUser?.username || "Usuario Anónimo";
+    const username = cleanUsername(rawUsername);
+
+    // Verificar si el usuario ya hizo una calificación
+    if (hasUserAlreadyReviewed(username)) {
+      alert("Ya has calificado este producto. Solo puedes hacer una calificación por producto.");
+      return;
+    }
+
+    // Crear fecha actual en formato compatible
+    const now = new Date();
+    const dateTime = now.toISOString().split('T')[0] + " " + 
+                     now.toTimeString().split(' ')[0];
+
+    // Crear objeto de nueva calificación
+    const newReview = {
+      user: username,
+      dateTime: dateTime,
+      score: parseInt(score),
+      description: description
+    };
+
+    // Agregar la calificación a la lista
+    addReviewToList(newReview);
+
+    // Limpiar el formulario
+    form.reset();
+
+    // Deshabilitar el formulario para evitar múltiples envíos
+    disableReviewForm("Ya has calificado este producto");
+
+    // Mostrar mensaje de éxito
+    showSuccessMessage();
+  });
+}
+
+// Función para deshabilitar el formulario después de enviar
+function disableReviewForm(message) {
+  const form = document.getElementById("review-form");
+  if (!form) return;
+  
+  const ratingSelect = document.getElementById("rating");
+  const commentTextarea = document.getElementById("comment");
+  const submitBtn = form.querySelector('button[type="submit"]');
+  
+  if (ratingSelect) ratingSelect.disabled = true;
+  if (commentTextarea) {
+    commentTextarea.disabled = true;
+    commentTextarea.placeholder = message;
+  }
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Ya has calificado";
+    submitBtn.style.opacity = "0.6";
+    submitBtn.style.cursor = "not-allowed";
+  }
+}
+
+function addReviewToList(review) {
+  const list = document.getElementById("reviews-list");
+  if (!list) return;
+
+  // Verificar si hay mensaje de "no hay opiniones" y eliminarlo
+  const emptyState = list.querySelector('.error-state');
+  if (emptyState) {
+    list.innerHTML = '';
+  }
+
+  // Crear el HTML de la nueva calificación usando la función existente
+  const reviewHTML = reviewItemHTML(review);
+
+  // Agregar al inicio de la lista (más reciente primero)
+  list.insertAdjacentHTML('afterbegin', reviewHTML);
+
+  // Agregar animación de entrada
+  const newReviewElement = list.firstElementChild;
+  newReviewElement.style.animation = 'fadeIn 0.5s ease-in';
+}
+
+function showSuccessMessage() {
+  // Crear mensaje temporal de éxito
+  const message = document.createElement('div');
+  message.className = 'success-message';
+  message.textContent = '✓ Tu calificación ha sido agregada exitosamente';
+  message.style.cssText = `
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4caf50;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    font-weight: 500;
+    animation: slideDown 0.3s ease-out;
+  `;
+
+  document.body.appendChild(message);
+
+  // Eliminar mensaje después de 3 segundos
+  setTimeout(() => {
+    message.style.animation = 'fadeOut 0.3s ease-out';
+    setTimeout(() => message.remove(), 300);
+  }, 3000);
+}
+
+// Función para verificar al cargar si el usuario ya comentó
+function checkIfUserAlreadyReviewed() {
+  // Esperar un momento para que se carguen los comentarios
+  setTimeout(() => {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    const username = cleanUsername(currentUser.username);
+    
+    if (hasUserAlreadyReviewed(username)) {
+      disableReviewForm("Ya has calificado este producto");
+    }
+  }, 1000); // Esperar 1 segundo para que se carguen los comentarios de la API
+}
+
 // === INICIALIZACIÓN ===
 
 document.addEventListener("DOMContentLoaded", function () {
   // Session control is handled globally by init.js
-  updateUserInterface();
-  setupLogout();
+  // updateUserInterface() and setupLogout() are now in init.js
   loadProductInfo();
 
   setupQuantityControls();
+  
+  // DESAFÍO: Configurar formulario de calificación
+  setupReviewForm();
+  
+  // Verificar si el usuario ya comentó este producto
+  checkIfUserAlreadyReviewed();
 });

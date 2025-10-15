@@ -95,6 +95,34 @@ function requireAuthentication() {
   return true;
 }
 
+// === GESTIÓN GLOBAL DE INTERFAZ DE USUARIO ===
+
+// Función para actualizar la interfaz con el nombre del usuario
+function updateUserInterface() {
+  const usernameDisplay = document.getElementById("usernameDisplay");
+  const sidebarUsername = document.getElementById("sidebarUsername");
+  const user = getCurrentUser();
+
+  if (usernameDisplay) {
+    usernameDisplay.textContent = user?.username || "";
+  }
+  if (sidebarUsername) {
+    sidebarUsername.textContent = user?.username || "";
+  }
+}
+
+// Función para configurar los botones de logout
+function setupLogout() {
+  const logoutButtons = document.querySelectorAll("[data-logout], #logoutBtn");
+  
+  logoutButtons.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      logout();
+    });
+  });
+}
+
 // ==== HELPER GLOBAL ====
 // Función para detectar si estamos en mobile (pantallas <= 767px)
 function isMobile() {
@@ -172,4 +200,54 @@ document.addEventListener("DOMContentLoaded", function () {
       overlay?.classList.add("hidden");
     }
   });
+
+  // === INICIALIZACIÓN DE INTERFAZ Y LOGOUT ===
+  // Ejecutar en todas las páginas autenticadas
+  if (!publicPages.includes(currentPage)) {
+    updateUserInterface();
+    setupLogout();
+  }
+
+  // === THEME TOGGLE INITIALIZATION ===
+  // Aplicar tema guardado y configurar el toggle
+  applySavedTheme();
+  setupThemeToggle();
 });
+
+// === GESTIÓN DEL THEME TOGGLE ===
+
+// Función para configurar el botón de cambio de tema
+function setupThemeToggle() {
+  const themeToggle = document.getElementById('theme-toggle');
+  if (!themeToggle) return;
+  
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+  });
+}
+
+// Función para aplicar el tema guardado al cargar la página
+function applySavedTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
+
+// Función para actualizar el icono según el tema activo
+function updateThemeIcon(theme) {
+  const themeToggle = document.getElementById('theme-toggle');
+  if (!themeToggle) return;
+  
+  const icon = themeToggle.querySelector('i');
+  
+  if (theme === 'dark') {
+    icon.className = 'fas fa-sun';  // Mostrar sol en modo oscuro
+  } else {
+    icon.className = 'fas fa-moon'; // Mostrar luna en modo claro
+  }
+}

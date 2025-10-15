@@ -1,28 +1,5 @@
-// === GESTIÓN DE INTERFAZ DE USUARIO ===
-
-function updateUserInterface() {
-  const usernameDisplay = document.getElementById("usernameDisplay");
-  
-  const user = getCurrentUser();
-  if (usernameDisplay && user) {
-    usernameDisplay.textContent = user.username;
-  }
-  
-  // Cargar datos del perfil
-  loadUserProfile();
-}
-
-function setupLogout() {
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
-        logout();
-      }
-    });
-  }
-}
+// === FUNCIONALIDAD ESPECÍFICA DE MY-PROFILE ===
+// Las funciones updateUserInterface() y setupLogout() están centralizadas en init.js
 
 // === FUNCIONALIDAD DE PERFIL DE USUARIO ===
 
@@ -30,6 +7,8 @@ function setupLogout() {
 
 document.addEventListener("DOMContentLoaded", function () {
   // Session control is handled globally by init.js
-  updateUserInterface();
-  setupLogout();
+  // updateUserInterface() and setupLogout() are now in init.js
+  
+  // Cargar datos del perfil específicos de esta página
+  loadUserProfile();
 });

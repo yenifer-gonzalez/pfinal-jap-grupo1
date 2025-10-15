@@ -19,29 +19,27 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
     />
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link href="css/font-awesome.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/login.css" />
   </head>
 
-  <body class="bg-light">
+  <body>
     <!-- Contenedor principal -->
-    <div
-      class="container min-vh-100 d-flex justify-content-center align-items-center"
-    >
-      <div class="login-wrapped">
-        <div class="card login-card shadow rounded-4 p-4 border-0">
-          <div class="card-body">
+    <div class="auth-shell">
+      <div class="auth-wrap">
+        <div class="auth-card">
+          <div class="auth-card--body">
             <!-- Logo -->
-            <div class="text-center mb-3">
+            <div class="auth-brand">
               <img class="logo-jap" src="img/logo-jap.svg" alt="" />
             </div>
 
             <!-- Formulario - Usuario y Contraseña  -->
-            <form novalidate onsubmit="handleSubmit(event)">
+            <form class="login-form" novalidate onsubmit="handleSubmit(event)">
               <!-- Campo Usuario -->
-              <div class="mb-3">
+              <div class="form-field">
                 <label for="username" class="form-label">Usuario</label>
                 <input
                   type="email"
@@ -51,13 +49,14 @@
                   required
                 />
                 <!-- Mensaje de error para el usuario -->
-                <p id="error-user"></p>
+                <p id="error-user" class="form-error"></p>
               </div>
 
               <!-- Campo Contraseña -->
-              <div class="mb-3">
+              <div class="form-field">
                 <label for="password" class="form-label">Contraseña</label>
-                <div class="position-relative">
+
+                <div class="input-w-toggle">
                   <input
                     type="password"
                     class="form-control pr-eye"
@@ -65,25 +64,23 @@
                     placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
                     required
                   />
-                  <!-- Botón para mostrar/ocultar contraseña -->
                   <button
                     type="button"
                     class="eye-abs"
                     onclick="changeEye(this)"
                     aria-label="Mostrar/ocultar contraseña"
+                    aria-controls="password"
                   >
                     <i class="bi bi-eye" id="eyeIcon"></i>
                   </button>
                 </div>
-                <!-- Mensaje de error para la contraseña -->
+
                 <p id="error-pass"></p>
               </div>
 
               <!-- Checkbox y link de recuperar contraseña -->
-              <div
-                class="form-check d-flex justify-content-between align-items-center mb-4"
-              >
-                <label class="form-check-label d-flex align-items-center">
+              <div class="form-aux">
+                <label class="checkbox">
                   <input
                     type="checkbox"
                     class="form-check-input"
@@ -93,20 +90,18 @@
                   <span class="link-secondary">Recordarme</span>
                 </label>
                 <!-- Versión desktop -->
-                <a href="#" class="forgot-link fl-default text-nowrap"
+                <a href="#" class="forgot-link forgot-link--desktop"
                   >¿Olvidaste tu contraseña?</a
                 >
               </div>
 
               <!-- Botón de login -->
-              <div
-                class="btn-wrapper d-flex flex-column align-items-center mt-4"
-              >
-                <button type="submit" class="btn btn-login px-5">
+              <div class="actions">
+                <button type="submit" class="button button--primary">
                   Ingresar
                 </button>
                 <!-- Versión mobile -->
-                <a href="#" class="forgot-link fl-mobile text-nowrap"
+                <a href="#" class="forgot-link fl-mobile"
                   >¿Olvidaste tu contraseña?</a
                 >
               </div>
@@ -115,6 +110,16 @@
         </div>
       </div>
     </div>
+    <!-- Floating Theme Toggle Button -->
+    <button
+      id="theme-toggle"
+      class="theme-toggle-btn"
+      aria-label="Toggle dark/light theme"
+    >
+      <i class="fas fa-moon" aria-hidden="true"></i>
+    </button>
+
     <script src="js/login.js"></script>
+    <script src="js/init.js"></script>
   </body>
 </html>
