@@ -191,3 +191,91 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("btnResetProfile")
     ?.addEventListener("click", resetUserProfile);
 });
+
+const PROFILE_PHOTO_KEY = "profilePhoto"; // nueva
+
+// Foto persistente en base64
+function loadPersistedPhoto() {
+  const dataURL = readLS(PROFILE_PHOTO_KEY, null);
+  const preview = document.getElementById("profilePhotoPreview");
+  const avatar = document.getElementById("profileAvatar");
+  if (!preview || !avatar) return;
+
+  if (dataURL) {
+    preview.src = dataURL;
+    avatar.src = dataURL;
+  } else {
+    preview.src = PLACEHOLDER_IMG;
+    avatar.src = PLACEHOLDER_IMG;
+  }
+}
+
+// Convierte imagen a base64 y la guarda
+function savePhotoToLocalStorage(file) {
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const dataURL = e.target.result;
+    writeLS(PROFILE_PHOTO_KEY, dataURL);
+  };
+  reader.readAsDataURL(file);
+}
+
+// ===== Foto de perfil - PREVIEW =====
+function setupPhotoActions() {
+  const input = document.getElementById("profilePhotoInput");
+  const preview = document.getElementById("profilePhotoPreview");
+  const avatar = document.getElementById("profileAvatar");
+  const btnEdit = document.getElementById("btnPhotoEdit");
+  const btnDel = document.getElementById("btnPhotoRemove");
+
+  if (btnEdit && input) {
+    btnEdit.addEventListener("click", () => input.click());
+  }
+
+  // Cuando el usuario selecciona una imagen
+  if (input && preview && avatar) {
+    input.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      // Vista previa inmediata
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+      avatar.src = url;
+      preview.addEventListener("load", () => URL.revokeObjectURL(url), {
+        once: true,
+      });
+
+      // Guardar versión base64 en localStorage
+      savePhotoToLocalStorage(file);
+    });
+  }
+
+  // Eliminar imagen, volver a placeholder y borrar del LS
+  if (btnDel && preview && input && avatar) {
+    btnDel.addEventListener("click", () => {
+      preview.src = PLACEHOLDER_IMG;
+      avatar.src = PLACEHOLDER_IMG;
+      input.value = "";
+      removeLS(PROFILE_PHOTO_KEY); // elimina del localStorage
+    });
+  }
+}
+
+// init
+document.addEventListener("DOMContentLoaded", () => {
+  loadUserProfile();
+  loadPersistedPhoto(); // NUEVO carga foto guardada si existe
+  setupPhotoActions();
+  setupTabs();
+
+  document
+    .getElementById("profileForm")
+    ?.addEventListener("submit", saveUserProfile);
+  document
+    .getElementById("btnSaveProfile")
+    ?.addEventListener("click", saveUserProfile);
+  document
+    .getElementById("btnResetProfile")
+    ?.addEventListener("click", resetUserProfile);
+});
