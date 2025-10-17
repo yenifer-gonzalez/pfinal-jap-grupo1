@@ -192,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ?.addEventListener("click", resetUserProfile);
 });
 
+
 const PROFILE_PHOTO_KEY = "profilePhoto"; // nueva
 
 // Foto persistente en base64
@@ -257,6 +258,7 @@ function setupPhotoActions() {
       preview.src = PLACEHOLDER_IMG;
       avatar.src = PLACEHOLDER_IMG;
       input.value = "";
+      localStorage.removeItem(PROFILE_PHOTO_KEY);
       removeLS(PROFILE_PHOTO_KEY); // elimina del localStorage
     });
   }
