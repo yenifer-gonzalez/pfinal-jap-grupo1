@@ -1,6 +1,7 @@
 // === FUNCIONALIDAD ESPECÍFICA DE MY-PROFILE ===
 const PROFILE_KEY = "profileData";
 const PLACEHOLDER_IMG = "img/img_perfil.png";
+const PROFILE_PHOTO_KEY = "profilePhoto"; // nueva
 
 // ===== Utils =====
 const readLS = (key, fb = null) => {
@@ -107,42 +108,6 @@ function resetUserProfile(e) {
   if (phone) phone.value = stored.phone || "";
 }
 
-// ===== Foto de perfil - PREVIEW =====
-// Configuración de los botones "Editar"  y "Eliminar".
-// Solo actualiza el preview.
-function setupPhotoActions() {
-  const input = document.getElementById("profilePhotoInput");
-  const preview = document.getElementById("profilePhotoPreview");
-  const btnEdit = document.getElementById("btnPhotoEdit");
-  const btnDel = document.getElementById("btnPhotoRemove");
-
-  // EDITAR dispara el input file
-  if (btnEdit && input) {
-    btnEdit.addEventListener("click", () => input.click());
-  }
-
-  // Cuando el usuario elige un archivo, se muestra el preview
-  if (input && preview) {
-    input.addEventListener("change", (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-      preview.src = url;
-      preview.addEventListener("load", () => URL.revokeObjectURL(url), {
-        once: true,
-      });
-    });
-  }
-
-  // ELIMINAR vuelve a la imagen placeholder y limpia el input
-  if (btnDel && preview && input) {
-    btnDel.addEventListener("click", () => {
-      preview.src = PLACEHOLDER_IMG;
-      input.value = ""; // permite volver a seleccionar el mismo archivo
-    });
-  }
-}
-
 // ===== Tabs perfil =====
 function setupTabs() {
   const buttons = document.querySelectorAll(".profile-tab-btn");
@@ -165,34 +130,6 @@ function setupTabs() {
   // Asegura que mis datos esté visible al cargar
   show("panel-data");
 }
-
-// ===== Init =====
-/**
- * Al cargar el DOM:
- * - Carga/Prellena el perfil
- * - Configura foto de perfil (preview)
- * - Configura tabs
- * - Conecta eventos de Guardar/Restablecer
- *
- * Nota: UI y logout ya se manejan en init.js (updateUserInterface, setupLogout)
- */
-document.addEventListener("DOMContentLoaded", () => {
-  loadUserProfile();
-  setupPhotoActions();
-  setupTabs();
-
-  document
-    .getElementById("profileForm")
-    ?.addEventListener("submit", saveUserProfile);
-  document
-    .getElementById("btnSaveProfile")
-    ?.addEventListener("click", saveUserProfile);
-  document
-    .getElementById("btnResetProfile")
-    ?.addEventListener("click", resetUserProfile);
-});
-
-const PROFILE_PHOTO_KEY = "profilePhoto"; // nueva
 
 // Foto persistente en base64
 function loadPersistedPhoto() {
@@ -258,7 +195,6 @@ function setupPhotoActions() {
       avatar.src = PLACEHOLDER_IMG;
       input.value = "";
       localStorage.removeItem(PROFILE_PHOTO_KEY);
-      removeLS(PROFILE_PHOTO_KEY); // elimina del localStorage
     });
   }
 }
@@ -273,9 +209,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("profileForm")
     ?.addEventListener("submit", saveUserProfile);
-  document
-    .getElementById("btnSaveProfile")
-    ?.addEventListener("click", saveUserProfile);
   document
     .getElementById("btnResetProfile")
     ?.addEventListener("click", resetUserProfile);
