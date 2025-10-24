@@ -64,6 +64,32 @@ function setupArrows() {
   galleryState.arrowsBound = true;
 }
 
+//  BTN COMPRAR Y CARGAR ELEMENTOS A LOCAL STORAGE
+
+function handleBuyProduct(product) {
+  // Obtener el carrito actual del localStorage o crear uno nuevo si no existe
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  
+  // Crear el objeto del producto para el carrito
+  const cartItem = {
+    id: product.id,
+    name: product.name,
+    currency: product.currency,
+    cost: product.cost,
+    image: product.images[0], // Guardamos la primera imagen del producto
+    count: 1 // Cantidad inicial
+  };
+
+  // Agregar el producto al carrito
+  cart.push(cartItem);
+  
+  // Guardar el carrito actualizado en localStorage
+  localStorage.setItem('cart', JSON.stringify(cart));
+  
+  // Redirigir al carrito
+  window.location.href = 'cart.html';
+}
+
 async function loadProductInfo() {
   const productId = localStorage.getItem("selectedProduct");
   // Validar si existe un producto seleccionado en el localStorage
@@ -98,6 +124,12 @@ async function loadProductInfo() {
     if (reviewName) reviewName.textContent = product.name;
 
     const reviewThumb = document.querySelector(".review-product-thumb");
+    
+    // Configurar el botón de compra
+    const buyButton = document.getElementById('pi-buy');
+    if (buyButton) {
+      buyButton.addEventListener('click', () => handleBuyProduct(product));
+    }
     if (reviewThumb && Array.isArray(product.images) && product.images[0]) {
       reviewThumb.src = product.images[0];
       reviewThumb.alt = `Imagen de ${product.name}`;
