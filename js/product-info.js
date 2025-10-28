@@ -77,6 +77,7 @@ function handleBuyProduct(product) {
     currency: product.currency,
     cost: product.cost,
     image: product.images[0], // Guardamos la primera imagen del producto
+    category: (product.category && product.category.name) || product.category || "Sin categoría",
     count: 1 // Cantidad inicial
   };
 

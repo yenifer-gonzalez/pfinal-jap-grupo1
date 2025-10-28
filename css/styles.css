@@ -230,6 +230,12 @@ a.custom-card:hover {
   text-decoration-thickness: 2px;
 }
 
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
 .user-avatar {
   border: 1px solid var(--color-primary-orange);
   border-radius: 999px;
@@ -245,6 +251,32 @@ a.custom-card:hover {
   background: var(--color-primary-orange);
   color: #fff;
   border-color: var(--color-primary-orange);
+}
+
+.cart-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--color-primary-orange);
+  transition: all 0.2s ease;
+  margin-left: 16px;
+}
+
+.cart-icon i {
+  font-size: 1.5rem;
+}
+
+.cart-icon:hover {
+  background: var(--color-secondary);
+  color: #fff;
+}
+
+.cart-icon.active {
+  background: var(--color-secondary);
 }
 
 .btn-check:focus + .btn,
@@ -276,7 +308,7 @@ a.custom-card:hover {
   flex: 0 0 auto;
 }
 
-.filters-left .page-title {
+.page-title {
   font-family: var(--font-family-secondary);
   margin-bottom: 0;
   font-size: 4rem;
