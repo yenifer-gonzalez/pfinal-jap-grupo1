@@ -170,27 +170,10 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.price-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
-}
-
-.price-info small {
-  color: var(--text-tertiary);
-  font-size: 0.85rem;
-  font-weight: var(--font-weight-normal);
-}
-
-.price-info .subtotal {
+.price .subtotal {
   color: var(--color-secondary);
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: var(--font-weight-bold);
-}
-
-.price span {
   flex: 1;
   min-width: 0;
 }

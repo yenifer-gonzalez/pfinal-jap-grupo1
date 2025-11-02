@@ -18,9 +18,7 @@ const badgeEl = document.getElementById('cartBadge');
 const subTotalEl = document.getElementById('subTotal');
 const discountEl = document.getElementById('discount');
 const grandTotalEl = document.getElementById('grandTotal');
-const shippingRadios = () => [
-  ...document.querySelectorAll('input[name="ship"]'),
-];
+const shippingRadios = () => [...document.querySelectorAll('input[name="ship"]')];
 
 // Helpers
 const EXCHANGE_RATE = 40; // 1 USD = 40 UYU
@@ -169,9 +167,7 @@ function computeTotals() {
   }, 0);
 
   const disc = 0;
-  const shipPct = Number(
-    shippingRadios().find((r) => r.checked)?.value || 0.15
-  );
+  const shipPct = Number(shippingRadios().find((r) => r.checked)?.value || 0.15);
   const ship = sub * shipPct;
   const grand = sub - disc + ship;
 
@@ -296,9 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Recalcular totales al cambiar envío o al “aplicar” cupón
   shippingRadios().forEach((r) => r.addEventListener('change', computeTotals));
-  document
-    .getElementById('applyCoupon')
-    ?.addEventListener('click', computeTotals);
+  document.getElementById('applyCoupon')?.addEventListener('click', computeTotals);
 
   document.getElementById('payBtn')?.addEventListener('click', () => {
     if (!cart.length) {
