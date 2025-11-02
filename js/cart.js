@@ -102,10 +102,7 @@ function renderItem(it, idx) {
     </div>
 
     <div class="price">
-      <div class="price-info">
-        <small>${money(it.cost, it.currency || "USD")} c/u</small>
-        <span class="subtotal">${money(subtotal, "USD")}</span>
-      </div>
+      <span class="subtotal">${money(subtotal, "USD")}</span>
       <button class="btn btn-sm remove" title="Eliminar producto">
         <i class="fa fa-trash"></i>
       </button>
