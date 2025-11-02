@@ -1963,3 +1963,28 @@ footer a:hover {
     font-size: 16px;
   }
 }
+
+/* ========================================
+   CART BADGE (Dropdown)
+   ======================================== */
+.cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: 8px;
+  background: var(--color-primary-orange);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover .cart-badge {
+  background: var(--color-primary-dark);
+  transform: scale(1.05);
+}

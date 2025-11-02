@@ -38,7 +38,17 @@ const toUSD = (amount, currency) => {
 
 function updateBadge() {
   const totalItems = cart.reduce((acc, it) => acc + (it.count ?? 1), 0);
-  if (badgeEl) badgeEl.textContent = totalItems;
+  
+  // Actualizar todos los badges en la página (puede haber múltiples en diferentes elementos)
+  const badges = document.querySelectorAll('#cartBadge');
+  badges.forEach(badge => {
+    if (totalItems > 0) {
+      badge.textContent = totalItems;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  });
 }
 
 function computeTotals() {
@@ -70,6 +80,12 @@ function renderEmpty() {
 function renderItem(it, idx) {
   const row = document.createElement("div");
   row.className = "cart-item";
+  
+  // Calcular subtotal para este producto
+  const priceInUSD = toUSD(it.cost, it.currency || "USD");
+  const currentCount = it.count ?? 1;
+  const subtotal = priceInUSD * currentCount;
+  
   row.innerHTML = `
     <div class="prod">
       <img src="${it.image}" alt="${it.name}">
@@ -80,26 +96,73 @@ function renderItem(it, idx) {
     </div>
 
     <div class="qty">
-      <button class="btn-minus" aria-label="Restar" disabled>–</button>
-      <input class="qty-input" type="number" min="1" value="1" disabled>
-      <button class="btn-plus" aria-label="Sumar" disabled>+</button>
+      <button class="btn-minus" aria-label="Restar">–</button>
+      <input class="qty-input" type="number" min="1" value="${currentCount}">
+      <button class="btn-plus" aria-label="Sumar">+</button>
     </div>
 
     <div class="price">
-      <span>${money(it.cost, it.currency || "USD")}</span>
+      <div class="price-info">
+        <small>${money(it.cost, it.currency || "USD")} c/u</small>
+        <span class="subtotal">${money(subtotal, "USD")}</span>
+      </div>
       <button class="btn btn-sm remove" title="Eliminar producto">
         <i class="fa fa-trash"></i>
       </button>
     </div>
   `;
 
-  // Evento eliminar
+  // Elementos interactivos
   const remove = row.querySelector(".remove");
+  const btnMinus = row.querySelector(".btn-minus");
+  const btnPlus = row.querySelector(".btn-plus");
+  const qtyInput = row.querySelector(".qty-input");
+  const subtotalEl = row.querySelector(".subtotal");
 
-  remove.addEventListener("click", () => {
-    cart.splice(idx, 1);
+  // Función para actualizar la cantidad y el subtotal en tiempo real
+  const updateQuantity = (newCount) => {
+    if (newCount < 1) newCount = 1;
+    
+    cart[idx].count = newCount;
+    qtyInput.value = newCount;
+    
+    // Actualizar subtotal en tiempo real
+    const newSubtotal = priceInUSD * newCount;
+    subtotalEl.textContent = money(newSubtotal, "USD");
+    
+    // Guardar en localStorage
     writeLS("cart", cart);
-    render();
+    
+    // Actualizar totales y badge
+    computeTotals();
+    updateBadge();
+  };
+
+  // Evento botón menos
+  btnMinus.addEventListener("click", () => {
+    const newCount = parseInt(qtyInput.value) - 1;
+    updateQuantity(newCount);
+  });
+
+  // Evento botón más
+  btnPlus.addEventListener("click", () => {
+    const newCount = parseInt(qtyInput.value) + 1;
+    updateQuantity(newCount);
+  });
+
+  // Evento input directo
+  qtyInput.addEventListener("input", (e) => {
+    const newCount = parseInt(e.target.value) || 1;
+    updateQuantity(newCount);
+  });
+
+  // Evento eliminar
+  remove.addEventListener("click", () => {
+    if (confirm("¿Deseas eliminar este producto del carrito?")) {
+      cart.splice(idx, 1);
+      writeLS("cart", cart);
+      render();
+    }
   });
 
   return row;

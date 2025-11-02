@@ -97,6 +97,32 @@ function requireAuthentication() {
 
 // === GESTIÓN GLOBAL DE INTERFAZ DE USUARIO ===
 
+// === FUNCIONES GLOBALES DE CARRITO ===
+
+// Función para actualizar el badge del carrito en todas las páginas
+function updateCartBadge() {
+  try {
+    const cartData = localStorage.getItem('cart');
+    const cart = cartData ? JSON.parse(cartData) : [];
+    const totalItems = cart.reduce((acc, it) => acc + (it.count ?? 1), 0);
+    
+    // Actualizar todos los badges en la página
+    const badges = document.querySelectorAll('#cartBadge');
+    badges.forEach(badge => {
+      if (totalItems > 0) {
+        badge.textContent = totalItems;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    });
+  } catch (error) {
+    console.error('Error updating cart badge:', error);
+  }
+}
+
+// === FUNCIONES GLOBALES DE INTERFAZ DE USUARIO ===
+
 // Función para actualizar la interfaz con el nombre del usuario
 function updateUserInterface() {
   const usernameDisplay = document.getElementById("usernameDisplay");
@@ -109,6 +135,9 @@ function updateUserInterface() {
   if (sidebarUsername) {
     sidebarUsername.textContent = user?.username || "";
   }
+  
+  // Actualizar el badge del carrito
+  updateCartBadge();
 }
 
 // Función para configurar los botones de logout
