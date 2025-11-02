@@ -66,6 +66,46 @@ function setupArrows() {
 
 //  BTN COMPRAR Y CARGAR ELEMENTOS A LOCAL STORAGE
 
+// Función para agregar producto al carrito SIN redirigir (botón "Agregar al carrito")
+function addToCart(product) {
+  // Obtener el carrito actual del localStorage o crear uno nuevo si no existe
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  
+  // Verificar si el producto ya existe en el carrito
+  const existingProductIndex = cart.findIndex(item => item.id === product.id);
+  
+  if (existingProductIndex !== -1) {
+    // Si el producto ya existe, incrementar la cantidad
+    cart[existingProductIndex].count = (cart[existingProductIndex].count || 1) + 1;
+  } else {
+    // Si no existe, crear el objeto del producto para el carrito
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      currency: product.currency,
+      cost: product.cost,
+      image: product.images[0], // Guardamos la primera imagen del producto
+      category: (product.category && product.category.name) || product.category || "Sin categoría",
+      count: 1 // Cantidad inicial
+    };
+    
+    // Agregar el producto al carrito
+    cart.push(cartItem);
+  }
+  
+  // Guardar el carrito actualizado en localStorage
+  localStorage.setItem('cart', JSON.stringify(cart));
+  
+  // Actualizar el badge si la función existe
+  if (typeof updateCartBadge === 'function') {
+    updateCartBadge();
+  }
+  
+  // Mostrar notificación de éxito
+  showCartNotification(product.name);
+}
+
+// Función para agregar producto al carrito Y redirigir (botón "Comprar ahora")
 function handleBuyProduct(product) {
   // Obtener el carrito actual del localStorage o crear uno nuevo si no existe
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -104,6 +144,33 @@ function handleBuyProduct(product) {
   window.location.href = 'cart.html';
 }
 
+// Función para mostrar notificación cuando se agrega al carrito
+function showCartNotification(productName) {
+  // Crear el elemento de notificación
+  const notification = document.createElement('div');
+  notification.className = 'cart-notification';
+  notification.innerHTML = `
+    <i class="bi bi-check-circle-fill"></i>
+    <span>¡Producto agregado al carrito!</span>
+  `;
+  
+  // Agregar al body
+  document.body.appendChild(notification);
+  
+  // Mostrar con animación
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 10);
+  
+  // Ocultar y eliminar después de 3 segundos
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => {
+      notification.remove();
+    }, 300);
+  }, 3000);
+}
+
 async function loadProductInfo() {
   const productId = localStorage.getItem("selectedProduct");
   // Validar si existe un producto seleccionado en el localStorage
@@ -139,7 +206,13 @@ async function loadProductInfo() {
 
     const reviewThumb = document.querySelector(".review-product-thumb");
     
-    // Configurar el botón de compra
+    // Configurar el botón "Agregar al carrito"
+    const addToCartButton = document.getElementById('pi-add');
+    if (addToCartButton) {
+      addToCartButton.addEventListener('click', () => addToCart(product));
+    }
+    
+    // Configurar el botón "Comprar ahora"
     const buyButton = document.getElementById('pi-buy');
     if (buyButton) {
       buyButton.addEventListener('click', () => handleBuyProduct(product));
