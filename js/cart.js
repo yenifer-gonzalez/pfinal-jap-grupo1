@@ -9,15 +9,15 @@ const readLS = (k, fb = null) => {
 const writeLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
 // Estado
-let cart = readLS("cart", []);
+let cart = readLS('cart', []);
 
 // Elementos
-const listEl = document.getElementById("cartList");
-const emptyEl = document.getElementById("emptyState");
-const badgeEl = document.getElementById("cartBadge");
-const subTotalEl = document.getElementById("subTotal");
-const discountEl = document.getElementById("discount");
-const grandTotalEl = document.getElementById("grandTotal");
+const listEl = document.getElementById('cartList');
+const emptyEl = document.getElementById('emptyState');
+const badgeEl = document.getElementById('cartBadge');
+const subTotalEl = document.getElementById('subTotal');
+const discountEl = document.getElementById('discount');
+const grandTotalEl = document.getElementById('grandTotal');
 const shippingRadios = () => [
   ...document.querySelectorAll('input[name="ship"]'),
 ];
@@ -25,23 +25,133 @@ const shippingRadios = () => [
 // Helpers
 const EXCHANGE_RATE = 40; // 1 USD = 40 UYU
 
-const money = (n, cur = "USD") =>
-  `${cur} ${Number(n).toLocaleString("en-US", { minimumFractionDigits: 0 })}`;
+const money = (n, cur = 'USD') =>
+  `${cur} ${Number(n).toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
 
 // Convierte cualquier precio a USD
 const toUSD = (amount, currency) => {
-  if (currency === "UYU") {
+  if (currency === 'UYU') {
     return amount / EXCHANGE_RATE;
   }
   return amount; // Si ya está en USD
 };
 
+// === FUNCIONES DE MODALES ===
+
+// Modal
+function showModal({ icon, iconClass, title, message, buttons }) {
+  // Overlay del modal
+  const modalOverlay = document.createElement('div');
+  modalOverlay.className = 'modal-overlay';
+
+  // Contenido del modal
+  modalOverlay.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-icon ${iconClass}">
+        <i class="bi bi-${icon}"></i>
+      </div>
+      <h2 class="modal-title">${title}</h2>
+      <p class="modal-message">${message}</p>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  `;
+
+  document.body.appendChild(modalOverlay);
+
+  // Botones
+  const actionsContainer = modalOverlay.querySelector('#modalActions');
+  buttons.forEach((btn) => {
+    const button = document.createElement('button');
+    button.className = `modal-btn ${btn.className}`;
+    button.textContent = btn.text;
+    button.addEventListener('click', () => {
+      closeModal(modalOverlay);
+      if (btn.onClick) btn.onClick();
+    });
+    actionsContainer.appendChild(button);
+  });
+
+  // Modal con animación
+  setTimeout(() => modalOverlay.classList.add('show'), 10);
+
+  // Cerrar al hacer clic fuera del modal
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      closeModal(modalOverlay);
+      if (buttons.find((b) => b.isCancel)) {
+        const cancelBtn = buttons.find((b) => b.isCancel);
+        if (cancelBtn.onClick) cancelBtn.onClick();
+      }
+    }
+  });
+
+  return modalOverlay;
+}
+
+// Función para cerrar modal
+function closeModal(modalElement) {
+  modalElement.classList.remove('show');
+  setTimeout(() => modalElement.remove(), 300);
+}
+
+// Modal de pago completado
+function showPaymentSuccessModal() {
+  showModal({
+    icon: 'check-circle-fill',
+    iconClass: 'success',
+    title: '¡Pago completado!',
+    message: 'Tu compra se ha procesado exitosamente. Gracias por tu compra.',
+    buttons: [
+      {
+        text: 'Continuar comprando',
+        className: 'modal-btn-secondary',
+        onClick: () => {
+          window.location.href = 'products.html';
+        },
+      },
+      {
+        text: 'Aceptar',
+        className: 'modal-btn-primary',
+        onClick: () => {
+          // Limpiar el carrito después de la compra
+          cart = [];
+          writeLS('cart', cart);
+          render();
+        },
+      },
+    ],
+  });
+}
+
+// Confirmación para eliminar producto
+function showDeleteConfirmationModal(onConfirm, onCancel) {
+  showModal({
+    icon: 'exclamation-triangle-fill',
+    iconClass: 'warning',
+    title: '¿Eliminar producto?',
+    message: '¿Estás seguro de que deseas eliminar este producto del carrito?',
+    buttons: [
+      {
+        text: 'No',
+        className: 'modal-btn-secondary',
+        isCancel: true,
+        onClick: onCancel,
+      },
+      {
+        text: 'Sí, eliminar',
+        className: 'modal-btn-danger',
+        onClick: onConfirm,
+      },
+    ],
+  });
+}
+
 function updateBadge() {
   const totalItems = cart.reduce((acc, it) => acc + (it.count ?? 1), 0);
-  
+
   // Actualizar todos los badges en la página (puede haber múltiples en diferentes elementos)
   const badges = document.querySelectorAll('#cartBadge');
-  badges.forEach(badge => {
+  badges.forEach((badge) => {
     if (totalItems > 0) {
       badge.textContent = totalItems;
       badge.style.display = 'inline-block';
@@ -54,7 +164,7 @@ function updateBadge() {
 function computeTotals() {
   // Convertir todo a USD antes de sumar
   const sub = cart.reduce((acc, it) => {
-    const priceInUSD = toUSD(it.cost, it.currency || "USD");
+    const priceInUSD = toUSD(it.cost, it.currency || 'USD');
     return acc + priceInUSD * (it.count ?? 1);
   }, 0);
 
@@ -71,27 +181,27 @@ function computeTotals() {
 }
 
 function renderEmpty() {
-  listEl.innerHTML = "";
-  emptyEl.classList.remove("hidden");
+  listEl.innerHTML = '';
+  emptyEl.classList.remove('hidden');
   computeTotals();
   updateBadge();
 }
 
 function renderItem(it, idx) {
-  const row = document.createElement("div");
-  row.className = "cart-item";
-  
+  const row = document.createElement('div');
+  row.className = 'cart-item';
+
   // Calcular subtotal para este producto
-  const priceInUSD = toUSD(it.cost, it.currency || "USD");
+  const priceInUSD = toUSD(it.cost, it.currency || 'USD');
   const currentCount = it.count ?? 1;
   const subtotal = priceInUSD * currentCount;
-  
+
   row.innerHTML = `
     <div class="prod">
       <img src="${it.image}" alt="${it.name}">
       <div>
         <h4>${it.name}</h4>
-        <small>Cat. ${it.category || "-"}</small>
+        <small>Cat. ${it.category || '-'}</small>
       </div>
     </div>
 
@@ -103,8 +213,7 @@ function renderItem(it, idx) {
 
     <div class="price">
       <div class="price-info">
-        <small>${money(it.cost, it.currency || "USD")} c/u</small>
-        <span class="subtotal">${money(subtotal, "USD")}</span>
+        <span class="subtotal">${money(subtotal, 'USD')}</span>
       </div>
       <button class="btn btn-sm remove" title="Eliminar producto">
         <i class="fa fa-trash"></i>
@@ -113,67 +222,68 @@ function renderItem(it, idx) {
   `;
 
   // Elementos interactivos
-  const remove = row.querySelector(".remove");
-  const btnMinus = row.querySelector(".btn-minus");
-  const btnPlus = row.querySelector(".btn-plus");
-  const qtyInput = row.querySelector(".qty-input");
-  const subtotalEl = row.querySelector(".subtotal");
+  const remove = row.querySelector('.remove');
+  const btnMinus = row.querySelector('.btn-minus');
+  const btnPlus = row.querySelector('.btn-plus');
+  const qtyInput = row.querySelector('.qty-input');
+  const subtotalEl = row.querySelector('.subtotal');
 
   // Función para actualizar la cantidad y el subtotal en tiempo real
   const updateQuantity = (newCount) => {
     if (newCount < 1) newCount = 1;
-    
+
     cart[idx].count = newCount;
     qtyInput.value = newCount;
-    
+
     // Actualizar subtotal en tiempo real
     const newSubtotal = priceInUSD * newCount;
-    subtotalEl.textContent = money(newSubtotal, "USD");
-    
+    subtotalEl.textContent = money(newSubtotal, 'USD');
+
     // Guardar en localStorage
-    writeLS("cart", cart);
-    
+    writeLS('cart', cart);
+
     // Actualizar totales y badge
     computeTotals();
     updateBadge();
   };
 
   // Evento botón menos
-  btnMinus.addEventListener("click", () => {
+  btnMinus.addEventListener('click', () => {
     const newCount = parseInt(qtyInput.value) - 1;
     updateQuantity(newCount);
   });
 
   // Evento botón más
-  btnPlus.addEventListener("click", () => {
+  btnPlus.addEventListener('click', () => {
     const newCount = parseInt(qtyInput.value) + 1;
     updateQuantity(newCount);
   });
 
   // Evento input directo
-  qtyInput.addEventListener("input", (e) => {
+  qtyInput.addEventListener('input', (e) => {
     const newCount = parseInt(e.target.value) || 1;
     updateQuantity(newCount);
   });
 
   // Evento eliminar
-  remove.addEventListener("click", () => {
-    if (confirm("¿Deseas eliminar este producto del carrito?")) {
+  remove.addEventListener('click', () => {
+    showDeleteConfirmationModal(() => {
+      // Si confirma eliminar
       cart.splice(idx, 1);
-      writeLS("cart", cart);
+      writeLS('cart', cart);
       render();
-    }
+    });
   });
 
   return row;
 }
 
 function render() {
-  cart = readLS("cart", []);
+  cart = readLS('cart', []);
   if (!cart || cart.length === 0) return renderEmpty();
 
-  emptyEl.classList.add("hidden");
-  listEl.innerHTML = "";
+  emptyEl.classList.add('hidden');
+  listEl.innerHTML = '';
   cart.forEach((it, idx) => listEl.appendChild(renderItem(it, idx)));
 
   updateBadge();
@@ -181,17 +291,21 @@ function render() {
 }
 
 // Init
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   render();
 
   // Recalcular totales al cambiar envío o al “aplicar” cupón
-  shippingRadios().forEach((r) => r.addEventListener("change", computeTotals));
+  shippingRadios().forEach((r) => r.addEventListener('change', computeTotals));
   document
-    .getElementById("applyCoupon")
-    ?.addEventListener("click", computeTotals);
+    .getElementById('applyCoupon')
+    ?.addEventListener('click', computeTotals);
 
-  document.getElementById("payBtn")?.addEventListener("click", () => {
-    if (!cart.length) return alert("Tu carrito está vacío.");
-    alert("Continuar al pago.");
+  document.getElementById('payBtn')?.addEventListener('click', () => {
+    if (!cart.length) {
+      // Si el carrito está vacío
+      return alert('Tu carrito está vacío.');
+    }
+    // Mostrar modal de pago completado
+    showPaymentSuccessModal();
   });
 });
