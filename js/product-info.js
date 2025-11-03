@@ -68,6 +68,10 @@ function setupArrows() {
 
 // Función para agregar producto al carrito SIN redirigir (botón "Agregar al carrito")
 function addToCart(product) {
+  // Obtener la cantidad seleccionada del input
+  const qtyInput = document.getElementById("pi-qty");
+  const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+  
   // Obtener el carrito actual del localStorage o crear uno nuevo si no existe
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   
@@ -75,8 +79,8 @@ function addToCart(product) {
   const existingProductIndex = cart.findIndex(item => item.id === product.id);
   
   if (existingProductIndex !== -1) {
-    // Si el producto ya existe, incrementar la cantidad
-    cart[existingProductIndex].count = (cart[existingProductIndex].count || 1) + 1;
+    // Si el producto ya existe, agregar la cantidad seleccionada
+    cart[existingProductIndex].count = (cart[existingProductIndex].count || 0) + quantity;
   } else {
     // Si no existe, crear el objeto del producto para el carrito
     const cartItem = {
@@ -86,7 +90,7 @@ function addToCart(product) {
       cost: product.cost,
       image: product.images[0], // Guardamos la primera imagen del producto
       category: (product.category && product.category.name) || product.category || "Sin categoría",
-      count: 1 // Cantidad inicial
+      count: quantity // Usar la cantidad seleccionada
     };
     
     // Agregar el producto al carrito
@@ -107,6 +111,10 @@ function addToCart(product) {
 
 // Función para agregar producto al carrito Y redirigir (botón "Comprar ahora")
 function handleBuyProduct(product) {
+  // Obtener la cantidad seleccionada del input
+  const qtyInput = document.getElementById("pi-qty");
+  const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+  
   // Obtener el carrito actual del localStorage o crear uno nuevo si no existe
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   
@@ -114,8 +122,8 @@ function handleBuyProduct(product) {
   const existingProductIndex = cart.findIndex(item => item.id === product.id);
   
   if (existingProductIndex !== -1) {
-    // Si el producto ya existe, incrementar la cantidad
-    cart[existingProductIndex].count = (cart[existingProductIndex].count || 1) + 1;
+    // Si el producto ya existe, agregar la cantidad seleccionada
+    cart[existingProductIndex].count = (cart[existingProductIndex].count || 0) + quantity;
   } else {
     // Si no existe, crear el objeto del producto para el carrito
     const cartItem = {
@@ -125,7 +133,7 @@ function handleBuyProduct(product) {
       cost: product.cost,
       image: product.images[0], // Guardamos la primera imagen del producto
       category: (product.category && product.category.name) || product.category || "Sin categoría",
-      count: 1 // Cantidad inicial
+      count: quantity // Usar la cantidad seleccionada
     };
     
     // Agregar el producto al carrito
