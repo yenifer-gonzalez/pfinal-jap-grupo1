@@ -81,8 +81,43 @@
             <span id="cartBadge" class="cart-badge">0</span>
           </a>
         </div>
+        <div class="mobile-actions">
+          <a href="cart.html" class="cart-icon-mobile" aria-label="Ir al carrito">
+            <i class="bi bi-cart3"></i>
+            <span id="cartBadgeMobile" class="cart-badge">0</span>
+          </a>
+          <button id="menuButton" class="btn menu-toggle" aria-label="Abrir menú">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
       </div>
     </header>
+
+    <!-- Sidebar Navegación (derecha) RESPONSIVE -->
+    <aside id="navSidebar" class="sidebar right hidden">
+      <div class="sidebar-content">
+        <div class="user-info">
+          <i class="bi bi-person-circle"></i>
+          <p id="sidebarUsername">example@gmail.com</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="index.html">Inicio</a>
+          <a href="categories.html" class="active">Categorías</a>
+          <a href="products.html">Productos</a>
+          <a href="sell.html">Vender</a>
+          <a href="my-profile.html">Mi perfil</a>
+          <a href="cart.html">Mi carrito</a>
+        </nav>
+        <hr />
+        <a href="#" class="sidebar-logout" data-logout>
+          <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- Overlay (fondo oscuro al abrir sidebar) -->
+    <div id="overlay" class="overlay hidden"></div>
 
     <!-- MAIN -->
     <main class="categories-container">

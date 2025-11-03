@@ -105,9 +105,9 @@ function updateCartBadge() {
     const cartData = localStorage.getItem('cart');
     const cart = cartData ? JSON.parse(cartData) : [];
     const totalItems = cart.reduce((acc, it) => acc + (it.count ?? 1), 0);
-    
-    // Actualizar todos los badges en la página
-    const badges = document.querySelectorAll('#cartBadge');
+
+    // Actualizar todos los badges en la página (desktop y mobile)
+    const badges = document.querySelectorAll('#cartBadge, #cartBadgeMobile');
     badges.forEach(badge => {
       if (totalItems > 0) {
         badge.textContent = totalItems;

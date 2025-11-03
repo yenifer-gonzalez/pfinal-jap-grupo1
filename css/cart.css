@@ -390,6 +390,22 @@
   }
 }
 
+@media (max-width: 600px) {
+  .cart-head,
+  .cart-item {
+    grid-template-columns: 1fr 110px 130px;
+    gap: 14px;
+  }
+
+  .summary-card {
+    padding: var(--space-md);
+  }
+
+  .summary-title {
+    font-size: 1.4rem;
+  }
+}
+
 @media (max-width: 560px) {
   .cart-head,
   .cart-item {
@@ -403,6 +419,249 @@
   .prod img {
     width: 84px;
     height: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-container {
+    padding: var(--space-lg) var(--space-sm);
+  }
+
+  .page-title {
+    font-size: 2rem;
+    padding-bottom: var(--space-md);
+  }
+
+  .cart-head,
+  .cart-item {
+    grid-template-columns: 1fr 80px 95px;
+    gap: 10px;
+    padding: 12px 10px;
+  }
+
+  .cart-head {
+    font-size: 0.75rem;
+  }
+
+  .prod {
+    grid-template-columns: 65px 1fr;
+    gap: 8px;
+  }
+
+  .prod img {
+    width: 65px;
+    height: 52px;
+  }
+
+  .prod h4 {
+    font-size: 0.85rem;
+  }
+
+  .qty {
+    grid-template-columns: 26px 36px 26px;
+    max-width: 88px;
+    height: 28px;
+  }
+
+  .qty button {
+    font-size: 13px;
+  }
+
+  .qty input {
+    font-size: 0.8rem;
+  }
+
+  .price .subtotal {
+    font-size: 0.85rem;
+  }
+
+  .summary-card {
+    padding: var(--space-sm);
+  }
+
+  .summary-title {
+    font-size: 1.3rem;
+  }
+
+  .summary-line,
+  .summary-total {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .cart-container {
+    padding: var(--space-md) 8px;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+  }
+
+  .cart-head,
+  .cart-item {
+    grid-template-columns: 1fr 68px 72px;
+    gap: 5px;
+    padding: 10px 8px;
+  }
+
+  .cart-head {
+    font-size: 0.7rem;
+  }
+
+  .prod {
+    grid-template-columns: 55px 1fr;
+    gap: 6px;
+  }
+
+  .prod img {
+    width: 55px;
+    height: 44px;
+  }
+
+  .prod h4 {
+    font-size: 0.8rem;
+  }
+
+  .prod small {
+    font-size: 0.7rem;
+  }
+
+  .qty {
+    grid-template-columns: 24px 32px 24px;
+    max-width: 80px;
+    height: 26px;
+  }
+
+  .qty button {
+    font-size: 12px;
+  }
+
+  .qty input {
+    font-size: 0.75rem;
+  }
+
+  .price .subtotal {
+    font-size: 0.8rem;
+  }
+
+  .summary-card {
+    padding: var(--space-md);
+  }
+
+  .summary-title {
+    font-size: 1.25rem;
+  }
+
+  .coupon-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .btn-ghost {
+    width: 100%;
+  }
+
+  .summary-line,
+  .summary-total {
+    font-size: 0.9rem;
+  }
+
+  .radio {
+    font-size: 0.85rem;
+  }
+
+  .shipping legend {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .cart-container {
+    padding: var(--space-sm) 6px;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .cart-head,
+  .cart-item {
+    grid-template-columns: 1fr 62px 68px;
+    gap: 4px;
+    padding: 8px 6px;
+  }
+
+  .cart-head {
+    font-size: 0.65rem;
+  }
+
+  .prod {
+    grid-template-columns: 50px 1fr;
+    gap: 5px;
+  }
+
+  .prod img {
+    width: 50px;
+    height: 40px;
+  }
+
+  .prod h4 {
+    font-size: 0.75rem;
+  }
+
+  .prod small {
+    font-size: 0.65rem;
+  }
+
+  .qty {
+    grid-template-columns: 22px 30px 22px;
+    max-width: 74px;
+    height: 24px;
+  }
+
+  .qty button {
+    font-size: 11px;
+  }
+
+  .qty input {
+    font-size: 0.7rem;
+  }
+
+  .price .subtotal {
+    font-size: 0.75rem;
+  }
+
+  .summary-card {
+    padding: 12px;
+  }
+
+  .summary-title {
+    font-size: 1.1rem;
+  }
+
+  .summary-line,
+  .summary-total {
+    font-size: 0.85rem;
+  }
+
+  .radio {
+    font-size: 0.8rem;
+  }
+
+  .shipping legend {
+    font-size: 0.85rem;
+  }
+
+  .input {
+    font-size: 0.85rem;
+    height: 36px;
+  }
+
+  .btn-ghost,
+  .btn-primary {
+    font-size: 0.85rem;
+    padding: 10px 12px;
   }
 }
 
