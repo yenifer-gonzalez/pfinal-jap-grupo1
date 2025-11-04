@@ -528,3 +528,934 @@
 :root[data-theme="dark"] #btnPhotoEdit:hover {
   background: var(--color-primary-dark);
 }
+
+/* ============================ ADDRESSES SYSTEM ============================ */
+
+/* Panel de direcciones */
+.addresses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.addresses-header h2 {
+  margin: 0;
+  font-family: var(--font-family-secondary);
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.btn-add-address {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--color-primary-orange);
+  color: #fff;
+  border: 1px solid var(--color-primary-orange);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-body);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-add-address:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn-add-address i {
+  font-size: 1.2em;
+}
+
+/* Lista de direcciones */
+#addressesList {
+  display: grid;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+/* Cuando la lista de direcciones está vacía, centramos */
+#addressesList:has(.no-addresses) {
+  place-items: center;
+}
+
+/* Lista de tarjetas */
+#cardsList {
+  margin-top: var(--space-lg);
+}
+
+/* Tarjeta de dirección */
+.address-card {
+  background: var(--card-background);
+  border: 2px solid var(--border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg);
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.address-card:hover {
+  border-color: var(--color-primary-orange);
+  box-shadow: 0 4px 12px var(--shadow-medium);
+}
+
+.address-card.default {
+  border-color: var(--color-primary-orange);
+  background: rgba(255, 140, 0, 0.03);
+}
+
+.address-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+  gap: var(--space-md);
+}
+
+.address-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.address-title h3 {
+  margin: 0;
+  font-size: var(--font-size-h4);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.badge-default {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--color-primary-orange);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.address-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-address-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border-light);
+  background: #fff;
+  color: var(--color-secondary);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-address-action:hover {
+  background: #fff4e6;
+  border-color: var(--color-primary-orange);
+  color: var(--color-primary-orange);
+}
+
+.btn-address-action.danger:hover {
+  background: #fee;
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.address-details {
+  color: var(--text-primary);
+  font-size: var(--font-size-body);
+  line-height: 1.6;
+}
+
+.address-details p {
+  margin: 0 0 6px;
+}
+
+.address-details strong {
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.address-phone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.address-instructions {
+  margin-top: var(--space-md);
+  padding: var(--space-sm);
+  background: var(--card-background-alt);
+  border-left: 3px solid var(--color-primary-orange);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Estado vacío */
+.no-addresses {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+.no-addresses i {
+  font-size: 4rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.no-addresses h3 {
+  margin: 0 0 var(--space-sm);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.no-addresses p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-body);
+}
+
+/* ============================ ADDRESS MODAL ============================ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-overlay.show {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.address-modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 650px;
+  max-height: 90vh;
+  z-index: 9999;
+  animation: slideUp 0.3s ease;
+}
+
+.address-modal.show {
+  display: block;
+}
+
+.address-modal-dialog {
+  background: var(--card-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.modal-header,
+.address-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border-light);
+  background: var(--card-background-alt);
+  flex-shrink: 0;
+}
+
+.modal-header h2,
+.address-modal-header h3 {
+  margin: 0;
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.btn-close-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn-close-modal:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-secondary);
+}
+
+.modal-body {
+  padding: var(--space-xl);
+  overflow-y: auto;
+  max-height: calc(90vh - 140px);
+}
+
+/* Formulario de dirección y tarjeta */
+#addressForm,
+#cardForm,
+.address-form {
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  overflow-y: auto;
+  flex: 1;
+  max-height: calc(90vh - 200px);
+}
+
+.form-row-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.form-group {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.form-group label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-orange);
+  font-size: 0.95rem;
+}
+
+.form-group input:not([type="checkbox"]),
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-sm);
+  background: #fff;
+  color: var(--text-primary);
+  font-size: var(--font-size-body);
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:not([type="checkbox"]):focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary-orange);
+  box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Checkbox - Estilo simple */
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: var(--space-sm) 0;
+}
+
+.form-check-input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--color-primary-orange);
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid var(--border-medium);
+  border-radius: 3px;
+  background: #fff;
+  -webkit-appearance: checkbox;
+  -moz-appearance: checkbox;
+  appearance: auto;
+}
+
+.form-check-label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: var(--font-weight-normal);
+  color: var(--text-primary);
+  font-size: var(--font-size-body);
+  -webkit-user-select: none;
+  user-select: none;
+  flex: 1;
+}
+
+/* Checkbox antiguo - mantener para compatibilidad */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--space-md);
+  background: var(--card-background-alt);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-light);
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--color-primary-orange);
+}
+
+.checkbox-group label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary);
+}
+
+/* Footer del modal */
+.modal-footer,
+.address-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-xl);
+  border-top: 1px solid var(--border-light);
+  background: var(--card-background-alt);
+  flex-shrink: 0;
+}
+
+.modal-footer button,
+.address-modal-footer button {
+  padding: 12px 24px;
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-body);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-light);
+}
+
+.btn-cancel,
+.btn-cancel-modal {
+  background: #fff;
+  color: var(--color-secondary);
+  border-color: var(--border-medium);
+}
+
+.btn-cancel:hover,
+.btn-cancel-modal:hover {
+  background: var(--card-background-alt);
+  border-color: var(--color-secondary);
+}
+
+.btn-save,
+.btn-save-address {
+  background: var(--color-primary-orange);
+  color: #fff;
+  border-color: var(--color-primary-orange);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-save:hover,
+.btn-save-address:hover {
+  background: var(--color-primary-dark);
+}
+
+/* ============================ RESPONSIVE ADDRESSES ============================ */
+@media (max-width: 768px) {
+  .addresses-header h2 {
+    font-size: 2rem;
+  }
+
+  .btn-add-address {
+    padding: 10px 16px;
+    font-size: 0.95rem;
+  }
+
+  .address-card {
+    padding: var(--space-md);
+  }
+
+  .form-row-group {
+    grid-template-columns: 1fr;
+  }
+
+  .address-modal {
+    max-width: 95%;
+    width: 95%;
+  }
+
+  .modal-header,
+  .address-modal-header,
+  .modal-body,
+  .address-form,
+  .modal-footer,
+  .address-modal-footer {
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  #addressForm,
+  #cardForm,
+  .address-form {
+    max-height: calc(90vh - 180px);
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 425px) {
+  .addresses-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-add-address {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .address-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .address-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .modal-header h2 {
+    font-size: 1.2rem;
+  }
+}
+
+/* ============================ DARK THEME - ADDRESSES ============================ */
+:root[data-theme="dark"] .address-card {
+  background: var(--card-background);
+  border-color: var(--border-medium);
+}
+
+:root[data-theme="dark"] .address-card.default {
+  background: rgba(255, 154, 26, 0.08);
+  border-color: var(--color-primary-orange);
+}
+
+:root[data-theme="dark"] .btn-address-action {
+  background: var(--card-background-alt);
+  border-color: var(--border-medium);
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .btn-address-action:hover {
+  background: #1f2c33;
+  color: var(--color-primary-orange);
+}
+
+:root[data-theme="dark"] .address-instructions {
+  background: var(--card-background-alt);
+}
+
+:root[data-theme="dark"] .address-modal {
+  background: var(--card-background);
+}
+
+:root[data-theme="dark"] .modal-header,
+:root[data-theme="dark"] .modal-footer {
+  background: var(--card-background-alt);
+  border-color: var(--border-medium);
+}
+
+:root[data-theme="dark"] .btn-close-modal:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:root[data-theme="dark"] .form-group input,
+:root[data-theme="dark"] .form-group select,
+:root[data-theme="dark"] .form-group textarea {
+  background: var(--card-background-alt);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+:root[data-theme="dark"] .form-group input:focus,
+:root[data-theme="dark"] .form-group select:focus,
+:root[data-theme="dark"] .form-group textarea:focus {
+  border-color: var(--color-primary-orange);
+  box-shadow: 0 0 0 2px rgba(255, 154, 26, 0.15);
+}
+
+:root[data-theme="dark"] .checkbox-group {
+  background: var(--card-background-alt);
+  border-color: var(--border-medium);
+}
+
+:root[data-theme="dark"] .btn-cancel {
+  background: var(--color-secondary-dark);
+  color: #fff;
+  border-color: var(--color-secondary-dark);
+}
+
+:root[data-theme="dark"] .btn-cancel:hover {
+  filter: brightness(1.1);
+}
+
+/* ===================================================================
+   🔷 SISTEMA DE TARJETAS - ESTILOS
+   =================================================================== */
+
+/* Lista de tarjetas */
+.cards-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Cuando la lista está vacía, centramos el contenido */
+.cards-list:has(.no-addresses) {
+  grid-template-columns: 1fr;
+  place-items: center;
+}
+
+/* Card individual - Diseño tipo tarjeta de crédito */
+.card-item {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  color: white;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Variantes de color según la marca */
+.card-item.visa {
+  background: linear-gradient(135deg, #1a1f71 0%, #0d47a1 100%);
+}
+
+.card-item.mastercard {
+  background: linear-gradient(135deg, #eb001b 0%, #f79e1b 100%);
+}
+
+.card-item.amex {
+  background: linear-gradient(135deg, #006fcf 0%, #0086c8 100%);
+}
+
+.card-item.default {
+  border: 3px solid #ffd700;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+/* Header de la tarjeta */
+.card-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.card-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-brand i {
+  font-size: 1.2rem;
+}
+
+.card-badge-default {
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.card-badge-default i {
+  font-size: 0.85rem;
+}
+
+/* Chip de la tarjeta (visual) */
+.card-chip {
+  width: 40px;
+  height: 30px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-chip::before,
+.card-chip::after {
+  content: "";
+  position: absolute;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.card-chip::before {
+  width: 100%;
+  height: 1px;
+  top: 50%;
+  left: 0;
+}
+
+.card-chip::after {
+  width: 1px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+}
+
+/* Número de tarjeta */
+.card-number-display {
+  font-size: 1.2rem;
+  font-family: "Courier New", monospace;
+  letter-spacing: 2px;
+  margin: 0.5rem 0;
+  font-weight: 500;
+}
+
+/* Información de la tarjeta */
+.card-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;
+}
+
+.card-holder {
+  flex: 1;
+}
+
+.card-holder-label,
+.card-expiry-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  opacity: 0.8;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.2rem;
+}
+
+.card-holder-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-expiry-section {
+  text-align: right;
+}
+
+.card-expiry-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: "Courier New", monospace;
+}
+
+/* Alias de la tarjeta */
+.card-alias {
+  position: absolute;
+  top: 0.75rem;
+  left: 1.25rem;
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  padding: 0.3rem 0.7rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Acciones de la tarjeta */
+.card-actions {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.4rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-item:hover .card-actions {
+  opacity: 1;
+}
+
+.btn-card-action {
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.8rem;
+}
+
+.btn-card-action:hover {
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.btn-card-action.btn-set-default {
+  background: rgba(255, 215, 0, 0.3);
+  border-color: rgba(255, 215, 0, 0.6);
+}
+
+.btn-card-action.btn-set-default:hover {
+  background: rgba(255, 215, 0, 0.5);
+}
+
+.btn-card-action.btn-delete {
+  background: rgba(244, 67, 54, 0.3);
+  border-color: rgba(244, 67, 54, 0.6);
+}
+
+.btn-card-action.btn-delete:hover {
+  background: rgba(244, 67, 54, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cards-list {
+    grid-template-columns: 1fr;
+  }
+
+  .card-item {
+    min-height: 140px;
+  }
+
+  .card-number-display {
+    font-size: 1.1rem;
+  }
+
+  .card-actions {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 425px) {
+  .card-item {
+    padding: 1rem 1.25rem;
+    min-height: 130px;
+  }
+
+  .card-number-display {
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+
+  .card-holder-name,
+  .card-expiry-value {
+    font-size: 0.75rem;
+  }
+}
+
+/* Dark theme para tarjetas */
+:root[data-theme="dark"] .card-item {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+:root[data-theme="dark"] .card-item:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+

@@ -154,6 +154,22 @@
                 <i class="bi bi-person-lines-fill me-2"></i> Mis datos
               </button>
               <button
+                id="tab-addresses"
+                class="profile-tab-btn"
+                type="button"
+                data-target="panel-addresses"
+              >
+                <i class="bi bi-geo-alt me-2"></i> Mis direcciones
+              </button>
+              <button
+                id="tab-cards"
+                class="profile-tab-btn"
+                type="button"
+                data-target="panel-cards"
+              >
+                <i class="bi bi-credit-card me-2"></i> Mis tarjetas
+              </button>
+              <button
                 id="tab-security"
                 class="profile-tab-btn"
                 type="button"
@@ -273,6 +289,58 @@
             </form>
           </article>
 
+          <!-- ========= Panel: Mis Direcciones ========= -->
+          <article
+            id="panel-addresses"
+            class="profile-panel"
+            aria-labelledby="panel-addresses-title"
+            hidden
+          >
+            <header class="addresses-header">
+              <h2 id="panel-addresses-title">Mis direcciones de envío</h2>
+              <button id="btnAddAddress" class="btn-add-address" type="button">
+                <i class="bi bi-plus-circle me-2"></i>
+                Agregar dirección
+              </button>
+            </header>
+
+            <!-- Lista de direcciones -->
+            <div id="addressesList" class="addresses-list">
+              <!-- Las direcciones se cargarán dinámicamente aquí -->
+              <div class="no-addresses">
+                <i class="bi bi-geo-alt"></i>
+                <p>No tienes direcciones guardadas</p>
+                <p class="text-muted">Agrega tu primera dirección para hacer tus compras más rápido</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- ========= Panel: Mis Tarjetas ========= -->
+          <article
+            id="panel-cards"
+            class="profile-panel"
+            aria-labelledby="panel-cards-title"
+            hidden
+          >
+            <header class="addresses-header">
+              <h2 id="panel-cards-title">Mis tarjetas de pago</h2>
+              <button id="btnAddCard" class="btn-add-address" type="button">
+                <i class="bi bi-plus-circle me-2"></i>
+                Agregar tarjeta
+              </button>
+            </header>
+
+            <!-- Lista de tarjetas -->
+            <div id="cardsList" class="cards-list">
+              <!-- Las tarjetas se cargarán dinámicamente aquí -->
+              <div class="no-addresses">
+                <i class="bi bi-credit-card"></i>
+                <h3>No tienes tarjetas guardadas</h3>
+                <p>Agrega una tarjeta para facilitar tus compras futuras</p>
+              </div>
+            </div>
+          </article>
+
           <!-- ========= Panel: Seguridad ========= -->
           <article
             id="panel-security"
@@ -307,7 +375,300 @@
           </article>
         </section>
       </section>
+
+      <!-- Overlay del modal -->
+      <div id="modalOverlay" class="modal-overlay"></div>
+
+      <!-- Modal para agregar/editar dirección -->
+      <aside id="addressModal" class="address-modal" role="dialog" aria-modal="true" aria-labelledby="addressModalTitle">
+        <div class="address-modal-dialog">
+          <header class="address-modal-header">
+            <h3 id="addressModalTitle">Agregar dirección</h3>
+            <button id="closeAddressModalBtn" type="button" class="btn-close-modal" aria-label="Cerrar">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </header>
+
+          <form id="addressForm" class="address-form">
+            <input type="hidden" id="addressId" />
+
+            <!-- Alias -->
+            <div class="form-group">
+              <label for="addressAlias">Alias de la dirección *</label>
+              <input
+                type="text"
+                id="addressAlias"
+                name="alias"
+                placeholder="Ej: Casa, Oficina, Trabajo"
+                required
+              />
+            </div>
+
+            <!-- Calle -->
+            <div class="form-group">
+              <label for="addressStreet">Calle y número *</label>
+              <input
+                type="text"
+                id="addressStreet"
+                name="street"
+                placeholder="Ej: Av. 18 de Julio 1234"
+                required
+              />
+            </div>
+
+            <!-- Esquina -->
+            <div class="form-group">
+              <label for="addressCorner">Esquina (opcional)</label>
+              <input
+                type="text"
+                id="addressCorner"
+                name="corner"
+                placeholder="Ej: Esquina Ejido"
+              />
+            </div>
+
+            <!-- Apartamento -->
+            <div class="form-group">
+              <label for="addressApartment">Apartamento/Unidad (opcional)</label>
+              <input
+                type="text"
+                id="addressApartment"
+                name="apartment"
+                placeholder="Ej: Apto 4B, Casa 5"
+              />
+            </div>
+
+            <!-- Ciudad y Departamento -->
+            <div class="form-row-group">
+              <div class="form-group">
+                <label for="addressCity">Ciudad *</label>
+                <input
+                  type="text"
+                  id="addressCity"
+                  name="city"
+                  placeholder="Montevideo"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="addressState">Departamento *</label>
+                <input
+                  type="text"
+                  id="addressState"
+                  name="state"
+                  placeholder="Montevideo"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Código postal y País -->
+            <div class="form-row-group">
+              <div class="form-group">
+                <label for="addressZipCode">Código postal *</label>
+                <input
+                  type="text"
+                  id="addressZipCode"
+                  name="zipCode"
+                  placeholder="11200"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="addressCountry">País *</label>
+                <input
+                  type="text"
+                  id="addressCountry"
+                  name="country"
+                  value="Uruguay"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="form-group">
+              <label for="addressPhone">Teléfono de contacto *</label>
+              <input
+                type="tel"
+                id="addressPhone"
+                name="phone"
+                placeholder="+598 99 123 456"
+                required
+              />
+            </div>
+
+            <!-- Instrucciones -->
+            <div class="form-group">
+              <label for="addressInstructions">Instrucciones de entrega (opcional)</label>
+              <textarea
+                id="addressInstructions"
+                name="instructions"
+                rows="3"
+                placeholder="Ej: Portón azul, timbre 4B, dejar con el portero"
+              ></textarea>
+            </div>
+
+            <!-- Dirección predeterminada -->
+            <div class="form-group">
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="addressIsDefault"
+                  name="isDefault"
+                  class="form-check-input"
+                />
+                <label for="addressIsDefault" class="form-check-label">
+                  Usar como dirección predeterminada
+                </label>
+              </div>
+            </div>
+          </form>
+
+          <!-- Botones de acción -->
+          <div class="address-modal-footer">
+            <button id="cancelAddressModal" type="button" class="btn-cancel-modal">
+              Cancelar
+            </button>
+            <button type="submit" form="addressForm" class="btn-save-address">
+              <i class="bi bi-check-circle me-2"></i>
+              Guardar dirección
+            </button>
+          </div>
+        </div>
+      </aside>
     </main>
+
+    <!-- ========= Modal: Agregar/Editar Tarjeta ========= -->
+    <aside id="cardModal" class="address-modal" role="dialog" aria-modal="true" aria-labelledby="cardModalTitle">
+      <div class="address-modal-dialog">
+        <header class="address-modal-header">
+          <h3 id="cardModalTitle">Agregar tarjeta de pago</h3>
+          <button id="closeCardModal" class="btn-close-modal" type="button" aria-label="Cerrar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+
+        <form id="cardForm" class="address-form">
+          <input type="hidden" id="cardId" />
+
+          <!-- Número de tarjeta -->
+          <div class="form-group">
+            <label for="cardNumber">
+              Número de tarjeta <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              id="cardNumber"
+              name="cardNumber"
+              class="form-control"
+              placeholder="1234 5678 9012 3456"
+              maxlength="19"
+              required
+              autocomplete="cc-number"
+            />
+            <small class="form-text">Solo se guardarán los últimos 4 dígitos</small>
+          </div>
+
+          <!-- Nombre en la tarjeta -->
+          <div class="form-group">
+            <label for="cardName">
+              Nombre en la tarjeta <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              id="cardName"
+              name="cardName"
+              class="form-control"
+              placeholder="Juan Pérez"
+              required
+              autocomplete="cc-name"
+            />
+          </div>
+
+          <!-- Fecha de vencimiento y CVV -->
+          <div class="form-row-group">
+            <div class="form-group">
+              <label for="cardExpiry">
+                Vencimiento <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                id="cardExpiry"
+                name="cardExpiry"
+                class="form-control"
+                placeholder="MM/AA"
+                maxlength="5"
+                required
+                autocomplete="cc-exp"
+              />
+              <small class="form-text">Formato: MM/AA</small>
+            </div>
+
+            <div class="form-group">
+              <label for="cardCvv">
+                CVV <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                id="cardCvv"
+                name="cardCvv"
+                class="form-control"
+                placeholder="123"
+                maxlength="4"
+                required
+                autocomplete="cc-csc"
+              />
+              <small class="form-text">No se guardará por seguridad</small>
+            </div>
+          </div>
+
+          <!-- Alias de la tarjeta -->
+          <div class="form-group">
+            <label for="cardAlias">
+              Alias (opcional)
+            </label>
+            <input
+              type="text"
+              id="cardAlias"
+              name="cardAlias"
+              class="form-control"
+              placeholder="Mi tarjeta principal"
+              maxlength="50"
+            />
+            <small class="form-text">Dale un nombre para identificarla fácilmente</small>
+          </div>
+
+          <!-- Tarjeta predeterminada -->
+          <div class="form-group">
+            <div class="form-check">
+              <input
+                type="checkbox"
+                id="cardIsDefault"
+                name="cardIsDefault"
+                class="form-check-input"
+              />
+              <label for="cardIsDefault" class="form-check-label">
+                Usar como tarjeta predeterminada
+              </label>
+            </div>
+          </div>
+        </form>
+
+        <!-- Botones de acción -->
+        <div class="address-modal-footer">
+          <button id="cancelCardModal" type="button" class="btn-cancel-modal">
+            Cancelar
+          </button>
+          <button type="submit" form="cardForm" class="btn-save-address">
+            <i class="bi bi-check-circle me-2"></i>
+            Guardar tarjeta
+          </button>
+        </div>
+      </div>
+    </aside>
 
     <!-- ======= Footer ======= -->
     <footer class="text-muted">
