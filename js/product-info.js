@@ -225,6 +225,10 @@ async function loadProductInfo() {
     if (buyButton) {
       buyButton.addEventListener('click', () => handleBuyProduct(product));
     }
+    
+    // Configurar el botón de favoritos
+    setupFavoriteButton(product);
+    
     if (reviewThumb && Array.isArray(product.images) && product.images[0]) {
       reviewThumb.src = product.images[0];
       reviewThumb.alt = `Imagen de ${product.name}`;
@@ -611,6 +615,82 @@ function checkIfUserAlreadyReviewed() {
       disableReviewForm("Ya has calificado este producto");
     }
   }, 1000); // Esperar 1 segundo para que se carguen los comentarios de la API
+}
+
+// === SISTEMA DE FAVORITOS ===
+
+/**
+ * Verifica si un producto está en favoritos
+ */
+function isProductInFavorites(productId) {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+  return wishlist.some(item => item.productId == productId);
+}
+
+/**
+ * Actualiza el estado visual del botón de favoritos
+ */
+function updateFavoriteButton(productId) {
+  const btn = document.getElementById('pi-fav');
+  if (!btn) return;
+
+  const isFavorite = isProductInFavorites(productId);
+  
+  if (isFavorite) {
+    btn.classList.add('active');
+    btn.innerHTML = '<i class="bi bi-heart-fill"></i>';
+    btn.setAttribute('aria-label', 'Quitar de favoritos');
+  } else {
+    btn.classList.remove('active');
+    btn.innerHTML = '<i class="bi bi-heart"></i>';
+    btn.setAttribute('aria-label', 'Agregar a favoritos');
+  }
+}
+
+/**
+ * Alterna el estado de favorito del producto actual
+ */
+function toggleProductFavorite(product) {
+  let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+  const isFavorite = wishlist.some(item => item.productId == product.id);
+
+  if (isFavorite) {
+    // Remover de favoritos
+    wishlist = wishlist.filter(item => item.productId != product.id);
+  } else {
+    // Agregar a favoritos
+    wishlist.push({
+      productId: product.id,
+      name: product.name,
+      description: product.description,
+      cost: product.cost,
+      currency: product.currency,
+      image: product.images[0] || 'img/cars_index.jpg',
+      soldCount: product.soldCount,
+      addedAt: new Date().toISOString(),
+      priceWhenAdded: product.cost
+    });
+  }
+
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  updateFavoriteButton(product.id);
+}
+
+/**
+ * Configura el botón de favoritos
+ */
+function setupFavoriteButton(product) {
+  const btn = document.getElementById('pi-fav');
+  if (!btn) return;
+
+  // Actualizar estado inicial
+  updateFavoriteButton(product.id);
+
+  // Agregar event listener
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleProductFavorite(product);
+  });
 }
 
 // === INICIALIZACIÓN ===

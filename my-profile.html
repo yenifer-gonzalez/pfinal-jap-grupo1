@@ -73,13 +73,29 @@
                   class="dropdown-item active"
                   aria-current="page"
                   href="my-profile.html"
-                  >Mi perfil</a
+                  ><i class="bi bi-person-circle me-2"></i>Mi perfil</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="my-profile.html#pedidos"
+                  onclick="event.preventDefault(); document.getElementById('tab-orders').click();"
+                  ><i class="bi bi-box-seam me-2"></i>Mis pedidos</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="my-profile.html#favoritos"
+                  onclick="event.preventDefault(); document.getElementById('tab-favorites').click();"
+                  ><i class="bi bi-heart me-2"></i>Mis favoritos</a
                 >
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
                 <a class="dropdown-item" id="logoutBtn" data-logout href="#"
-                  >Cerrar sesión</a
+                  ><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a
                 >
               </li>
             </ul>
@@ -154,6 +170,22 @@
                 <i class="bi bi-person-lines-fill me-2"></i> Mis datos
               </button>
               <button
+                id="tab-orders"
+                class="profile-tab-btn"
+                type="button"
+                data-target="panel-orders"
+              >
+                <i class="bi bi-box-seam me-2"></i> Mis pedidos
+              </button>
+              <button
+                id="tab-favorites"
+                class="profile-tab-btn"
+                type="button"
+                data-target="panel-favorites"
+              >
+                <i class="bi bi-heart me-2"></i> Lista de deseos
+              </button>
+              <button
                 id="tab-addresses"
                 class="profile-tab-btn"
                 type="button"
@@ -167,15 +199,7 @@
                 type="button"
                 data-target="panel-cards"
               >
-                <i class="bi bi-credit-card me-2"></i> Mis tarjetas
-              </button>
-              <button
-                id="tab-orders"
-                class="profile-tab-btn"
-                type="button"
-                data-target="panel-orders"
-              >
-                <i class="bi bi-box-seam me-2"></i> Mis pedidos
+                <i class="bi bi-credit-card me-2"></i> Métodos de pago
               </button>
               <button
                 id="tab-security"
@@ -385,6 +409,25 @@
 
               <!-- Lista de pedidos -->
               <div id="ordersList" class="orders-list">
+                <!-- Se llena dinámicamente con JavaScript -->
+              </div>
+            </div>
+          </article>
+
+          <!-- ========= Panel: Mis Favoritos ========= -->
+          <article
+            id="panel-favorites"
+            class="profile-panel"
+            aria-labelledby="panel-favorites-title"
+            hidden
+          >
+            <header class="profile-panel-header">
+              <h2 id="panel-favorites-title">Mis productos favoritos</h2>
+            </header>
+
+            <div class="favorites-content">
+              <!-- Lista de favoritos -->
+              <div id="favoritesList" class="favorites-grid">
                 <!-- Se llena dinámicamente con JavaScript -->
               </div>
             </div>

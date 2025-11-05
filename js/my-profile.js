@@ -1124,6 +1124,156 @@ function setupOrdersSystem() {
   });
 }
 
+// ==================================================================
+// 🔷 SISTEMA DE FAVORITOS/WISHLIST
+// ==================================================================
+
+const WISHLIST_KEY = "wishlist";
+
+/**
+ * Obtiene los favoritos del localStorage
+ */
+function getFavorites() {
+  return readLS(WISHLIST_KEY, []);
+}
+
+/**
+ * Renderiza los productos favoritos
+ */
+function renderFavorites() {
+  const favoritesList = document.getElementById('favoritesList');
+  if (!favoritesList) return;
+
+  const favorites = getFavorites();
+
+  if (favorites.length === 0) {
+    favoritesList.innerHTML = `
+      <div class="no-favorites">
+        <i class="bi bi-heart"></i>
+        <h3>No tienes productos favoritos</h3>
+        <p>Explora nuestro catálogo y guarda tus productos preferidos aquí</p>
+        <a href="products.html" class="btn-primary">
+          <i class="bi bi-shop"></i> Ver productos
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  favoritesList.innerHTML = favorites.map(item => `
+    <div class="favorite-card">
+      <button class="favorite-remove-btn" onclick="removeFromFavorites('${item.productId}')" aria-label="Eliminar de favoritos">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <div class="favorite-image" onclick="window.location.href='product-info.html?id=${item.productId}'">
+        <img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.src='img/cars_index.jpg'">
+      </div>
+      <div class="favorite-details">
+        <h3 class="favorite-name">${item.name}</h3>
+        <p class="favorite-description">${item.description}</p>
+        <div class="favorite-meta">
+          <span class="favorite-price">${item.currency} ${formatMoney(item.cost, item.currency)}</span>
+          <span class="favorite-sold">
+            <i class="bi bi-box-seam"></i>
+            ${item.soldCount} vendidos
+          </span>
+        </div>
+        <div class="favorite-actions">
+          <button class="btn-favorite-action primary" onclick="window.location.href='product-info.html?id=${item.productId}'">
+            <i class="bi bi-eye"></i> Ver producto
+          </button>
+          <button class="btn-favorite-action secondary" onclick="addFavoriteToCart('${item.productId}')">
+            <i class="bi bi-cart-plus"></i> Agregar al carrito
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/**
+ * Elimina un producto de favoritos
+ */
+window.removeFromFavorites = function(productId) {
+  let wishlist = getFavorites();
+  wishlist = wishlist.filter(item => item.productId != productId);
+  writeLS(WISHLIST_KEY, wishlist);
+  renderFavorites();
+};
+
+/**
+ * Agrega un producto de favoritos al carrito
+ */
+window.addFavoriteToCart = function(productId) {
+  const favorites = getFavorites();
+  const product = favorites.find(item => item.productId == productId);
+  
+  if (!product) return;
+
+  // Obtener el carrito actual
+  let cart = readLS('cart', []);
+  
+  // Verificar si ya está en el carrito
+  const existingIndex = cart.findIndex(item => item.id == productId);
+  
+  if (existingIndex !== -1) {
+    // Incrementar cantidad
+    cart[existingIndex].quantity += 1;
+  } else {
+    // Agregar nuevo producto al carrito
+    cart.push({
+      id: product.productId,
+      name: product.name,
+      description: product.description,
+      cost: product.cost,
+      currency: product.currency,
+      image: product.image,
+      quantity: 1
+    });
+  }
+  
+  // Guardar carrito actualizado
+  writeLS('cart', cart);
+  
+  // Actualizar badge si existe la función
+  if (typeof updateCartBadge === 'function') {
+    updateCartBadge();
+  }
+  
+  // Mostrar notificación
+  showFavoriteNotification(product.name);
+};
+
+/**
+ * Muestra notificación al agregar al carrito desde favoritos
+ */
+function showFavoriteNotification(productName) {
+  const notification = document.createElement('div');
+  notification.className = 'cart-notification';
+  notification.innerHTML = `
+    <i class="bi bi-check-circle-fill"></i>
+    <span>¡${productName} agregado al carrito!</span>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 10);
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+/**
+ * Configura el sistema de favoritos
+ */
+function setupFavoritesSystem() {
+  renderFavorites();
+}
+
 // init
 document.addEventListener("DOMContentLoaded", () => {
   loadUserProfile();
@@ -1133,6 +1283,17 @@ document.addEventListener("DOMContentLoaded", () => {
   setupAddressesSystem(); // NUEVO sistema de direcciones
   setupCardsSystem(); // NUEVO sistema de tarjetas
   setupOrdersSystem(); // NUEVO sistema de pedidos
+  setupFavoritesSystem(); // NUEVO sistema de favoritos
+
+  // Verificar si hay un parámetro tab en la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const tab = urlParams.get('tab');
+  
+  if (tab === 'orders') {
+    document.getElementById('tab-orders')?.click();
+  } else if (tab === 'favorites') {
+    document.getElementById('tab-favorites')?.click();
+  }
 
   document
     .getElementById("profileForm")

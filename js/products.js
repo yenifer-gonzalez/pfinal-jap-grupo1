@@ -109,6 +109,10 @@ function mostrarProductos(productos) {
   const search = val(FILTERS?.search, "searchFilter");
   const searchTerm = search && search.trim() !== "" ? search.trim() : null;
 
+  // Obtener favoritos del localStorage
+  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+  const favoriteIds = wishlist.map(item => item.productId);
+
   productos.forEach((producto) => {
     // Función para resaltar términos de búsqueda
     const highlightText = (text, term) => {
@@ -138,9 +142,10 @@ function mostrarProductos(productos) {
                         onerror="this.src='img/cars_index.jpg'"
                         style="opacity: 0; transition: opacity 0.3s ease;"
                         onload="this.style.opacity='1'">
-                    <button class="favorite-btn" onclick="toggleFavorite(event, ${
-                      producto.id
-                    })">♡</button>
+                    <button class="favorite-btn ${favoriteIds.includes(producto.id) ? 'toggle-fav' : ''}" 
+                        onclick="toggleFavorite(event, ${producto.id})"
+                        style="${favoriteIds.includes(producto.id) ? 'color: var(--color-primary-orange);' : ''}"
+                    >${favoriteIds.includes(producto.id) ? '♥' : '♡'}</button>
                 </div>
                 <div class="product-info">
                   <h3 class="product-name">${highlightedName}</h3>
@@ -458,17 +463,38 @@ function toggleFavorite(event, productId) {
   const favoriteBtn = event.target;
   const isFavorite = favoriteBtn.textContent === "♥";
 
+  // Obtener favoritos actuales del localStorage
+  let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
   if (isFavorite) {
+    // Remover de favoritos
+    wishlist = wishlist.filter(item => item.productId !== productId);
     favoriteBtn.textContent = "♡";
     favoriteBtn.style.color = "";
     favoriteBtn.classList.remove("toggle-fav");
   } else {
+    // Agregar a favoritos
+    const product = currentProducts.find(p => p.id === productId);
+    if (product) {
+      wishlist.push({
+        productId: product.id,
+        name: product.name,
+        description: product.description,
+        cost: product.cost,
+        currency: product.currency,
+        image: product.image,
+        soldCount: product.soldCount,
+        addedAt: new Date().toISOString(),
+        priceWhenAdded: product.cost
+      });
+    }
     favoriteBtn.textContent = "♥";
     favoriteBtn.style.color = "var(--color-primary-orange)";
     favoriteBtn.classList.add("toggle-fav");
   }
 
-  // Aquí podrías guardar los favoritos en localStorage o enviar al servidor
+  // Guardar en localStorage
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
 }
 
 // === FUNCIONES DE CONFIGURACIÓN ===
