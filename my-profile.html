@@ -170,6 +170,14 @@
                 <i class="bi bi-credit-card me-2"></i> Mis tarjetas
               </button>
               <button
+                id="tab-orders"
+                class="profile-tab-btn"
+                type="button"
+                data-target="panel-orders"
+              >
+                <i class="bi bi-box-seam me-2"></i> Mis pedidos
+              </button>
+              <button
                 id="tab-security"
                 class="profile-tab-btn"
                 type="button"
@@ -337,6 +345,41 @@
                 <i class="bi bi-credit-card"></i>
                 <h3>No tienes tarjetas guardadas</h3>
                 <p>Agrega una tarjeta para facilitar tus compras futuras</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- ========= Panel: Mis Pedidos ========= -->
+          <article
+            id="panel-orders"
+            class="profile-panel"
+            aria-labelledby="panel-orders-title"
+            hidden
+          >
+            <header class="profile-panel-header">
+              <h2 id="panel-orders-title">Mis pedidos</h2>
+            </header>
+
+            <div class="orders-content">
+              <!-- Filtros de pedidos -->
+              <div class="orders-filters">
+                <button class="filter-btn active" data-filter="all">
+                  <i class="bi bi-list-ul"></i> Todos
+                </button>
+                <button class="filter-btn" data-filter="pending">
+                  <i class="bi bi-clock-history"></i> Pendientes
+                </button>
+                <button class="filter-btn" data-filter="confirmed">
+                  <i class="bi bi-check-circle"></i> Confirmados
+                </button>
+                <button class="filter-btn" data-filter="completed">
+                  <i class="bi bi-check-all"></i> Completados
+                </button>
+              </div>
+
+              <!-- Lista de pedidos -->
+              <div id="ordersList" class="orders-list">
+                <!-- Se llena dinámicamente con JavaScript -->
               </div>
             </div>
           </article>

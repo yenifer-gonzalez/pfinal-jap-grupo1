@@ -738,6 +738,312 @@
   font-size: var(--font-size-body);
 }
 
+/* ============================ ORDERS SYSTEM ============================ */
+
+/* Filtros de pedidos */
+.orders-filters {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: var(--space-sm) var(--space-lg);
+  border: 2px solid var(--border-light);
+  border-radius: var(--border-radius-md);
+  background: var(--card-background);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.filter-btn:hover {
+  border-color: var(--color-primary-orange);
+  color: var(--color-primary-orange);
+  transform: translateY(-2px);
+}
+
+.filter-btn.active {
+  background: var(--color-primary-orange);
+  border-color: var(--color-primary-orange);
+  color: white;
+}
+
+.filter-btn i {
+  font-size: 1rem;
+}
+
+/* Lista de pedidos */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Tarjeta de pedido */
+.order-card {
+  background: var(--card-background);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.order-card:hover {
+  box-shadow: 0 4px 12px var(--shadow-light);
+  transform: translateY(-2px);
+}
+
+/* Header del pedido */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  background: var(--card-background-alt);
+  border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.order-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.order-number {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-orange);
+}
+
+.order-date {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.order-date i {
+  margin-right: var(--space-xs);
+}
+
+/* Estado del pedido */
+.order-status {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--border-radius-full);
+  font-size: 0.85rem;
+  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.order-status.pending {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.order-status.confirmed {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+  border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.order-status.completed {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* Contenido del pedido */
+.order-content {
+  padding: var(--space-xl);
+}
+
+/* Items del pedido */
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.order-item {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.order-item-image {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--border-radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.order-item-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-item-name {
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-xs);
+}
+
+.order-item-quantity {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.order-item-price {
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+  flex-shrink: 0;
+}
+
+/* Resumen del pedido */
+.order-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-light);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.order-total {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.order-total-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.order-total-amount {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+/* Acciones del pedido */
+.order-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.btn-order-action {
+  padding: var(--space-sm) var(--space-lg);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.btn-order-action.primary {
+  background: var(--color-primary-orange);
+  color: white;
+}
+
+.btn-order-action.primary:hover {
+  background: var(--color-primary-orange-dark);
+  transform: translateY(-2px);
+}
+
+.btn-order-action.secondary {
+  background: transparent;
+  color: var(--color-primary-orange);
+  border: 2px solid var(--color-primary-orange);
+}
+
+.btn-order-action.secondary:hover {
+  background: var(--color-primary-orange);
+  color: white;
+}
+
+/* Estado vacío */
+.no-orders {
+  text-align: center;
+  padding: var(--space-2xl);
+}
+
+.no-orders i {
+  font-size: 4rem;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-lg);
+}
+
+.no-orders h3 {
+  margin: 0 0 var(--space-sm);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.no-orders p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-body);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .order-item-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .order-summary {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .order-actions {
+    width: 100%;
+  }
+
+  .btn-order-action {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .orders-filters {
+    justify-content: center;
+  }
+}
+
 /* ============================ ADDRESS MODAL ============================ */
 .modal-overlay {
   display: none;

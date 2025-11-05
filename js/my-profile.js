@@ -955,6 +955,210 @@ function setupCardsSystem() {
   renderCards();
 }
 
+// ==================================================================
+// 🔷 SISTEMA DE PEDIDOS
+// ==================================================================
+
+const ORDERS_KEY = "orders";
+
+/**
+ * Obtiene los pedidos del localStorage
+ */
+function getOrders() {
+  return readLS(ORDERS_KEY, []);
+}
+
+/**
+ * Formatea una fecha ISO a formato legible
+ */
+function formatOrderDate(isoDate) {
+  const date = new Date(isoDate);
+  return date.toLocaleDateString('es-UY', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+/**
+ * Formatea el monto con moneda
+ */
+function formatMoney(amount, currency = 'USD') {
+  return `${currency} ${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
+}
+
+/**
+ * Obtiene el nombre del estado en español
+ */
+function getStatusName(status) {
+  const statusMap = {
+    'pending': 'Pendiente',
+    'confirmed': 'Confirmado',
+    'completed': 'Completado'
+  };
+  return statusMap[status] || status;
+}
+
+/**
+ * Obtiene el ícono del estado
+ */
+function getStatusIcon(status) {
+  const iconMap = {
+    'pending': 'bi-clock-history',
+    'confirmed': 'bi-check-circle',
+    'completed': 'bi-check-all'
+  };
+  return iconMap[status] || 'bi-box-seam';
+}
+
+/**
+ * Renderiza los pedidos
+ */
+function renderOrders(filter = 'all') {
+  const container = document.getElementById('ordersList');
+  if (!container) return;
+
+  let orders = getOrders();
+
+  // Filtrar pedidos
+  if (filter !== 'all') {
+    orders = orders.filter(order => order.status === filter);
+  }
+
+  // Ordenar por fecha (más reciente primero)
+  orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  if (orders.length === 0) {
+    container.innerHTML = `
+      <div class="no-orders">
+        <i class="bi bi-inbox"></i>
+        <h3>No hay pedidos ${filter !== 'all' ? getStatusName(filter).toLowerCase() + 's' : ''}</h3>
+        <p>Tus pedidos aparecerán aquí</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = orders.map(order => `
+    <div class="order-card" data-status="${order.status}">
+      <!-- Header -->
+      <div class="order-header">
+        <div class="order-info">
+          <span class="order-number">#${order.id}</span>
+          <span class="order-date">
+            <i class="bi bi-calendar3"></i>
+            ${formatOrderDate(order.date)}
+          </span>
+        </div>
+        <span class="order-status ${order.status}">
+          <i class="${getStatusIcon(order.status)}"></i>
+          ${getStatusName(order.status)}
+        </span>
+      </div>
+
+      <!-- Content -->
+      <div class="order-content">
+        <!-- Items -->
+        <div class="order-items">
+          ${order.items.slice(0, 3).map(item => `
+            <div class="order-item">
+              <img src="${item.image}" alt="${item.name}" class="order-item-image" />
+              <div class="order-item-details">
+                <p class="order-item-name">${item.name}</p>
+                <span class="order-item-quantity">Cantidad: ${item.count || 1}</span>
+              </div>
+              <span class="order-item-price">${formatMoney(item.cost * (item.count || 1), 'USD')}</span>
+            </div>
+          `).join('')}
+          ${order.items.length > 3 ? `<p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Y ${order.items.length - 3} producto(s) más...</p>` : ''}
+        </div>
+
+        <!-- Summary -->
+        <div class="order-summary">
+          <div class="order-total">
+            <span class="order-total-label">Total del pedido</span>
+            <span class="order-total-amount">${formatMoney(order.total, 'USD')}</span>
+          </div>
+          <div class="order-actions">
+            <button class="btn-order-action primary" onclick="viewOrderDetails('${order.id}')">
+              <i class="bi bi-eye"></i>
+              Ver detalles
+            </button>
+            ${order.status === 'completed' ? `
+              <button class="btn-order-action secondary" onclick="reorderItems('${order.id}')">
+                <i class="bi bi-arrow-repeat"></i>
+                Volver a comprar
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/**
+ * Ver detalles del pedido (redirige a order-confirmation)
+ */
+window.viewOrderDetails = function(orderId) {
+  window.location.href = `order-confirmation.html?order=${orderId}`;
+};
+
+/**
+ * Volver a comprar un pedido
+ */
+window.reorderItems = function(orderId) {
+  const orders = getOrders();
+  const order = orders.find(o => o.id === orderId);
+  
+  if (!order) {
+    alert('Pedido no encontrado');
+    return;
+  }
+
+  // Agregar items al carrito
+  const cart = readLS('cart', []);
+  
+  order.items.forEach(item => {
+    const existingItem = cart.find(c => c.id === item.id);
+    if (existingItem) {
+      existingItem.count += (item.count || 1);
+    } else {
+      cart.push({...item, count: item.count || 1});
+    }
+  });
+
+  writeLS('cart', cart);
+  alert('Productos agregados al carrito');
+  window.location.href = 'cart.html';
+};
+
+/**
+ * Configura el sistema de pedidos
+ */
+function setupOrdersSystem() {
+  // Renderizar pedidos inicialmente
+  renderOrders();
+
+  // Event listeners para filtros
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      // Remover active de todos
+      filterBtns.forEach(b => b.classList.remove('active'));
+      
+      // Agregar active al clickeado
+      this.classList.add('active');
+      
+      // Filtrar pedidos
+      const filter = this.dataset.filter;
+      renderOrders(filter);
+    });
+  });
+}
+
 // init
 document.addEventListener("DOMContentLoaded", () => {
   loadUserProfile();
@@ -963,6 +1167,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupTabs();
   setupAddressesSystem(); // NUEVO sistema de direcciones
   setupCardsSystem(); // NUEVO sistema de tarjetas
+  setupOrdersSystem(); // NUEVO sistema de pedidos
 
   document
     .getElementById("profileForm")
