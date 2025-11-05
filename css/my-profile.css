@@ -740,6 +740,35 @@
 
 /* ============================ ORDERS SYSTEM ============================ */
 
+/* Nota de simulación */
+.simulation-notice {
+  background: var(--info-light);
+  border-left: 4px solid var(--info);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  margin-bottom: var(--space-lg);
+}
+
+.simulation-notice i {
+  color: var(--info);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.simulation-notice span {
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.simulation-notice strong {
+  color: var(--info);
+}
+
 /* Filtros de pedidos */
 .orders-filters {
   display: flex;

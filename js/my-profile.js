@@ -1084,14 +1084,8 @@ function renderOrders(filter = 'all') {
           <div class="order-actions">
             <button class="btn-order-action primary" onclick="viewOrderDetails('${order.id}')">
               <i class="bi bi-eye"></i>
-              Ver detalles
+              Ver detalles completos
             </button>
-            ${order.status === 'completed' ? `
-              <button class="btn-order-action secondary" onclick="reorderItems('${order.id}')">
-                <i class="bi bi-arrow-repeat"></i>
-                Volver a comprar
-              </button>
-            ` : ''}
           </div>
         </div>
       </div>
@@ -1104,35 +1098,6 @@ function renderOrders(filter = 'all') {
  */
 window.viewOrderDetails = function(orderId) {
   window.location.href = `order-confirmation.html?order=${orderId}`;
-};
-
-/**
- * Volver a comprar un pedido
- */
-window.reorderItems = function(orderId) {
-  const orders = getOrders();
-  const order = orders.find(o => o.id === orderId);
-  
-  if (!order) {
-    alert('Pedido no encontrado');
-    return;
-  }
-
-  // Agregar items al carrito
-  const cart = readLS('cart', []);
-  
-  order.items.forEach(item => {
-    const existingItem = cart.find(c => c.id === item.id);
-    if (existingItem) {
-      existingItem.count += (item.count || 1);
-    } else {
-      cart.push({...item, count: item.count || 1});
-    }
-  });
-
-  writeLS('cart', cart);
-  alert('Productos agregados al carrito');
-  window.location.href = 'cart.html';
 };
 
 /**

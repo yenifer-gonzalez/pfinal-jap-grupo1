@@ -29,6 +29,10 @@
   --shadow-light: rgba(0, 0, 0, 0.1); /* Sombra suave */
   --shadow-medium: rgba(0, 0, 0, 0.15); /* Sombra media */
 
+  /* Colores de Estado/Información */
+  --info: #2196f3; /* Azul para información */
+  --info-light: #e3f2fd; /* Fondo azul claro para alertas info */
+
   /* Tipografía */
   --font-family-primary: "Poppins", sans-serif;
   --font-family-secondary: "Raleway", sans-serif;
@@ -97,6 +101,10 @@
   --border-medium: #3a5563;
   --shadow-light: rgba(0, 0, 0, 0.45);
   --shadow-medium: rgba(0, 0, 0, 0.6);
+
+  /* Colores de Estado/Información (dark mode) */
+  --info: #42a5f5; /* Azul más claro para dark mode */
+  --info-light: #1e3a52; /* Fondo azul oscuro para alertas info */
 
   /* Header */
   --header-bg: #0f141780;
