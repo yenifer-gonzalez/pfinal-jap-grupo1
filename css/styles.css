@@ -286,6 +286,21 @@ a.custom-card:hover {
   box-shadow: none;
 }
 
+/* Accesibilidad: Focus visible mejorado (solo con teclado) */
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Eliminar outline en clicks de mouse */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .products-container {
   max-width: var(--container-max-width);
   margin: 0 auto;

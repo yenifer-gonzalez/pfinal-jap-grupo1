@@ -376,7 +376,7 @@ function setupInfiniteScroll() {
   loadMoreSentinel.id = 'load-more-sentinel';
   loadMoreSentinel.className = 'load-more-container';
   loadMoreSentinel.innerHTML = `
-    <div class="load-more-spinner">
+    <div class="load-more-spinner" role="status" aria-live="polite" aria-busy="true">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Cargando más productos...</span>
       </div>
