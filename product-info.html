@@ -32,6 +32,10 @@
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/styles.css" />
+
+    <!-- Preload de recursos -->
+    <link rel="preconnect" href="https://japceibal.github.io" />
+    <link rel="dns-prefetch" href="https://japceibal.github.io" />
   </head>
 
   <body>
@@ -162,6 +166,7 @@
                 class="pi-main-img"
                 src="img/prod50921_1.jpg"
                 alt="Imagen principal del producto"
+                loading="eager"
               />
 
               <button
@@ -374,8 +379,8 @@
       <i class="fas fa-moon" aria-hidden="true"></i>
     </button>
 
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/init.js"></script>
-    <script src="js/product-info.js"></script>
+    <script src="js/bootstrap.bundle.min.js" defer></script>
+    <script src="js/init.js" defer></script>
+    <script src="js/product-info.js" defer></script>
   </body>
 </html>

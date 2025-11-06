@@ -561,6 +561,39 @@ mark {
   padding: 0 var(--space-sm);
 }
 
+/* === INFINITE SCROLL === */
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-2xl);
+  margin-top: var(--space-lg);
+}
+
+.load-more-spinner {
+  text-align: center;
+}
+
+.load-more-spinner p {
+  color: var(--text-secondary);
+  margin-top: var(--space-md);
+  font-size: 0.9rem;
+}
+
+.end-of-results {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-secondary);
+  margin-top: var(--space-lg);
+}
+
+.end-of-results i {
+  font-size: 2.5rem;
+  color: var(--color-success);
+  margin-bottom: var(--space-md);
+}
+
 .loading-state {
   text-align: center;
   padding: var(--space-3xl);

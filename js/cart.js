@@ -194,7 +194,7 @@ function renderItem(it, idx) {
 
   row.innerHTML = `
     <div class="prod">
-      <img src="${it.image}" alt="${it.name}">
+      <img src="${it.image}" alt="${it.name}" loading="lazy">
       <div>
         <h4>${it.name}</h4>
         <small>Cat. ${it.category || '-'}</small>

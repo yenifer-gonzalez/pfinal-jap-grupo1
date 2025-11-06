@@ -280,3 +280,23 @@ function updateThemeIcon(theme) {
     icon.className = 'fas fa-moon'; // Mostrar luna en modo claro
   }
 }
+
+// === REGISTRO DE SERVICE WORKER ===
+// Registrar Service Worker para caché y funcionalidad offline
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((registration) => {
+        console.log('[SW] Service Worker registrado exitosamente:', registration.scope);
+        
+        // Verificar actualizaciones periódicamente
+        setInterval(() => {
+          registration.update();
+        }, 60000); // Verificar cada minuto
+      })
+      .catch((error) => {
+        console.error('[SW] Error al registrar Service Worker:', error);
+      });
+  });
+}

@@ -10,6 +10,11 @@ const productsPerPage = 9;
 const productsCache = new Map();
 const CACHE_DURATION = 5 * 60 * 1000;
 
+// === INFINITE SCROLL VARIABLES ===
+let isLoadingMore = false;
+let intersectionObserver = null;
+let loadMoreSentinel = null;
+
 // --- BRIDGE ---
 // "Puente" para que los selects del sidebar mobile y los de desktop
 // se mantengan sincornizados y se pueda utilizar la misma lógica de applyFilters().
@@ -43,14 +48,15 @@ const mirror = (els, source) => {
   });
 };
 
-// Función completa para renderizar página con productos y paginación
+// Función completa para renderizar página con infinite scroll
 function renderPage() {
-  const startIndex = (currentPage - 1) * productsPerPage;
-  const endIndex = startIndex + productsPerPage;
-  const productsToShow = filteredProducts.slice(startIndex, endIndex);
-
+  const productsToShow = filteredProducts.slice(0, currentPage * productsPerPage);
+  
   mostrarProductos(productsToShow);
-  setupPagination();
+  setupInfiniteScroll();
+  
+  // Ocultar paginación clásica (ya no se usa)
+  document.getElementById("pagination").innerHTML = "";
 }
 
 // Versión mejorada de la función original con cache y error handling
@@ -335,64 +341,217 @@ function applyFilters() {
 }
 
 // === FUNCIONES DE PAGINACIÓN ===
+// Ya no se usan botones de paginación, solo infinite scroll
 
-// Función para configurar la paginación
-function setupPagination() {
-  const totalProducts = filteredProducts.length;
-  const totalPages = Math.ceil(totalProducts / productsPerPage);
-  const paginationContainer = document.getElementById("pagination");
-
-  if (totalPages <= 1) {
-    paginationContainer.innerHTML = "";
-    return;
-  }
-
-  let paginationHTML = "";
-
-  // Botón anterior
-  if (currentPage > 1) {
-    paginationHTML += `<button class="pagination-btn" onclick="goToPage(${
-      currentPage - 1
-    })">←</button>`;
-  }
-
-  // Números de página
-  const startPage = Math.max(1, currentPage - 2);
-  const endPage = Math.min(totalPages, currentPage + 2);
-
-  if (startPage > 1) {
-    paginationHTML += `<button class="pagination-btn" onclick="goToPage(1)">1</button>`;
-    if (startPage > 2) {
-      paginationHTML += `<span class="pagination-dots">...</span>`;
-    }
-  }
-
-  for (let i = startPage; i <= endPage; i++) {
-    const activeClass = i === currentPage ? "active" : "";
-    paginationHTML += `<button class="pagination-btn ${activeClass}" onclick="goToPage(${i})">${i}</button>`;
-  }
-
-  if (endPage < totalPages) {
-    if (endPage < totalPages - 1) {
-      paginationHTML += `<span class="pagination-dots">...</span>`;
-    }
-    paginationHTML += `<button class="pagination-btn" onclick="goToPage(${totalPages})">${totalPages}</button>`;
-  }
-
-  // Botón siguiente
-  if (currentPage < totalPages) {
-    paginationHTML += `<button class="pagination-btn" onclick="goToPage(${
-      currentPage + 1
-    })">→</button>`;
-  }
-
-  paginationContainer.innerHTML = paginationHTML;
-}
-
-// Función para ir a una página específica
+// Función para ir a una página específica (solo para reset en filtros)
 function goToPage(page) {
   currentPage = page;
   renderPage();
+  
+  // Scroll suave al inicio de los productos
+  document.getElementById('productsContainer').scrollIntoView({ 
+    behavior: 'smooth',
+    block: 'start'
+  });
+}
+
+// === FUNCIONES DE INFINITE SCROLL ===
+
+// Función para configurar el Intersection Observer
+function setupInfiniteScroll() {
+  const totalProducts = filteredProducts.length;
+  const loadedProducts = currentPage * productsPerPage;
+  
+  // Si ya se cargaron todos los productos, no hacer nada
+  if (loadedProducts >= totalProducts) {
+    showEndOfResults();
+    return;
+  }
+  
+  // Limpiar observer anterior si existe
+  cleanupInfiniteScroll();
+  
+  // Crear sentinel (elemento que detecta cuando llegamos al final)
+  loadMoreSentinel = document.createElement('div');
+  loadMoreSentinel.id = 'load-more-sentinel';
+  loadMoreSentinel.className = 'load-more-container';
+  loadMoreSentinel.innerHTML = `
+    <div class="load-more-spinner">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando más productos...</span>
+      </div>
+      <p class="mt-2">Cargando más productos...</p>
+    </div>
+  `;
+  
+  // Agregar sentinel después del container de productos
+  const container = document.getElementById('productsContainer');
+  container.parentElement.appendChild(loadMoreSentinel);
+  
+  // Crear Intersection Observer
+  intersectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !isLoadingMore) {
+        loadMoreProducts();
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '100px' // Cargar antes de llegar al final
+  });
+  
+  // Observar el sentinel
+  intersectionObserver.observe(loadMoreSentinel);
+}
+
+// Función para cargar más productos (infinite scroll)
+function loadMoreProducts() {
+  const totalProducts = filteredProducts.length;
+  const loadedProducts = currentPage * productsPerPage;
+  
+  if (isLoadingMore || loadedProducts >= totalProducts) {
+    return;
+  }
+  
+  isLoadingMore = true;
+  
+  // Simular pequeño delay para mejor UX
+  setTimeout(() => {
+    currentPage++;
+    
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    const newProducts = filteredProducts.slice(startIndex, endIndex);
+    
+    // Agregar nuevos productos al final
+    appendProducts(newProducts);
+    
+    isLoadingMore = false;
+    
+    // Verificar si hay más productos
+    const newLoadedProducts = currentPage * productsPerPage;
+    if (newLoadedProducts >= totalProducts) {
+      cleanupInfiniteScroll();
+      showEndOfResults();
+    }
+  }, 300);
+}
+
+// Función para agregar productos al contenedor existente
+function appendProducts(productos) {
+  const container = document.getElementById('productsContainer');
+  
+  // Obtener término de búsqueda
+  const val = (arr, fallbackId) =>
+    FILTERS && arr
+      ? firstVal(arr)
+      : document.getElementById(fallbackId)?.value || "";
+
+  const search = val(FILTERS?.search, "searchFilter");
+  const searchTerm = search && search.trim() !== "" ? search.trim() : null;
+
+  // Obtener favoritos
+  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+  const favoriteIds = wishlist.map(item => item.productId);
+  
+  // Función para resaltar términos
+  const highlightText = (text, term) => {
+    if (!term) return text;
+    const regex = new RegExp(
+      `(${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+      "gi"
+    );
+    return text.replace(regex, "<mark>$1</mark>");
+  };
+  
+  let html = "";
+  productos.forEach((producto) => {
+    const highlightedName = highlightText(producto.name, searchTerm);
+    const highlightedDescription = highlightText(producto.description, searchTerm);
+    
+    html += `
+      <div class="product-card" data-product-id="${producto.id}" onclick="goToProduct(${producto.id})">
+        <div class="product-image">
+          <img src="${producto.image}" alt="${producto.name}" 
+            loading="lazy"
+            onerror="this.src='img/cars_index.jpg'"
+            style="opacity: 0; transition: opacity 0.3s ease;"
+            onload="this.style.opacity='1'">
+          <button class="favorite-btn ${favoriteIds.includes(producto.id) ? 'toggle-fav' : ''}" 
+            onclick="toggleFavorite(event, ${producto.id})"
+            style="${favoriteIds.includes(producto.id) ? 'color: var(--color-primary-orange);' : ''}"
+          >${favoriteIds.includes(producto.id) ? '♥' : '♡'}</button>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">${highlightedName}</h3>
+          <p class="product-description">${highlightedDescription}</p>
+          <div class="product-wrapper">
+            <div class="product-stats">
+              <span class="product-sold">${producto.soldCount} vendidos</span>
+            </div>
+            <div class="product-meta">
+              <span class="product-price">${producto.currency} ${new Intl.NumberFormat("es-UY").format(producto.cost)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  
+  // Agregar nuevos productos con animación
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  
+  Array.from(tempDiv.children).forEach((card, index) => {
+    setTimeout(() => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      container.appendChild(card);
+      
+      // Animar entrada
+      setTimeout(() => {
+        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 10);
+    }, index * 50); // Escalonar la aparición
+  });
+}
+
+// Función para mostrar mensaje de fin de resultados
+function showEndOfResults() {
+  const totalProducts = filteredProducts.length;
+  
+  const endMessage = document.createElement('div');
+  endMessage.className = 'end-of-results';
+  endMessage.innerHTML = `
+    <div class="text-center py-4">
+      <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+      <p class="mt-2 mb-0">Has visto todos los ${totalProducts} productos</p>
+    </div>
+  `;
+  
+  const container = document.getElementById('productsContainer');
+  container.parentElement.appendChild(endMessage);
+}
+
+// Función para limpiar infinite scroll
+function cleanupInfiniteScroll() {
+  if (intersectionObserver) {
+    intersectionObserver.disconnect();
+    intersectionObserver = null;
+  }
+  
+  if (loadMoreSentinel) {
+    loadMoreSentinel.remove();
+    loadMoreSentinel = null;
+  }
+  
+  // Remover mensaje de fin de resultados
+  const endMessage = document.querySelector('.end-of-results');
+  if (endMessage) {
+    endMessage.remove();
+  }
 }
 
 // === FUNCIONES DE UTILIDAD ===

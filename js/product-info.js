@@ -40,7 +40,7 @@ function renderThumbnails() {
         `<button class="pi-thumb${
           idx === galleryState.index ? " is-active" : ""
         }" data-index="${idx}">
-         <img src="${src}" alt="Miniatura ${idx + 1}">
+         <img src="${src}" alt="Miniatura ${idx + 1}" loading="lazy">
        </button>`
     )
     .join("");
@@ -426,7 +426,7 @@ function renderRelatedProducts(relatedProducts) {
 
     card.innerHTML = `
     <a href="product-info.html" data-id="${product.id}">
-    <img src="${product.image}" alt="${product.name}">
+    <img src="${product.image}" alt="${product.name}" loading="lazy">
     <h3 class="related-name">${product.name}</h3>
     </a>
     `;

@@ -365,7 +365,7 @@ function loadOrderSummary() {
   // Renderizar productos
   itemsContainer.innerHTML = items.map(item => `
     <div class="order-item">
-      <img src="${item.image}" alt="${item.name}" />
+      <img src="${item.image}" alt="${item.name}" loading="lazy" />
       <div class="order-item-info">
         <h4>${item.name}</h4>
         <p>Cantidad: ${item.count || 1}</p>

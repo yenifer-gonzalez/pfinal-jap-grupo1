@@ -129,7 +129,7 @@ function displayOrderItems(items) {
   
   container.innerHTML = items.map(item => `
     <div class="order-item">
-      <img src="${item.image}" alt="${item.name}" />
+      <img src="${item.image}" alt="${item.name}" loading="lazy" />
       <div class="order-item-info">
         <h3>${item.name}</h3>
         <p>Cantidad: ${item.count || 1}</p>
