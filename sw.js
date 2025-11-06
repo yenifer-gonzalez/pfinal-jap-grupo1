@@ -1,12 +1,10 @@
-// ========================================
-// SERVICE WORKER - Caché Inteligente
-// ========================================
+// Service Worker para mejorar la velocidad y permitir uso offline
 
 const CACHE_NAME = 'emercado-v1';
 const CACHE_API_NAME = 'emercado-api-v1';
 const CACHE_IMAGES_NAME = 'emercado-images-v1';
 
-// Assets estáticos para cachear (cache-first)
+// Archivos que queremos guardar en caché
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -24,70 +22,61 @@ const STATIC_ASSETS = [
   '/img/logo-jap.svg'
 ];
 
-// URLs de API para cachear temporalmente (network-first)
+// URLs de la API
 const API_URLS = [
   'https://japceibal.github.io/emercado-api'
 ];
 
-// ========================================
-// INSTALL - Cachear assets estáticos
-// ========================================
+// Cuando se instala, guardamos los archivos en caché
 self.addEventListener('install', (event) => {
-  console.log('[SW] Instalando service worker...');
+  console.log('[SW] Instalando...');
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('[SW] Cacheando assets estáticos');
+        console.log('[SW] Guardando archivos en caché');
         return cache.addAll(STATIC_ASSETS);
       })
-      .then(() => self.skipWaiting()) // Activar inmediatamente
+      .then(() => self.skipWaiting())
       .catch((error) => {
-        console.error('[SW] Error al cachear assets:', error);
+        console.error('[SW] Error:', error);
       })
   );
 });
 
-// ========================================
-// ACTIVATE - Limpiar cachés antiguos
-// ========================================
+// Cuando se activa, limpiamos cachés viejos
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activando service worker...');
+  console.log('[SW] Activando...');
   
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            // Eliminar cachés viejos
             if (cacheName !== CACHE_NAME && 
                 cacheName !== CACHE_API_NAME && 
                 cacheName !== CACHE_IMAGES_NAME) {
-              console.log('[SW] Eliminando caché antiguo:', cacheName);
+              console.log('[SW] Borrando caché viejo:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       })
-      .then(() => self.clients.claim()) // Tomar control inmediato
+      .then(() => self.clients.claim())
   );
 });
 
-// ========================================
-// FETCH - Estrategias de caché
-// ========================================
+// Interceptamos las peticiones para usar caché cuando sea posible
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // ========================================
-  // 1. API Requests - Network First (con fallback a caché)
-  // ========================================
+  // Para la API: intentamos red primero, si falla usamos caché
   if (url.origin === 'https://japceibal.github.io') {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          // Cachear respuesta exitosa
+          // Guardamos la respuesta en caché
           if (response && response.status === 200) {
             const responseClone = response.clone();
             caches.open(CACHE_API_NAME).then((cache) => {
@@ -97,13 +86,12 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          // Si falla la red, usar caché
+          // Si no hay internet, usamos lo que tenemos en caché
           return caches.match(request).then((cachedResponse) => {
             if (cachedResponse) {
-              console.log('[SW] Usando caché de API (offline):', request.url);
+              console.log('[SW] Usando caché (sin internet):', request.url);
               return cachedResponse;
             }
-            // Si no hay caché, retornar error offline
             return new Response(
               JSON.stringify({ error: 'Sin conexión', offline: true }),
               { 
@@ -117,9 +105,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ========================================
-  // 2. Imágenes - Cache First (con network fallback)
-  // ========================================
+  // Para imágenes: primero buscamos en caché, si no hay bajamos de internet
   if (request.destination === 'image') {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
@@ -128,7 +114,7 @@ self.addEventListener('fetch', (event) => {
         }
 
         return fetch(request).then((response) => {
-          // Cachear nueva imagen
+          // Guardamos la imagen nueva
           if (response && response.status === 200) {
             const responseClone = response.clone();
             caches.open(CACHE_IMAGES_NAME).then((cache) => {
@@ -142,9 +128,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ========================================
-  // 3. Assets estáticos (CSS, JS) - Cache First
-  // ========================================
+  // Para CSS y JS: primero buscamos en caché
   if (
     request.destination === 'style' ||
     request.destination === 'script' ||
@@ -159,7 +143,7 @@ self.addEventListener('fetch', (event) => {
         }
 
         return fetch(request).then((response) => {
-          // Cachear nuevo asset
+          // Guardamos el archivo nuevo
           if (response && response.status === 200) {
             const responseClone = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
@@ -173,14 +157,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ========================================
-  // 4. HTML pages - Network First (con fallback a caché)
-  // ========================================
+  // Para páginas HTML: intentamos cargar de internet
   if (request.destination === 'document' || request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          // Cachear nueva página
+          // Guardamos la página
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(request, responseClone);
@@ -188,12 +170,11 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          // Si falla, usar caché
+          // Si no hay internet, mostramos lo que tenemos
           return caches.match(request).then((cachedResponse) => {
             if (cachedResponse) {
               return cachedResponse;
             }
-            // Fallback a index.html offline
             return caches.match('/index.html');
           });
         })
@@ -201,38 +182,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ========================================
-  // 5. Default - Network First
-  // ========================================
+  // Para todo lo demás: intentamos internet, si falla usamos caché
   event.respondWith(
     fetch(request).catch(() => caches.match(request))
   );
 });
 
-// ========================================
-// BACKGROUND SYNC (opcional para futuro)
-// ========================================
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-cart') {
-    console.log('[SW] Sincronizando carrito...');
-    // Implementar lógica de sincronización
-  }
-});
 
-// ========================================
-// PUSH NOTIFICATIONS (opcional para futuro)
-// ========================================
-self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : {};
-  const title = data.title || 'eMercado';
-  const options = {
-    body: data.body || 'Nueva notificación',
-    icon: '/img/logo-jap.svg',
-    badge: '/img/logo-jap.svg',
-    data: data
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
-});
