@@ -222,6 +222,12 @@ function setupEventListeners() {
   // Formateo de campos de tarjeta
   setupCardFormatting();
 
+  // Guardar nueva tarjeta
+  const saveCardBtn = document.getElementById('saveNewCard');
+  if (saveCardBtn) {
+    saveCardBtn.addEventListener('click', saveNewCard);
+  }
+
   // Toggle nueva tarjeta
   const toggleCardBtn = document.getElementById('toggleNewCard');
   const newCardForm = document.getElementById('newCardForm');
@@ -288,6 +294,75 @@ function saveNewAddress() {
     '<i class="bi bi-plus-circle"></i> Usar una dirección diferente';
 
   alert('Dirección guardada en tu perfil');
+}
+
+// Guardar nueva tarjeta en perfil
+function saveNewCard() {
+  const cardNumber = document.getElementById('newCardNumber').value.trim().replace(/\s/g, '');
+  const cardName = document.getElementById('newCardName').value.trim();
+  const cardExpiry = document.getElementById('newCardExpiry').value.trim();
+  const cardCVV = document.getElementById('newCardCVV').value.trim();
+
+  // Validación básica
+  if (!cardNumber || !cardName || !cardExpiry || !cardCVV) {
+    alert('Por favor completa todos los campos de la tarjeta');
+    return;
+  }
+
+  // Validar formato de número de tarjeta (16 dígitos)
+  if (cardNumber.length < 13 || cardNumber.length > 19) {
+    alert('Número de tarjeta inválido');
+    return;
+  }
+
+  // Validar formato de vencimiento (MM/AA)
+  if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+    alert('Formato de vencimiento inválido (MM/AA)');
+    return;
+  }
+
+  // Validar CVV (3-4 dígitos)
+  if (cardCVV.length < 3 || cardCVV.length > 4) {
+    alert('CVV inválido');
+    return;
+  }
+
+  // Detectar marca de tarjeta
+  const detectCardBrand = (number) => {
+    if (/^4/.test(number)) return 'Visa';
+    if (/^5[1-5]/.test(number)) return 'Mastercard';
+    if (/^3[47]/.test(number)) return 'Amex';
+    return 'Otra';
+  };
+
+  const newCard = {
+    id: 'card_' + Date.now(),
+    alias: detectCardBrand(cardNumber),
+    lastFour: cardNumber.slice(-4),
+    cardName: cardName,
+    expiry: cardExpiry,
+    brand: detectCardBrand(cardNumber).toLowerCase(),
+    isDefault: false,
+    createdAt: new Date().toISOString()
+  };
+
+  // Guardar en localStorage
+  const cards = readLS('userCards', []);
+  cards.push(newCard);
+  writeLS('userCards', cards);
+
+  // Seleccionar esta tarjeta
+  selectedCard = newCard;
+
+  // Recargar lista
+  loadSavedCards();
+
+  // Ocultar formulario
+  document.getElementById('newCardForm').classList.add('hidden');
+  document.getElementById('toggleNewCard').innerHTML = 
+    '<i class="bi bi-plus-circle"></i> Usar una tarjeta diferente';
+
+  alert('Tarjeta guardada en tu perfil');
 }
 
 // ===== MÉTODOS DE PAGO =====

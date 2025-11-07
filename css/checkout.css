@@ -268,6 +268,21 @@
   margin-bottom: var(--space-md);
 }
 
+/* Formulario de tarjeta dentro del payment-form */
+#cardPaymentContent {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+#cardPaymentContent #newCardForm {
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-md);
+  background: var(--card-background-alt);
+}
+
 /* Iconos de marcas en tarjetas guardadas */
 .address-option[data-card-id] .address-info p i {
   margin-right: var(--space-xs);
