@@ -570,7 +570,7 @@ mark {
 .error-state {
   text-align: center;
   padding: var(--space-3xl);
-  color: #dc3545;
+  color: var(--color-error);
 }
 
 /* === LOADING SKELETON === */
@@ -1957,6 +1957,16 @@ footer a:hover {
 .valoracion .star-btn:nth-child(3):hover ~ .star-btn,
 .valoracion .star-btn:nth-child(4):hover ~ .star-btn,
 .valoracion .star-btn:nth-child(5):hover ~ .star-btn {
+  color: var(--color-hover);
+  transform: rotate(360deg);
+}
+
+/* Estrellas seleccionadas */
+.valoracion .star-btn.selected {
+  color: var(--color-hover);
+}
+
+.valoracion .star-btn.hover {
   color: var(--color-hover);
   transform: rotate(360deg);
 }

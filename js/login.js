@@ -51,20 +51,56 @@ function handleSubmit(event) {
 
   if (!user.value) {
     errorUser.innerText = "Por favor, ingrese un email.";
+    user.classList.add("error");
+    setTimeout(() => user.classList.remove("error"), 400);
     return;
   } else if (!regexEmail.test(user.value)) {
     errorUser.innerText = "Por favor, ingrese un email válido.";
+    user.classList.add("error");
+    setTimeout(() => user.classList.remove("error"), 400);
     return;
   } else {
     errorUser.innerText = "";
+    user.classList.remove("error");
   }
 
+  // Validación de contraseña
   if (!pass.value) {
     errorPass.innerText = "Por favor, ingrese una contraseña.";
+    pass.classList.add("error");
+    setTimeout(() => pass.classList.remove("error"), 400);
     return;
-  } else {
-    errorPass.innerText = "";
   }
+
+  // Validar longitud mínima
+  if (pass.value.length < 6) {
+    errorPass.innerText = "La contraseña debe tener al menos 6 caracteres.";
+    pass.classList.add("error");
+    setTimeout(() => pass.classList.remove("error"), 400);
+    return;
+  }
+
+  // Validar que contenga al menos una letra
+  const hasLetter = /[a-zA-Z]/.test(pass.value);
+  if (!hasLetter) {
+    errorPass.innerText = "La contraseña debe contener al menos una letra.";
+    pass.classList.add("error");
+    setTimeout(() => pass.classList.remove("error"), 400);
+    return;
+  }
+
+  // Validar que contenga al menos un número
+  const hasNumber = /[0-9]/.test(pass.value);
+  if (!hasNumber) {
+    errorPass.innerText = "La contraseña debe contener al menos un número.";
+    pass.classList.add("error");
+    setTimeout(() => pass.classList.remove("error"), 400);
+    return;
+  }
+
+  // Contraseña válida
+  errorPass.innerText = "";
+  pass.classList.remove("error");
 
   let remember = document.getElementById("remember");
 
@@ -87,8 +123,8 @@ function changeEye() {
   const showing = pass.type === "text";
 
   pass.type = showing ? "password" : "text";
-  icon.classList.toggle("bi-eye", showing);
-  icon.classList.toggle("bi-eye-slash", !showing);
+  icon.classList.toggle("fa-eye", showing);
+  icon.classList.toggle("fa-eye-slash", !showing);
 }
 
 // === INICIALIZACIÓN ===

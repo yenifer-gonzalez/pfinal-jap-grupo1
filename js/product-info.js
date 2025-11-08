@@ -17,50 +17,43 @@ function setupGallery(images) {
 // Setea imagen principal y activa la miniatura
 function setMainImage(i) {
   if (!galleryState.images.length) return;
-  galleryState.index =
-    (i + galleryState.images.length) % galleryState.images.length;
-  const main = document.getElementById("pi-main-image");
+  galleryState.index = (i + galleryState.images.length) % galleryState.images.length;
+  const main = document.getElementById('pi-main-image');
   if (main) main.src = galleryState.images[galleryState.index];
 
   // activar miniatura seleccionada
-  const thumbs = document.querySelectorAll(".pi-thumb");
-  thumbs.forEach((b, idx) =>
-    b.classList.toggle("is-active", idx === galleryState.index)
-  );
+  const thumbs = document.querySelectorAll('.pi-thumb');
+  thumbs.forEach((b, idx) => b.classList.toggle('is-active', idx === galleryState.index));
 }
 
 // Dibuja miniaturas y les agrega click
 function renderThumbnails() {
-  const wrap = document.getElementById("pi-thumbs");
+  const wrap = document.getElementById('pi-thumbs');
   if (!wrap) return;
 
   wrap.innerHTML = galleryState.images
     .map(
       (src, idx) =>
         `<button class="pi-thumb${
-          idx === galleryState.index ? " is-active" : ""
+          idx === galleryState.index ? ' is-active' : ''
         }" data-index="${idx}">
          <img src="${src}" alt="Miniatura ${idx + 1}">
        </button>`
     )
-    .join("");
+    .join('');
 
-  wrap.querySelectorAll(".pi-thumb").forEach((btn) => {
-    btn.addEventListener("click", () =>
-      setMainImage(Number(btn.dataset.index))
-    );
+  wrap.querySelectorAll('.pi-thumb').forEach((btn) => {
+    btn.addEventListener('click', () => setMainImage(Number(btn.dataset.index)));
   });
 }
 
 // Flechas izquierda/derecha
 function setupArrows() {
   if (galleryState.arrowsBound) return;
-  const prev = document.querySelector(".pi-carousel-btn.left");
-  const next = document.querySelector(".pi-carousel-btn.right");
-  if (prev)
-    prev.addEventListener("click", () => setMainImage(galleryState.index - 1));
-  if (next)
-    next.addEventListener("click", () => setMainImage(galleryState.index + 1));
+  const prev = document.querySelector('.pi-carousel-btn.left');
+  const next = document.querySelector('.pi-carousel-btn.right');
+  if (prev) prev.addEventListener('click', () => setMainImage(galleryState.index - 1));
+  if (next) next.addEventListener('click', () => setMainImage(galleryState.index + 1));
   galleryState.arrowsBound = true;
 }
 
@@ -69,15 +62,15 @@ function setupArrows() {
 // Función para agregar producto al carrito SIN redirigir (botón "Agregar al carrito")
 function addToCart(product) {
   // Obtener la cantidad seleccionada del input
-  const qtyInput = document.getElementById("pi-qty");
+  const qtyInput = document.getElementById('pi-qty');
   const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-  
+
   // Obtener el carrito actual del localStorage o crear uno nuevo si no existe
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  
+
   // Verificar si el producto ya existe en el carrito
-  const existingProductIndex = cart.findIndex(item => item.id === product.id);
-  
+  const existingProductIndex = cart.findIndex((item) => item.id === product.id);
+
   if (existingProductIndex !== -1) {
     // Si el producto ya existe, agregar la cantidad seleccionada
     cart[existingProductIndex].count = (cart[existingProductIndex].count || 0) + quantity;
@@ -89,22 +82,22 @@ function addToCart(product) {
       currency: product.currency,
       cost: product.cost,
       image: product.images[0], // Guardamos la primera imagen del producto
-      category: (product.category && product.category.name) || product.category || "Sin categoría",
-      count: quantity // Usar la cantidad seleccionada
+      category: (product.category && product.category.name) || product.category || 'Sin categoría',
+      count: quantity, // Usar la cantidad seleccionada
     };
-    
+
     // Agregar el producto al carrito
     cart.push(cartItem);
   }
-  
+
   // Guardar el carrito actualizado en localStorage
   localStorage.setItem('cart', JSON.stringify(cart));
-  
+
   // Actualizar el badge si la función existe
   if (typeof updateCartBadge === 'function') {
     updateCartBadge();
   }
-  
+
   // Mostrar notificación de éxito
   showCartNotification(product.name);
 }
@@ -112,15 +105,15 @@ function addToCart(product) {
 // Función para agregar producto al carrito Y redirigir (botón "Comprar ahora")
 function handleBuyProduct(product) {
   // Obtener la cantidad seleccionada del input
-  const qtyInput = document.getElementById("pi-qty");
+  const qtyInput = document.getElementById('pi-qty');
   const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-  
+
   // Obtener el carrito actual del localStorage o crear uno nuevo si no existe
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  
+
   // Verificar si el producto ya existe en el carrito
-  const existingProductIndex = cart.findIndex(item => item.id === product.id);
-  
+  const existingProductIndex = cart.findIndex((item) => item.id === product.id);
+
   if (existingProductIndex !== -1) {
     // Si el producto ya existe, agregar la cantidad seleccionada
     cart[existingProductIndex].count = (cart[existingProductIndex].count || 0) + quantity;
@@ -132,22 +125,22 @@ function handleBuyProduct(product) {
       currency: product.currency,
       cost: product.cost,
       image: product.images[0], // Guardamos la primera imagen del producto
-      category: (product.category && product.category.name) || product.category || "Sin categoría",
-      count: quantity // Usar la cantidad seleccionada
+      category: (product.category && product.category.name) || product.category || 'Sin categoría',
+      count: quantity, // Usar la cantidad seleccionada
     };
-    
+
     // Agregar el producto al carrito
     cart.push(cartItem);
   }
-  
+
   // Guardar el carrito actualizado en localStorage
   localStorage.setItem('cart', JSON.stringify(cart));
-  
+
   // Actualizar el badge si la función existe
   if (typeof updateCartBadge === 'function') {
     updateCartBadge();
   }
-  
+
   // Redirigir al carrito
   window.location.href = 'cart.html';
 }
@@ -161,15 +154,15 @@ function showCartNotification(productName) {
     <i class="bi bi-check-circle-fill"></i>
     <span>¡Producto agregado al carrito!</span>
   `;
-  
+
   // Agregar al body
   document.body.appendChild(notification);
-  
+
   // Mostrar con animación
   setTimeout(() => {
     notification.classList.add('show');
   }, 10);
-  
+
   // Ocultar y eliminar después de 3 segundos
   setTimeout(() => {
     notification.classList.remove('show');
@@ -180,10 +173,10 @@ function showCartNotification(productName) {
 }
 
 async function loadProductInfo() {
-  const productId = localStorage.getItem("selectedProduct");
+  const productId = localStorage.getItem('selectedProduct');
   // Validar si existe un producto seleccionado en el localStorage
   if (!productId) {
-    showError("No se encontró el producto seleccionado.");
+    showError('No se encontró el producto seleccionado.');
     return;
   }
 
@@ -193,33 +186,31 @@ async function loadProductInfo() {
   const url = `https://japceibal.github.io/emercado-api/products/${productId}.json`;
   const resultObj = await getJSONData(url);
 
-  if (resultObj.status === "ok") {
+  if (resultObj.status === 'ok') {
     // Insertar datos en el HTML
     const product = resultObj.data;
-    document.getElementById("pi-title").textContent = product.name;
-    document.getElementById(
-      "pi-price"
-    ).textContent = `${product.currency} ${product.cost}`;
-    document.getElementById("pi-description").textContent = product.description;
+    document.getElementById('pi-title').textContent = product.name;
+    document.getElementById('pi-price').textContent = `${product.currency} ${product.cost}`;
+    document.getElementById('pi-description').textContent = product.description;
     // CAMBIO: soportar categoría como objeto o string
-    document.getElementById("pi-category").textContent =
-      (product.category && product.category.name) || product.category || "";
-    document.getElementById("pi-sold").textContent = product.soldCount;
+    document.getElementById('pi-category').textContent =
+      (product.category && product.category.name) || product.category || '';
+    document.getElementById('pi-sold').textContent = product.soldCount;
     // Inicializar galería con las imágenes del producto
     setupGallery(product.images);
 
     // Completar encabezado del formulario de reseña
-    const reviewName = document.getElementById("review-product-name");
+    const reviewName = document.getElementById('review-product-name');
     if (reviewName) reviewName.textContent = product.name;
 
-    const reviewThumb = document.querySelector(".review-product-thumb");
-    
+    const reviewThumb = document.querySelector('.review-product-thumb');
+
     // Configurar el botón "Agregar al carrito"
     const addToCartButton = document.getElementById('pi-add');
     if (addToCartButton) {
       addToCartButton.addEventListener('click', () => addToCart(product));
     }
-    
+
     // Configurar el botón "Comprar ahora"
     const buyButton = document.getElementById('pi-buy');
     if (buyButton) {
@@ -231,13 +222,13 @@ async function loadProductInfo() {
     }
     renderRelatedProducts(product.relatedProducts);
   } else {
-    showError("No se pudo cargar la información del producto");
+    showError('No se pudo cargar la información del producto');
   }
 }
 
 // Swipe izquierda/derecha en la galería
 (function enableSwipeOnCarousel() {
-  const area = document.querySelector(".pi-carousel");
+  const area = document.querySelector('.pi-carousel');
   if (!area) return;
 
   let startX = 0,
@@ -246,7 +237,7 @@ async function loadProductInfo() {
     dragging = false;
   const THRESHOLD = 50;
 
-  const getPoint = (e) => ("touches" in e && e.touches[0]) || e;
+  const getPoint = (e) => ('touches' in e && e.touches[0]) || e;
 
   const onDown = (e) => {
     const p = getPoint(e);
@@ -280,41 +271,37 @@ async function loadProductInfo() {
     }
   };
 
-  if ("PointerEvent" in window) {
-    area.addEventListener("pointerdown", onDown);
-    area.addEventListener("pointermove", onMove, { passive: false });
-    area.addEventListener("pointerup", onUp);
-    area.addEventListener("pointercancel", onUp);
-    area.addEventListener("pointerleave", onUp);
+  if ('PointerEvent' in window) {
+    area.addEventListener('pointerdown', onDown);
+    area.addEventListener('pointermove', onMove, { passive: false });
+    area.addEventListener('pointerup', onUp);
+    area.addEventListener('pointercancel', onUp);
+    area.addEventListener('pointerleave', onUp);
   } else {
-    area.addEventListener("touchstart", onDown, { passive: true });
-    area.addEventListener("touchmove", onMove, { passive: false });
-    area.addEventListener("touchend", onUp);
-    area.addEventListener("touchcancel", onUp);
+    area.addEventListener('touchstart', onDown, { passive: true });
+    area.addEventListener('touchmove', onMove, { passive: false });
+    area.addEventListener('touchend', onUp);
+    area.addEventListener('touchcancel', onUp);
   }
 })();
 
 // === INPUT DE CANTIDAD ===
 function setupQuantityControls() {
-  const minusBtn = document.querySelector(
-    '.pi-qty button[aria-label="Disminuir"]'
-  );
-  const plusBtn = document.querySelector(
-    '.pi-qty button[aria-label="Aumentar"]'
-  );
-  const input = document.getElementById("pi-qty");
+  const minusBtn = document.querySelector('.pi-qty button[aria-label="Disminuir"]');
+  const plusBtn = document.querySelector('.pi-qty button[aria-label="Aumentar"]');
+  const input = document.getElementById('pi-qty');
 
   if (!input) return;
 
   const min = parseInt(input.min) || 1;
   const max = parseInt(input.max) || 10;
 
-  minusBtn.addEventListener("click", () => {
+  minusBtn.addEventListener('click', () => {
     let val = parseInt(input.value);
     if (val > min) input.value = val - 1;
   });
 
-  plusBtn.addEventListener("click", () => {
+  plusBtn.addEventListener('click', () => {
     let val = parseInt(input.value);
     if (val < max) input.value = val + 1;
   });
@@ -335,30 +322,28 @@ function starsHTML(score, max = 5) {
       icons.push('<i class="bi bi-star" aria-hidden="true"></i>');
     }
   }
-  return icons.join("");
+  return icons.join('');
 }
 
 function formatDate(dstr) {
   try {
-    const [datePart] = String(dstr).split(" ");
-    const [yyyy, mm, dd] = datePart.split("-");
+    const [datePart] = String(dstr).split(' ');
+    const [yyyy, mm, dd] = datePart.split('-');
     if (yyyy && mm && dd) return `${dd}/${mm}/${yyyy}`;
   } catch (e) {}
-  return dstr || "";
+  return dstr || '';
 }
 
 function reviewItemHTML({ user, dateTime, score, description }) {
-  const safeUser = user || "Usuario";
-  const safeText = description || "";
-  const safeDate = formatDate(dateTime || "");
+  const safeUser = user || 'Usuario';
+  const safeText = description || '';
+  const safeDate = formatDate(dateTime || '');
 
   return `
     <article class="review-item">
       <header class="review-header">
         <span class="review-user">${safeUser}</span>
-        <time class="review-date" datetime="${
-          dateTime || ""
-        }">${safeDate}</time>
+        <time class="review-date" datetime="${dateTime || ''}">${safeDate}</time>
       </header>
       <div class="review-rating" aria-label="Calificación: ${score} de 5">
         ${starsHTML(Number(score) || 0)}
@@ -370,7 +355,7 @@ function reviewItemHTML({ user, dateTime, score, description }) {
 
 // Carga y render de comentarios
 async function loadProductComments(productId) {
-  const list = document.getElementById("reviews-list");
+  const list = document.getElementById('reviews-list');
   if (!list) return;
 
   list.innerHTML = `
@@ -401,9 +386,9 @@ async function loadProductComments(productId) {
           description: c.description,
         })
       )
-      .join("");
+      .join('');
   } catch (err) {
-    console.error("Error cargando comentarios:", err);
+    console.error('Error cargando comentarios:', err);
     list.innerHTML = `
       <div class="error-state">
         No se pudieron cargar las opiniones. Intenta nuevamente más tarde.
@@ -413,12 +398,12 @@ async function loadProductComments(productId) {
 
 // Carga y render de Productos Relacionados
 function renderRelatedProducts(relatedProducts) {
-  const container = document.getElementById("related-grid");
-  container.innerHTML = ""; // Limpiamos contenido previo
+  const container = document.getElementById('related-grid');
+  container.innerHTML = ''; // Limpiamos contenido previo
 
-  relatedProducts.forEach(product => {
-    const card = document.createElement("div");
-    card.classList.add("related-item");
+  relatedProducts.forEach((product) => {
+    const card = document.createElement('div');
+    card.classList.add('related-item');
 
     card.innerHTML = `
     <a href="product-info.html" data-id="${product.id}">
@@ -427,9 +412,9 @@ function renderRelatedProducts(relatedProducts) {
     </a>
     `;
 
-    card.addEventListener("click", () => {
-      localStorage.setItem("selectedProduct", product.id);
-      window.location.href = "product-info.html";
+    card.addEventListener('click', () => {
+      localStorage.setItem('selectedProduct', product.id);
+      window.location.href = 'product-info.html';
     });
 
     container.appendChild(card);
@@ -440,76 +425,146 @@ function renderRelatedProducts(relatedProducts) {
 
 // Función para limpiar el username (quitar dominio del email)
 function cleanUsername(username) {
-  if (!username) return "Usuario Anónimo";
-  
+  if (!username) return 'Usuario Anónimo';
+
   // Si contiene @, tomar solo la parte antes del @
   if (username.includes('@')) {
     return username.split('@')[0];
   }
-  
+
   return username;
 }
 
 // Función para verificar si el usuario ya comentó
 function hasUserAlreadyReviewed(username) {
-  const list = document.getElementById("reviews-list");
+  const list = document.getElementById('reviews-list');
   if (!list) return false;
-  
+
   // Obtener todas las calificaciones existentes
   const existingReviews = list.querySelectorAll('.review-user');
-  
+
   // Verificar si el usuario ya tiene una calificación
   for (const reviewUser of existingReviews) {
     if (reviewUser.textContent.trim() === username) {
       return true;
     }
   }
-  
+
   return false;
 }
 
+// Función para manejar la selección de estrellas
+function setupStarRating() {
+  const starButtons = document.querySelectorAll('.star-btn');
+  const ratingInput = document.getElementById('rating');
+
+  if (!starButtons.length || !ratingInput) return;
+
+  const totalStars = starButtons.length;
+
+  starButtons.forEach((button, index) => {
+    button.type = 'button';
+
+    button.addEventListener('click', function () {
+      const rating = totalStars - index;
+      ratingInput.value = rating;
+
+      updateStarDisplay(rating);
+    });
+
+    button.addEventListener('mouseenter', function () {
+      const hoverRating = totalStars - index;
+      highlightStars(hoverRating);
+    });
+  });
+
+  const valoracionDiv = document.querySelector('.valoracion');
+  if (valoracionDiv) {
+    valoracionDiv.addEventListener('mouseleave', function () {
+      const currentRating = parseInt(ratingInput.value) || 0;
+      updateStarDisplay(currentRating);
+    });
+  }
+}
+
+// Función para actualizar la visualización de estrellas seleccionadas
+function updateStarDisplay(rating) {
+  const starButtons = document.querySelectorAll('.star-btn');
+  const totalStars = starButtons.length;
+
+  starButtons.forEach((button, index) => {
+    const visualPosition = totalStars - index;
+
+    if (visualPosition <= rating) {
+      button.classList.add('selected');
+    } else {
+      button.classList.remove('selected');
+    }
+  });
+}
+
+// Función para resaltar estrellas en hover
+function highlightStars(rating) {
+  const starButtons = document.querySelectorAll('.star-btn');
+  const totalStars = starButtons.length;
+
+  starButtons.forEach((button, index) => {
+    const visualPosition = totalStars - index;
+
+    if (visualPosition <= rating) {
+      button.classList.add('hover');
+    } else {
+      button.classList.remove('hover');
+    }
+  });
+}
+
 function setupReviewForm() {
-  const form = document.getElementById("review-form");
+  const form = document.getElementById('review-form');
   if (!form) return;
 
-  form.addEventListener("submit", function(e) {
+  form.addEventListener('submit', function (e) {
     e.preventDefault(); // Evitar envío real del formulario
 
     // Obtener datos del formulario
-    const ratingSelect = document.getElementById("rating");
-    const commentTextarea = document.getElementById("comment");
-    
-    const score = ratingSelect.value;
+    const ratingSelect = document.getElementById('rating');
+    const commentTextarea = document.getElementById('comment');
+
+    const score = parseInt(ratingSelect.value);
     const description = commentTextarea.value.trim();
 
     // Validar que se hayan completado los campos
-    if (!score || !description) {
-      alert("Por favor completa todos los campos");
+    if (!score || score < 1 || score > 5) {
+      alert('Por favor selecciona una calificación de 1 a 5 estrellas.');
+      return;
+    }
+
+    if (!description) {
+      alert('Por favor escribe un comentario sobre el producto.');
       return;
     }
 
     // Obtener usuario actual de la sesión y limpiar el username
     const currentUser = getCurrentUser();
-    const rawUsername = currentUser?.username || "Usuario Anónimo";
+    const rawUsername = currentUser?.username || 'Usuario Anónimo';
     const username = cleanUsername(rawUsername);
 
     // Verificar si el usuario ya hizo una calificación
     if (hasUserAlreadyReviewed(username)) {
-      alert("Ya has calificado este producto. Solo puedes hacer una calificación por producto.");
+      alert('Ya has calificado este producto. Solo puedes hacer una calificación por producto.');
       return;
     }
 
     // Crear fecha actual en formato compatible
     const now = new Date();
-    const dateTime = now.toISOString().split('T')[0] + " " + 
-                     now.toTimeString().split(' ')[0];
+    const dateTime = now.toISOString().split('T')[0] + ' ' + now.toTimeString().split(' ')[0];
 
     // Crear objeto de nueva calificación
     const newReview = {
       user: username,
       dateTime: dateTime,
       score: parseInt(score),
-      description: description
+      description: description,
     };
 
     // Agregar la calificación a la lista
@@ -519,7 +574,7 @@ function setupReviewForm() {
     form.reset();
 
     // Deshabilitar el formulario para evitar múltiples envíos
-    disableReviewForm("Ya has calificado este producto");
+    disableReviewForm('Ya has calificado este producto');
 
     // Mostrar mensaje de éxito
     showSuccessMessage();
@@ -528,13 +583,13 @@ function setupReviewForm() {
 
 // Función para deshabilitar el formulario después de enviar
 function disableReviewForm(message) {
-  const form = document.getElementById("review-form");
+  const form = document.getElementById('review-form');
   if (!form) return;
-  
-  const ratingSelect = document.getElementById("rating");
-  const commentTextarea = document.getElementById("comment");
+
+  const ratingSelect = document.getElementById('rating');
+  const commentTextarea = document.getElementById('comment');
   const submitBtn = form.querySelector('button[type="submit"]');
-  
+
   if (ratingSelect) ratingSelect.disabled = true;
   if (commentTextarea) {
     commentTextarea.disabled = true;
@@ -542,14 +597,14 @@ function disableReviewForm(message) {
   }
   if (submitBtn) {
     submitBtn.disabled = true;
-    submitBtn.textContent = "Ya has calificado";
-    submitBtn.style.opacity = "0.6";
-    submitBtn.style.cursor = "not-allowed";
+    submitBtn.textContent = 'Ya has calificado';
+    submitBtn.style.opacity = '0.6';
+    submitBtn.style.cursor = 'not-allowed';
   }
 }
 
 function addReviewToList(review) {
-  const list = document.getElementById("reviews-list");
+  const list = document.getElementById('reviews-list');
   if (!list) return;
 
   // Verificar si hay mensaje de "no hay opiniones" y eliminarlo
@@ -604,27 +659,28 @@ function checkIfUserAlreadyReviewed() {
   setTimeout(() => {
     const currentUser = getCurrentUser();
     if (!currentUser) return;
-    
+
     const username = cleanUsername(currentUser.username);
-    
+
     if (hasUserAlreadyReviewed(username)) {
-      disableReviewForm("Ya has calificado este producto");
+      disableReviewForm('Ya has calificado este producto');
     }
   }, 1000); // Esperar 1 segundo para que se carguen los comentarios de la API
 }
 
 // === INICIALIZACIÓN ===
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', function () {
   // Session control is handled globally by init.js
   // updateUserInterface() and setupLogout() are now in init.js
   loadProductInfo();
 
   setupQuantityControls();
-  
+
   // DESAFÍO: Configurar formulario de calificación
+  setupStarRating(); // Configurar interacción con estrellas
   setupReviewForm();
-  
+
   // Verificar si el usuario ya comentó este producto
   checkIfUserAlreadyReviewed();
 });

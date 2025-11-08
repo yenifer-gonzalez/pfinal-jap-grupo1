@@ -188,7 +188,7 @@
 }
 
 .price .remove:hover {
-  background-color: #dc3545;
+  background-color: var(--color-error);
   color: #fff;
 }
 
