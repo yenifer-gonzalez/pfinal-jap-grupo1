@@ -6,7 +6,15 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <title>eMercado - Todo lo que busques está aquí</title>
+    <title>Detalle de Producto - e-Mercado</title>
+    <meta name="description" content="Información detallada del producto, características, precio, calificaciones y comentarios de usuarios. Compra seguro en e-Mercado." />
+    <meta name="author" content="Grupo 1 - JAP 2024" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Producto - e-Mercado" />
+    <meta property="og:description" content="Descubre las características y opiniones de este producto." />
+    <meta property="og:type" content="product" />
+    
     <link
       rel="stylesheet"
       href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
@@ -32,6 +40,10 @@
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/styles.css" />
+
+    <!-- Preload de recursos -->
+    <link rel="preconnect" href="https://japceibal.github.io" />
+    <link rel="dns-prefetch" href="https://japceibal.github.io" />
   </head>
 
   <body>
@@ -39,7 +51,7 @@
       <div class="header-container">
         <div class="header-logo">
           <a href="index.html" class="logo-icon">
-            <img src="img/logo-jap.svg" alt="logo-jap" class="logo-img" />
+            <img src="img/logo-jap.svg" alt="e-Mercado - Tienda online de productos" class="logo-img" />
           </a>
         </div>
         <nav class="main-nav">
@@ -69,25 +81,37 @@
               aria-labelledby="userDropdown"
             >
               <li>
-                <a class="dropdown-item" href="my-profile.html">Mi perfil</a>
+                <a class="dropdown-item" href="my-profile.html"
+                  ><i class="bi bi-person-circle me-2"></i>Mi perfil</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=orders"
+                  ><i class="bi bi-box-seam me-2"></i>Mis pedidos</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=favorites"
+                  ><i class="bi bi-heart me-2"></i>Mis favoritos</a
+                >
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
-                <a class="dropdown-item" id="logoutBtn" href="#"
-                  >Cerrar sesión</a
+                <a class="dropdown-item" id="logoutBtn" data-logout href="#"
+                  ><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a
                 >
               </li>
             </ul>
           </div>
           <a href="cart.html" class="cart-icon" aria-label="Ir al carrito">
             <i class="bi bi-cart3"></i>
-            <span id="cartBadge" class="cart-badge">0</span>
+            <span id="cartBadge" class="cart-badge" aria-live="polite" aria-label="Productos en carrito">0</span>
           </a>
         </div>
         <div class="mobile-actions">
           <a href="cart.html" class="cart-icon-mobile" aria-label="Ir al carrito">
             <i class="bi bi-cart3"></i>
-            <span id="cartBadgeMobile" class="cart-badge">0</span>
+            <span id="cartBadgeMobile" class="cart-badge" aria-live="polite" aria-label="Productos en carrito">0</span>
           </a>
           <button id="menuButton" class="btn menu-toggle" aria-label="Abrir menú">
             <i class="bi bi-list"></i>
@@ -150,6 +174,7 @@
                 class="pi-main-img"
                 src="img/prod50921_1.jpg"
                 alt="Imagen principal del producto"
+                loading="eager"
               />
 
               <button
@@ -363,8 +388,8 @@
       <i class="fas fa-moon" aria-hidden="true"></i>
     </button>
 
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/init.js"></script>
-    <script src="js/product-info.js"></script>
+    <script src="js/bootstrap.bundle.min.js" defer></script>
+    <script src="js/init.js" defer></script>
+    <script src="js/product-info.js" defer></script>
   </body>
 </html>

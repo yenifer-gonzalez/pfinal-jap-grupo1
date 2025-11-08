@@ -4,6 +4,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>eMercado - Todo lo que busques está aquí</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Iniciar Sesión - e-Mercado</title>
+    <meta
+      name="description"
+      content="Ingresa a tu cuenta de e-Mercado para acceder a tus compras, carrito y perfil. Compra seguro con nosotros."
+    />
+    <meta name="author" content="Grupo 1 - JAP 2024" />
     <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,85 +33,90 @@
 
   <body>
     <!-- Contenedor principal -->
-    <div class="auth-shell">
-      <div class="auth-wrap">
-        <div class="auth-card">
-          <div class="auth-card--body">
-            <!-- Logo -->
-            <div class="auth-brand">
-              <img class="logo-jap" src="img/logo-jap.svg" alt="" />
-            </div>
-
-            <!-- Formulario - Usuario y Contraseña  -->
-            <form class="login-form" novalidate onsubmit="handleSubmit(event)">
-              <!-- Campo Usuario -->
-              <div class="form-field">
-                <label for="username" class="form-label">Correo electrónico</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="username"
-                  placeholder="usuario@correo.com"
-                  required
-                />
-                <!-- Mensaje de error para el usuario -->
-                <p id="error-user"></p>
+    <main>
+      <div class="auth-shell">
+        <div class="auth-wrap">
+          <div class="auth-card">
+            <div class="auth-card--body">
+              <!-- Logo -->
+              <div class="auth-brand">
+                <img class="logo-jap" src="img/logo-jap.svg" alt="" />
               </div>
 
-              <!-- Campo Contraseña -->
-              <div class="form-field">
-                <label for="password" class="form-label">Contraseña</label>
-
-                <div class="input-w-toggle">
+              <!-- Formulario - Usuario y Contraseña  -->
+              <form class="login-form" novalidate onsubmit="handleSubmit(event)">
+                <!-- Campo Usuario -->
+                <div class="form-field">
+                  <label for="username" class="form-label">Correo electrónico</label>
                   <input
-                    type="password"
-                    class="form-control pr-eye"
-                    id="password"
-                    placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
+                    type="email"
+                    class="form-control"
+                    id="username"
+                    placeholder="usuario@correo.com"
                     required
                   />
-                  <button
-                    type="button"
-                    class="eye-abs"
-                    onclick="changeEye(this)"
-                    aria-label="Mostrar/ocultar contraseña"
-                    aria-controls="password"
-                  >
-                    <i class="fa-solid fa-eye" id="eyeIcon"></i>
-                  </button>
+                  <!-- Mensaje de error para el usuario -->
+                  <p id="error-user"></p>
                 </div>
 
-                <p id="error-pass"></p>
-              </div>
+                <!-- Campo Contraseña -->
+                <div class="form-field">
+                  <label for="password" class="form-label">Contraseña</label>
 
-              <!-- Checkbox y link de recuperar contraseña -->
-              <div class="form-aux">
-                <label class="checkbox-fa">
-                  <input type="checkbox" id="remember" name="remember" />
-                  <span class="box"><i class="fa-solid fa-check"></i></span>
-                  <span class="link-secondary">Recordarme</span>
-                </label>
+                  <div class="input-w-toggle">
+                    <input
+                      type="password"
+                      class="form-control pr-eye"
+                      id="password"
+                      placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="eye-abs"
+                      onclick="changeEye(this)"
+                      aria-label="Mostrar/ocultar contraseña"
+                      aria-controls="password"
+                    >
+                      <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                    </button>
+                  </div>
 
-                <a href="#" class="forgot-link forgot-link--desktop"> ¿Olvidaste tu contraseña? </a>
-              </div>
+                  <p id="error-pass"></p>
+                </div>
 
-              <!-- Botón de login -->
-              <div class="actions">
-                <button type="submit" class="button button--primary">Ingresar</button>
-                <!-- Versión mobile -->
-                <a href="#" class="forgot-link fl-mobile">¿Olvidaste tu contraseña?</a>
-              </div>
-            </form>
+                <!-- Checkbox y link de recuperar contraseña -->
+                <div class="form-aux">
+                  <label class="checkbox-fa">
+                    <input type="checkbox" id="remember" name="remember" />
+                    <span class="box"><i class="fa-solid fa-check"></i></span>
+                    <span class="link-secondary">Recordarme</span>
+                  </label>
+
+                  <a href="#" class="forgot-link forgot-link--desktop">
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+
+                <!-- Botón de login -->
+                <div class="actions">
+                  <button type="submit" class="button button--primary">Ingresar</button>
+                  <!-- Versión mobile -->
+                  <a href="#" class="forgot-link fl-mobile">¿Olvidaste tu contraseña?</a>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
+
     <!-- Floating Theme Toggle Button -->
     <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
       <i class="fas fa-moon" aria-hidden="true"></i>
     </button>
 
-    <script src="js/login.js"></script>
-    <script src="js/init.js"></script>
+    <script src="js/login.js" defer></script>
+    <script src="js/init.js" defer></script>
   </body>
 </html>

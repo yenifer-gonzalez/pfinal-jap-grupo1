@@ -286,6 +286,21 @@ a.custom-card:hover {
   box-shadow: none;
 }
 
+/* Accesibilidad: Focus visible mejorado (solo con teclado) */
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Eliminar outline en clicks de mouse */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .products-container {
   max-width: var(--container-max-width);
   margin: 0 auto;
@@ -408,7 +423,7 @@ mark {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--product-card-width), 1fr));
   gap: var(--space-lg);
   margin-bottom: var(--space-3xl);
 }
@@ -561,6 +576,39 @@ mark {
   padding: 0 var(--space-sm);
 }
 
+/* === INFINITE SCROLL === */
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-2xl);
+  margin-top: var(--space-lg);
+}
+
+.load-more-spinner {
+  text-align: center;
+}
+
+.load-more-spinner p {
+  color: var(--text-secondary);
+  margin-top: var(--space-md);
+  font-size: 0.9rem;
+}
+
+.end-of-results {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-secondary);
+  margin-top: var(--space-lg);
+}
+
+.end-of-results i {
+  font-size: 2.5rem;
+  color: var(--color-success);
+  margin-bottom: var(--space-md);
+}
+
 .loading-state {
   text-align: center;
   padding: var(--space-3xl);
@@ -697,7 +745,7 @@ footer a:hover {
   position: fixed;
   top: 0;
   bottom: 0;
-  width: 280px;
+  width: var(--product-card-width);
   max-width: 80%;
   background: linear-gradient(to bottom, #fff8dc, #e8f1f5);
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);

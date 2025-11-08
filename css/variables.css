@@ -32,8 +32,11 @@
   /* ========= ESTADOS DE INTERFAZ  ========= */
   --color-error: #dc3545; /* Mensajes de error, validaciones fallidas */
   --color-success: #28a745; /* Confirmaciones, operaciones exitosas */
-  --color-warning: #ffc107; /* Advertencias */
-  --color-info: #17a2b8; /* Información general, tooltips */
+  --color-warning: #ff9800; /* Advertencias, alertas */
+  --color-info: #2196f3; /* Información general, tooltips */
+
+  /* ========= ESTADOS DE INFORMACIÓN (backgrounds) ========= */
+  --info-light: #e3f2fd; /* Fondo azul claro para alertas info */
 
   /* ========= TIPOGRAFÍA ========= */
   --font-family-primary: 'Poppins', sans-serif;
@@ -86,7 +89,6 @@
   --backdrop-blur: blur(10px);
   --backdrop-blur-light: blur(6px);
   --opacity-placeholder: 0.9;
-  --opacity-disabled: 0.6;
 
   /* ========= VARIABLES ESPECÍFICAS - LOGIN  ========= */
   --bg-warm-1: #ffd19a; /* Naranja claro intermedio */
@@ -124,17 +126,12 @@
   --header-bg: #0f141780;
   --header-text: #f8f9fa;
 
-  /* Navegación */
-  --nav-link-color: #ffffff;
-  --nav-link-hover: #77bdf2;
-
-  /* Superficies auxiliares */
-  --btn-surface: #2a1e10;
-  --fav-surface: #1c2d35;
-
-  /* Estados */
+  /* Estados en modo oscuro */
   --color-error: #ff8c00; /* Naranja para errores */
   --color-success: #4caf50; /* Verde más claro */
-  --color-warning: #ffd54f; /* Amarillo más claro */
-  --color-info: #29b6f6; /* Azul más claro */
+  --color-warning: #ffb74d; /* Amarillo más claro para advertencias */
+  --color-info: #42a5f5; /* Azul más claro para información */
+
+  /* Estados de información (backgrounds dark mode) */
+  --info-light: #1e3a52; /* Fondo azul oscuro para alertas info */
 }

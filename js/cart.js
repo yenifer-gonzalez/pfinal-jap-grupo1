@@ -194,7 +194,7 @@ function renderItem(it, idx) {
 
   row.innerHTML = `
     <div class="prod">
-      <img src="${it.image}" alt="${it.name}">
+      <img src="${it.image}" alt="${it.name}" loading="lazy">
       <div>
         <h4>${it.name}</h4>
         <small>Cat. ${it.category || '-'}</small>
@@ -290,16 +290,34 @@ function render() {
 document.addEventListener('DOMContentLoaded', () => {
   render();
 
-  // Recalcular totales al cambiar envío o al “aplicar” cupón
+  // Recalcular totales al cambiar envío o al "aplicar" cupón
   shippingRadios().forEach((r) => r.addEventListener('change', computeTotals));
   document.getElementById('applyCoupon')?.addEventListener('click', computeTotals);
 
-  document.getElementById('payBtn')?.addEventListener('click', () => {
+  // Botón para ir al checkout
+  document.getElementById('checkoutBtn')?.addEventListener('click', () => {
     if (!cart.length) {
-      // Si el carrito está vacío
       return alert('Tu carrito está vacío.');
     }
-    // Mostrar modal de pago completado
-    showPaymentSuccessModal();
+    
+    // Guardar datos del carrito para el checkout
+    const sub = cart.reduce((acc, it) => {
+      const priceInUSD = toUSD(it.cost, it.currency || 'USD');
+      return acc + priceInUSD * (it.count ?? 1);
+    }, 0);
+    
+    const shipPct = Number(shippingRadios().find((r) => r.checked)?.value || 0.15);
+    const shipType = shippingRadios().find((r) => r.checked)?.parentElement?.textContent?.trim() || 'Premium 2 a 5 días (15%)';
+    
+    writeLS('checkoutData', {
+      subtotal: sub,
+      shippingCost: sub * shipPct,
+      shippingType: shipType,
+      total: sub + (sub * shipPct),
+      items: cart
+    });
+    
+    // Redirigir a checkout
+    window.location.href = 'checkout.html';
   });
 });
