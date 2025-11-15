@@ -1,19 +1,3 @@
-// ===== CHECKOUT PAGE =====
-
-// Utils
-const readLS = (k, fb = null) => {
-  try {
-    return JSON.parse(localStorage.getItem(k)) ?? fb;
-  } catch {
-    return fb;
-  }
-};
-
-const writeLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-
-const money = (n, cur = 'USD') =>
-  `${cur} ${Number(n).toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
-
 // Estado
 let checkoutData = readLS('checkoutData', null);
 let selectedAddress = null;
@@ -56,11 +40,15 @@ function loadSavedAddresses() {
   }
 
   // Encontrar dirección predeterminada
-  const defaultAddress = addresses.find(addr => addr.isDefault) || addresses[0];
+  const defaultAddress = addresses.find((addr) => addr.isDefault) || addresses[0];
   selectedAddress = defaultAddress;
 
-  container.innerHTML = addresses.map(addr => `
-    <label class="address-option ${addr.id === defaultAddress.id ? 'selected' : ''}" data-address-id="${addr.id}">
+  container.innerHTML = addresses
+    .map(
+      (addr) => `
+    <label class="address-option ${
+      addr.id === defaultAddress.id ? 'selected' : ''
+    }" data-address-id="${addr.id}">
       <input 
         type="radio" 
         name="shippingAddress" 
@@ -70,25 +58,33 @@ function loadSavedAddresses() {
       <div class="address-info">
         <h4>
           ${addr.alias}
-          ${addr.isDefault ? '<span class="badge-default"><i class="bi bi-star-fill"></i> Predeterminada</span>' : ''}
+          ${
+            addr.isDefault
+              ? '<span class="badge-default"><i class="bi bi-star-fill"></i> Predeterminada</span>'
+              : ''
+          }
         </h4>
         <p>
-          ${addr.street}${addr.corner ? ` esquina ${addr.corner}` : ''}${addr.apartment ? `, ${addr.apartment}` : ''}
+          ${addr.street}${addr.corner ? ` esquina ${addr.corner}` : ''}${
+        addr.apartment ? `, ${addr.apartment}` : ''
+      }
         </p>
         <p>${addr.city}, ${addr.state} ${addr.zipCode}</p>
         ${addr.phone ? `<p class="phone"><i class="bi bi-telephone"></i> ${addr.phone}</p>` : ''}
       </div>
     </label>
-  `).join('');
+  `
+    )
+    .join('');
 
   // Event listeners para selección de dirección
-  document.querySelectorAll('input[name="shippingAddress"]').forEach(radio => {
+  document.querySelectorAll('input[name="shippingAddress"]').forEach((radio) => {
     radio.addEventListener('change', (e) => {
       const addressId = e.target.value;
-      selectedAddress = addresses.find(a => a.id === addressId);
-      
+      selectedAddress = addresses.find((a) => a.id === addressId);
+
       // Actualizar visualización
-      document.querySelectorAll('.address-option').forEach(opt => {
+      document.querySelectorAll('.address-option').forEach((opt) => {
         opt.classList.toggle('selected', opt.dataset.addressId === addressId);
       });
     });
@@ -118,7 +114,7 @@ function loadSavedCards() {
   if (cardsContainer) cardsContainer.style.display = 'block';
 
   // Encontrar tarjeta predeterminada
-  const defaultCard = cards.find(card => card.isDefault) || cards[0];
+  const defaultCard = cards.find((card) => card.isDefault) || cards[0];
   selectedCard = defaultCard;
 
   // Enmascara número de tarjeta
@@ -130,9 +126,9 @@ function loadSavedCards() {
   const getCardIcon = (brand) => {
     const brandLower = brand ? brand.toLowerCase() : '';
     const icons = {
-      'visa': 'fa fa-cc-visa',
-      'mastercard': 'fa fa-cc-mastercard',
-      'amex': 'fa fa-cc-amex'
+      visa: 'fa fa-cc-visa',
+      mastercard: 'fa fa-cc-mastercard',
+      amex: 'fa fa-cc-amex',
     };
     return icons[brandLower] || 'bi bi-credit-card';
   };
@@ -143,8 +139,12 @@ function loadSavedCards() {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  container.innerHTML = cards.map(card => `
-    <label class="address-option ${card.id === defaultCard.id ? 'selected' : ''}" data-card-id="${card.id}">
+  container.innerHTML = cards
+    .map(
+      (card) => `
+    <label class="address-option ${card.id === defaultCard.id ? 'selected' : ''}" data-card-id="${
+        card.id
+      }">
       <input 
         type="radio" 
         name="paymentCard" 
@@ -154,7 +154,11 @@ function loadSavedCards() {
       <div class="address-info">
         <h4>
           ${card.alias || capitalize(card.brand)}
-          ${card.isDefault ? '<span class="badge-default"><i class="bi bi-star-fill"></i> Predeterminada</span>' : ''}
+          ${
+            card.isDefault
+              ? '<span class="badge-default"><i class="bi bi-star-fill"></i> Predeterminada</span>'
+              : ''
+          }
         </h4>
         <p>
           <i class="${getCardIcon(card.brand)}"></i>
@@ -163,16 +167,18 @@ function loadSavedCards() {
         <p class="phone">${card.cardName} • Vence ${card.expiry}</p>
       </div>
     </label>
-  `).join('');
+  `
+    )
+    .join('');
 
   // Event listeners para selección de tarjeta
-  document.querySelectorAll('input[name="paymentCard"]').forEach(radio => {
+  document.querySelectorAll('input[name="paymentCard"]').forEach((radio) => {
     radio.addEventListener('change', (e) => {
       const cards = readLS('userCards', []);
-      selectedCard = cards.find(card => card.id === e.target.value);
-      
+      selectedCard = cards.find((card) => card.id === e.target.value);
+
       // Actualizar clases de selección
-      document.querySelectorAll('.address-option[data-card-id]').forEach(opt => {
+      document.querySelectorAll('.address-option[data-card-id]').forEach((opt) => {
         opt.classList.remove('selected');
       });
       e.target.closest('.address-option').classList.add('selected');
@@ -239,14 +245,14 @@ function setupEventListeners() {
       toggleCardBtn.innerHTML = isHidden
         ? '<i class="bi bi-dash-circle"></i> Ocultar formulario'
         : '<i class="bi bi-plus-circle"></i> Usar una tarjeta diferente';
-      
+
       // Si se muestra el formulario, deseleccionar tarjetas guardadas
       if (isHidden) {
         selectedCard = null;
-        document.querySelectorAll('input[name="paymentCard"]').forEach(radio => {
+        document.querySelectorAll('input[name="paymentCard"]').forEach((radio) => {
           radio.checked = false;
         });
-        document.querySelectorAll('.address-option[data-card-id]').forEach(opt => {
+        document.querySelectorAll('.address-option[data-card-id]').forEach((opt) => {
           opt.classList.remove('selected');
         });
       }
@@ -268,11 +274,17 @@ function saveNewAddress() {
     country: 'Uruguay',
     phone: document.getElementById('newPhone').value.trim(),
     isDefault: false,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   // Validación básica
-  if (!newAddress.street || !newAddress.city || !newAddress.state || !newAddress.zipCode || !newAddress.phone) {
+  if (
+    !newAddress.street ||
+    !newAddress.city ||
+    !newAddress.state ||
+    !newAddress.zipCode ||
+    !newAddress.phone
+  ) {
     alert('Por favor completa todos los campos obligatorios (*)');
     return;
   }
@@ -290,7 +302,7 @@ function saveNewAddress() {
 
   // Ocultar formulario
   document.getElementById('newAddressForm').classList.add('hidden');
-  document.getElementById('toggleNewAddress').innerHTML = 
+  document.getElementById('toggleNewAddress').innerHTML =
     '<i class="bi bi-plus-circle"></i> Usar una dirección diferente';
 
   alert('Dirección guardada en tu perfil');
@@ -343,7 +355,7 @@ function saveNewCard() {
     expiry: cardExpiry,
     brand: detectCardBrand(cardNumber).toLowerCase(),
     isDefault: false,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   // Guardar en localStorage
@@ -359,7 +371,7 @@ function saveNewCard() {
 
   // Ocultar formulario
   document.getElementById('newCardForm').classList.add('hidden');
-  document.getElementById('toggleNewCard').innerHTML = 
+  document.getElementById('toggleNewCard').innerHTML =
     '<i class="bi bi-plus-circle"></i> Usar una tarjeta diferente';
 
   alert('Tarjeta guardada en tu perfil');
@@ -372,7 +384,7 @@ function setupPaymentMethods() {
   const mercadoPagoInfo = document.getElementById('mercadoPagoInfo');
   const cryptoInfo = document.getElementById('cryptoInfo');
 
-  document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+  document.querySelectorAll('input[name="paymentMethod"]').forEach((radio) => {
     radio.addEventListener('change', (e) => {
       selectedPaymentMethod = e.target.value;
 
@@ -383,7 +395,7 @@ function setupPaymentMethods() {
       if (cryptoInfo) cryptoInfo.classList.add('hidden');
 
       // Mostrar el formulario correspondiente
-      switch(selectedPaymentMethod) {
+      switch (selectedPaymentMethod) {
         case 'card':
           if (cardPaymentContent) cardPaymentContent.classList.remove('hidden');
           break;
@@ -435,10 +447,12 @@ function setupCardFormatting() {
 // ===== RESUMEN DEL PEDIDO =====
 function loadOrderSummary() {
   const itemsContainer = document.getElementById('orderItems');
-  const { items, subtotal, shippingCost, shippingType, total } = checkoutData;
+  const { items, subtotal, discount, shippingCost, shippingType, total, couponCode } = checkoutData;
 
   // Renderizar productos
-  itemsContainer.innerHTML = items.map(item => `
+  itemsContainer.innerHTML = items
+    .map(
+      (item) => `
     <div class="order-item">
       <img src="${item.image}" alt="${item.name}" loading="lazy" />
       <div class="order-item-info">
@@ -449,12 +463,34 @@ function loadOrderSummary() {
         ${money(item.cost * (item.count || 1), 'USD')}
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 
-  // Actualizar totales
+  // Subtotal
   document.getElementById('summarySubtotal').textContent = money(subtotal, 'USD');
+
+  // Descuento
+  const discountLabelEl = document.getElementById('summaryDiscountLabel');
+  const discountEl = document.getElementById('summaryDiscount');
+
+  if (discountLabelEl && discountEl) {
+    if (discount && discount > 0) {
+      discountLabelEl.textContent = couponCode ? `Descuento (${couponCode})` : 'Descuento';
+      discountEl.textContent = `- ${money(discount, 'USD')}`;
+    } else {
+      discountLabelEl.textContent = 'Descuento';
+      discountEl.textContent = money(0, 'USD');
+    }
+  }
+
+  // Envío
   document.getElementById('summaryShipping').textContent = money(shippingCost, 'USD');
-  document.getElementById('summaryShippingLabel').textContent = `Envío (${shippingType.split(' ')[0]})`;
+  document.getElementById('summaryShippingLabel').textContent = `Envío (${
+    shippingType.split(' ')[0]
+  })`;
+
+  // Total final
   document.getElementById('summaryTotal').textContent = money(total, 'USD');
 }
 
@@ -476,7 +512,7 @@ function confirmPurchase() {
       city: document.getElementById('newCity').value.trim(),
       state: document.getElementById('newState').value.trim(),
       zipCode: document.getElementById('newZipCode').value.trim(),
-      phone: document.getElementById('newPhone').value.trim()
+      phone: document.getElementById('newPhone').value.trim(),
     };
   }
 
@@ -519,20 +555,20 @@ function confirmPurchase() {
     // Validación especial para crypto
     const selectedCrypto = document.querySelector('input[name="cryptoCurrency"]:checked');
     const cryptoName = selectedCrypto ? selectedCrypto.value : 'Bitcoin';
-    
+
     // Mostrar advertencia de simulación
     const confirmed = confirm(
       `⚠️ SIMULACIÓN DE PAGO\n\n` +
-      `Has seleccionado pagar con ${cryptoName}.\n\n` +
-      `En un entorno real:\n` +
-      `• Se generaría una dirección de pago única\n` +
-      `• Deberías enviar el pago exacto a esa dirección\n` +
-      `• El pedido quedaría pendiente hasta confirmar el pago\n` +
-      `• Este proceso puede tardar varios minutos\n\n` +
-      `Como esto es una simulación educativa, el pedido se confirmará inmediatamente.\n\n` +
-      `¿Deseas continuar?`
+        `Has seleccionado pagar con ${cryptoName}.\n\n` +
+        `En un entorno real:\n` +
+        `• Se generaría una dirección de pago única\n` +
+        `• Deberías enviar el pago exacto a esa dirección\n` +
+        `• El pedido quedaría pendiente hasta confirmar el pago\n` +
+        `• Este proceso puede tardar varios minutos\n\n` +
+        `Como esto es una simulación educativa, el pedido se confirmará inmediatamente.\n\n` +
+        `¿Deseas continuar?`
     );
-    
+
     if (!confirmed) {
       return;
     }
@@ -540,11 +576,11 @@ function confirmPurchase() {
     // Validación especial para Mercado Pago
     const confirmed = confirm(
       `ℹ️ SIMULACIÓN DE PAGO\n\n` +
-      `En un entorno real, serías redirigido a Mercado Pago para completar el pago de forma segura.\n\n` +
-      `Como esto es una simulación educativa, el pedido se confirmará inmediatamente.\n\n` +
-      `¿Deseas continuar?`
+        `En un entorno real, serías redirigido a Mercado Pago para completar el pago de forma segura.\n\n` +
+        `Como esto es una simulación educativa, el pedido se confirmará inmediatamente.\n\n` +
+        `¿Deseas continuar?`
     );
-    
+
     if (!confirmed) {
       return;
     }
@@ -563,13 +599,15 @@ function confirmPurchase() {
     date: new Date().toISOString(),
     items: checkoutData.items,
     subtotal: checkoutData.subtotal,
+    discount: checkoutData.discount || 0,
+    couponCode: checkoutData.couponCode || null,
     shipping: checkoutData.shippingCost,
     shippingType: checkoutData.shippingType,
     total: checkoutData.total,
     address: selectedAddress,
     paymentMethod: selectedPaymentMethod,
     cryptoCurrency: cryptoCurrency,
-    status: 'pending'
+    status: 'pending',
   };
 
   // Guardar orden
@@ -602,26 +640,26 @@ function validateNewAddressForm() {
 // Obtener nombre del método de pago
 function getPaymentMethodName(order) {
   const methods = {
-    'card': 'Tarjeta de crédito/débito',
-    'transfer': 'Transferencia bancaria',
-    'mercadopago': 'Mercado Pago',
-    'crypto': order.cryptoCurrency ? `Criptomoneda (${order.cryptoCurrency})` : 'Criptomoneda'
+    card: 'Tarjeta de crédito/débito',
+    transfer: 'Transferencia bancaria',
+    mercadopago: 'Mercado Pago',
+    crypto: order.cryptoCurrency ? `Criptomoneda (${order.cryptoCurrency})` : 'Criptomoneda',
   };
   return methods[order.paymentMethod] || 'Otro';
 }
 
 // Obtener recordatorio según método de pago
 function getPaymentReminder(order) {
-  switch(order.paymentMethod) {
+  switch (order.paymentMethod) {
     case 'transfer':
       return '<div class="transfer-reminder"><i class="bi bi-info-circle-fill"></i><span>Recuerda enviar el comprobante de transferencia a <strong>pagos@emercado.com</strong></span></div>';
     case 'mercadopago':
       return '<div class="transfer-reminder" style="background: rgba(0, 158, 227, 0.1); border-color: rgba(0, 158, 227, 0.3);"><i class="bi bi-wallet2" style="color: #009ee3;"></i><span><strong>Simulación:</strong> En un entorno real, serías redirigido a Mercado Pago para completar el pago de forma segura</span></div>';
     case 'crypto':
       const cryptoIcons = {
-        'Bitcoin': '<i class="fab fa-bitcoin" style="color: #f7931a;"></i>',
-        'Ethereum': '<i class="fab fa-ethereum" style="color: #627eea;"></i>',
-        'USDT': '<i class="tether-icon-fab" style="color: #26a17b;"></i>'
+        Bitcoin: '<i class="fab fa-bitcoin" style="color: #f7931a;"></i>',
+        Ethereum: '<i class="fab fa-ethereum" style="color: #627eea;"></i>',
+        USDT: '<i class="tether-icon-fab" style="color: #26a17b;"></i>',
       };
       const icon = cryptoIcons[order.cryptoCurrency] || '<i class="fab fa-bitcoin"></i>';
       const address = generateCryptoAddress(order.cryptoCurrency);
@@ -649,9 +687,9 @@ function getPaymentReminder(order) {
 // Generar dirección crypto realista según el tipo
 function generateCryptoAddress(currency) {
   const addresses = {
-    'Bitcoin': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-    'Ethereum': '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-    'USDT': '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'
+    Bitcoin: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+    Ethereum: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
+    USDT: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
   };
   return addresses[currency] || addresses['Bitcoin'];
 }
@@ -683,7 +721,9 @@ function showSuccessModal(order) {
           </div>
           <div class="order-detail-row">
             <span class="detail-label">Productos:</span>
-            <span class="detail-value">${order.items.length} ${order.items.length === 1 ? 'artículo' : 'artículos'}</span>
+            <span class="detail-value">${order.items.length} ${
+    order.items.length === 1 ? 'artículo' : 'artículos'
+  }</span>
           </div>
           <div class="order-detail-row">
             <span class="detail-label">Método de pago:</span>
@@ -699,7 +739,9 @@ function showSuccessModal(order) {
       ${getPaymentReminder(order)}
       
       <div class="success-actions">
-        <button onclick="window.location.href='order-confirmation.html?order=${order.id}'" class="btn-view-order">
+        <button onclick="window.location.href='order-confirmation.html?order=${
+          order.id
+        }'" class="btn-view-order">
           <i class="bi bi-receipt"></i>
           Ver detalles del pedido
         </button>
@@ -708,7 +750,9 @@ function showSuccessModal(order) {
       <div class="redirect-message">
         <div class="spinner"></div>
         <p>Serás redirigido en <span id="countdown">8</span> segundos...</p>
-        <button onclick="window.location.href='order-confirmation.html?order=${order.id}'" class="btn-redirect-now">
+        <button onclick="window.location.href='order-confirmation.html?order=${
+          order.id
+        }'" class="btn-redirect-now">
           Ir ahora
         </button>
       </div>
@@ -720,7 +764,7 @@ function showSuccessModal(order) {
   // Countdown para redirección
   let countdown = 8;
   const countdownEl = document.getElementById('countdown');
-  
+
   const timer = setInterval(() => {
     countdown--;
     if (countdownEl) {
