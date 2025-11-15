@@ -2,14 +2,14 @@
 <html lang="es">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Carrito de Compras - e-Mercado</title>
-    <meta name="description" content="Revisa los productos en tu carrito, ajusta cantidades y procede al checkout. Compra segura en e-Mercado." />
+    <meta
+      name="description"
+      content="Revisa los productos en tu carrito, ajusta cantidades y procede al checkout. Compra segura en e-Mercado."
+    />
     <meta name="author" content="Grupo 1 - JAP 2024" />
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,11 +38,15 @@
   </head>
 
   <body>
-    <header class="main-header">
+    <header id="header" class="main-header">
       <div class="header-container">
         <div class="header-logo">
           <a href="index.html" class="logo-icon">
-            <img src="img/logo-jap.svg" alt="e-Mercado - Tienda online de productos" class="logo-img" />
+            <img
+              src="img/logo-jap.svg"
+              alt="e-Mercado - Tienda online de productos"
+              class="logo-img"
+            />
           </a>
         </div>
         <nav class="main-nav">
@@ -65,10 +69,7 @@
               <i class="bi bi-person me-2"></i>
               <span id="usernameDisplay"></span>
             </button>
-            <ul
-              class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="userDropdown"
-            >
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li>
                 <a class="dropdown-item" href="my-profile.html"
                   ><i class="bi bi-person-circle me-2"></i>Mi perfil</a
@@ -92,19 +93,27 @@
               </li>
             </ul>
           </div>
-          <a
-            href="cart.html"
-            class="cart-icon active"
-            aria-label="Ir al carrito"
-          >
+          <a href="cart.html" class="cart-icon active" aria-label="Ir al carrito">
             <i class="bi bi-cart3"></i>
-            <span id="cartBadge" class="cart-badge" aria-live="polite" aria-label="Productos en carrito">0</span>
+            <span
+              id="cartBadge"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
           </a>
         </div>
         <div class="mobile-actions">
           <a href="cart.html" class="cart-icon-mobile active" aria-label="Ir al carrito">
-            <i class="bi bi-cart3-fill"></i>
-            <span id="cartBadgeMobile" class="cart-badge" aria-live="polite" aria-label="Productos en carrito">0</span>
+            <i class="bi bi-cart3"></i>
+            <span
+              id="cartBadgeMobile"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
           </a>
           <button id="menuButton" class="btn menu-toggle" aria-label="Abrir menú">
             <i class="bi bi-list"></i>
@@ -113,7 +122,7 @@
       </div>
     </header>
 
-    <!-- Sidebar Navegación (derecha) RESPONSIVE -->
+    <!-- Sidebar navegación (derecha) RESPONSIVE -->
     <aside id="navSidebar" class="sidebar right hidden">
       <div class="sidebar-content">
         <div class="user-info">
@@ -130,6 +139,14 @@
           <a href="cart.html" class="active">Mi carrito</a>
         </nav>
         <hr />
+        <button
+          class="sidebar-theme-toggle"
+          id="theme-toggle-sidebar"
+          aria-label="Toggle dark/light theme"
+        >
+          <span>Modo oscuro</span>
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </button>
         <a href="#" class="sidebar-logout" data-logout>
           <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
         </a>
@@ -139,8 +156,9 @@
     <!-- Overlay (fondo oscuro al abrir sidebar) -->
     <div id="overlay" class="overlay hidden"></div>
 
+    <!-- Contenido principal del carrito -->
     <main class="cart-container">
-      <h1 class="page-title">Carrito de compras</h1>
+      <h1 class="page-title">Carrito de <span class="wink">compras</span></h1>
       <section class="cart-layout">
         <!-- Lista -->
         <article class="cart-card">
@@ -165,12 +183,7 @@
 
           <p>¿Tienes algún código de descuento?</p>
           <div class="coupon-row">
-            <input
-              id="couponInput"
-              class="input"
-              type="text"
-              placeholder="Código de descuento"
-            />
+            <input id="couponInput" class="input" type="text" placeholder="Código de descuento" />
             <button id="applyCoupon" class="btn-ghost">Aplicar</button>
           </div>
 
@@ -209,16 +222,18 @@
       </section>
     </main>
 
-    <footer class="text-muted">
-      <div class="container">
-        <p>
+    <!-- Footer -->
+    <footer>
+      <div class="footer-container">
+        <p class="footer-text">
           Este sitio forma parte de
-          <a href="https://jovenesaprogramar.edu.uy/" target="_blank"
-            >Jovenes a Programar</a
-          >
+          <a href="https://jovenesaprogramar.edu.uy/" target="_blank" rel="noopener noreferrer">
+            Jóvenes a Programar
+          </a>
         </p>
-        <p class="float-end">
-          <a href="#">Volver arriba</a>
+
+        <p class="footer-back-to-top">
+          <a href="#" id="goTop">Volver arriba</a>
         </p>
       </div>
     </footer>
@@ -233,11 +248,7 @@
     </div>
 
     <!-- Floating Theme Toggle Button -->
-    <button
-      id="theme-toggle"
-      class="theme-toggle-btn"
-      aria-label="Toggle dark/light theme"
-    >
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
       <i class="fas fa-moon" aria-hidden="true"></i>
     </button>
 

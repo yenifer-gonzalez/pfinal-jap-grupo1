@@ -1,30 +1,20 @@
-// Utils
-const readLS = (k, fb = null) => {
-  try {
-    return JSON.parse(localStorage.getItem(k)) ?? fb;
-  } catch {
-    return fb;
-  }
-};
-const writeLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-
-// Estado
 let cart = readLS('cart', []);
 
 // Elementos
 const listEl = document.getElementById('cartList');
 const emptyEl = document.getElementById('emptyState');
-const badgeEl = document.getElementById('cartBadge');
 const subTotalEl = document.getElementById('subTotal');
 const discountEl = document.getElementById('discount');
 const grandTotalEl = document.getElementById('grandTotal');
 const shippingRadios = () => [...document.querySelectorAll('input[name="ship"]')];
+const couponInputEl = document.getElementById('couponInput');
 
 // Helpers
 const EXCHANGE_RATE = 40; // 1 USD = 40 UYU
-
-const money = (n, cur = 'USD') =>
-  `${cur} ${Number(n).toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
+const COUPONS = {
+  JAPG1: 0.1, // 10% de descuento
+};
+let appliedCoupon = null;
 
 // Convierte cualquier precio a USD
 const toUSD = (amount, currency) => {
@@ -33,6 +23,21 @@ const toUSD = (amount, currency) => {
   }
   return amount; // Si ya está en USD
 };
+
+// Subtotal en USD de todo el carrito
+function computeSubtotalUSD() {
+  return cart.reduce((acc, it) => {
+    const priceInUSD = toUSD(it.cost, it.currency || 'USD');
+    return acc + priceInUSD * (it.count ?? 1);
+  }, 0);
+}
+
+// Calcula cuánto descuento aplica según el cupón vigente
+function getDiscountAmount(subtotal) {
+  if (!appliedCoupon) return 0;
+  const pct = COUPONS[appliedCoupon] || 0;
+  return subtotal * pct;
+}
 
 // === FUNCIONES DE MODALES ===
 
@@ -92,35 +97,6 @@ function closeModal(modalElement) {
   setTimeout(() => modalElement.remove(), 300);
 }
 
-// Modal de pago completado
-function showPaymentSuccessModal() {
-  showModal({
-    icon: 'check-circle-fill',
-    iconClass: 'success',
-    title: '¡Pago completado!',
-    message: 'Tu compra se ha procesado exitosamente. Gracias por tu compra.',
-    buttons: [
-      {
-        text: 'Continuar comprando',
-        className: 'modal-btn-secondary',
-        onClick: () => {
-          window.location.href = 'products.html';
-        },
-      },
-      {
-        text: 'Aceptar',
-        className: 'modal-btn-primary',
-        onClick: () => {
-          // Limpiar el carrito después de la compra
-          cart = [];
-          writeLS('cart', cart);
-          render();
-        },
-      },
-    ],
-  });
-}
-
 // Confirmación para eliminar producto
 function showDeleteConfirmationModal(onConfirm, onCancel) {
   showModal({
@@ -144,11 +120,11 @@ function showDeleteConfirmationModal(onConfirm, onCancel) {
   });
 }
 
+// Actualiza todos los badges (desktop + mobile)
 function updateBadge() {
   const totalItems = cart.reduce((acc, it) => acc + (it.count ?? 1), 0);
 
-  // Actualizar todos los badges en la página (puede haber múltiples en diferentes elementos)
-  const badges = document.querySelectorAll('#cartBadge');
+  const badges = document.querySelectorAll('.cart-badge');
   badges.forEach((badge) => {
     if (totalItems > 0) {
       badge.textContent = totalItems;
@@ -159,23 +135,69 @@ function updateBadge() {
   });
 }
 
+// Totales (subtotal, descuento, envío, total)
 function computeTotals() {
-  // Convertir todo a USD antes de sumar
-  const sub = cart.reduce((acc, it) => {
-    const priceInUSD = toUSD(it.cost, it.currency || 'USD');
-    return acc + priceInUSD * (it.count ?? 1);
-  }, 0);
-
-  const disc = 0;
+  const sub = computeSubtotalUSD();
+  const disc = getDiscountAmount(sub);
   const shipPct = Number(shippingRadios().find((r) => r.checked)?.value || 0.15);
   const ship = sub * shipPct;
   const grand = sub - disc + ship;
 
   subTotalEl.textContent = money(sub);
-  discountEl.textContent = money(disc);
+  discountEl.textContent = disc ? `- ${money(disc)}` : money(0);
   grandTotalEl.textContent = money(grand);
 }
 
+// Manejo del cupón (botón "Aplicar")
+function handleApplyCoupon() {
+  if (!couponInputEl) return;
+
+  const rawCode = couponInputEl.value.trim();
+  const code = rawCode.toUpperCase();
+
+  if (!code) {
+    // Si borran el código, se quita el descuento
+    appliedCoupon = null;
+    computeTotals();
+    return;
+  }
+
+  if (COUPONS[code]) {
+    appliedCoupon = code;
+    computeTotals();
+
+    showModal({
+      icon: 'check-circle-fill',
+      iconClass: 'success',
+      title: 'Cupón aplicado',
+      message: `Se aplicó el cupón ${code} correctamente.`,
+      buttons: [
+        {
+          text: 'Aceptar',
+          className: 'modal-btn-primary',
+        },
+      ],
+    });
+  } else {
+    appliedCoupon = null;
+    computeTotals();
+
+    showModal({
+      icon: 'x-circle-fill',
+      iconClass: 'warning',
+      title: 'Cupón inválido',
+      message: 'El código ingresado no es válido. Prueba con otro cupón.',
+      buttons: [
+        {
+          text: 'Aceptar',
+          className: 'modal-btn-primary',
+        },
+      ],
+    });
+  }
+}
+
+// Estado vacío
 function renderEmpty() {
   listEl.innerHTML = '';
   emptyEl.classList.remove('hidden');
@@ -183,20 +205,21 @@ function renderEmpty() {
   updateBadge();
 }
 
+// Render de cada item del carrito
 function renderItem(it, idx) {
   const row = document.createElement('div');
   row.className = 'cart-item';
 
-  // Calcular subtotal para este producto
-  const priceInUSD = toUSD(it.cost, it.currency || 'USD');
+  // Calcular subtotal para este producto EN USD
   const currentCount = it.count ?? 1;
+  const priceInUSD = toUSD(it.cost, it.currency || 'USD');
   const subtotal = priceInUSD * currentCount;
 
   row.innerHTML = `
     <div class="prod">
       <img src="${it.image}" alt="${it.name}" loading="lazy">
       <div>
-        <h4>${it.name}</h4>
+        <h3>${it.name}</h3>
         <small>Cat. ${it.category || '-'}</small>
       </div>
     </div>
@@ -208,9 +231,7 @@ function renderItem(it, idx) {
     </div>
 
     <div class="price">
-      <div class="price-info">
-        <span class="subtotal">${money(subtotal, 'USD')}</span>
-      </div>
+      <span class="subtotal">${money(subtotal, 'USD')}</span>
       <button class="btn btn-sm remove" title="Eliminar producto">
         <i class="fa fa-trash"></i>
       </button>
@@ -226,12 +247,14 @@ function renderItem(it, idx) {
 
   // Función para actualizar la cantidad y el subtotal en tiempo real
   const updateQuantity = (newCount) => {
+    // Límites
     if (newCount < 1) newCount = 1;
+    if (newCount > 99) newCount = 99;
 
     cart[idx].count = newCount;
     qtyInput.value = newCount;
 
-    // Actualizar subtotal en tiempo real
+    // Actualizar subtotal en tiempo real EN USD
     const newSubtotal = priceInUSD * newCount;
     subtotalEl.textContent = money(newSubtotal, 'USD');
 
@@ -274,6 +297,7 @@ function renderItem(it, idx) {
   return row;
 }
 
+// Render general del carrito
 function render() {
   cart = readLS('cart', []);
   if (!cart || cart.length === 0) return renderEmpty();
@@ -290,33 +314,51 @@ function render() {
 document.addEventListener('DOMContentLoaded', () => {
   render();
 
-  // Recalcular totales al cambiar envío o al "aplicar" cupón
+  // Recalcular totales al cambiar envío
   shippingRadios().forEach((r) => r.addEventListener('change', computeTotals));
-  document.getElementById('applyCoupon')?.addEventListener('click', computeTotals);
+
+  // Aplicar cupón
+  document.getElementById('applyCoupon')?.addEventListener('click', handleApplyCoupon);
 
   // Botón para ir al checkout
   document.getElementById('checkoutBtn')?.addEventListener('click', () => {
     if (!cart.length) {
-      return alert('Tu carrito está vacío.');
+      showModal({
+        icon: 'exclamation-triangle-fill',
+        iconClass: 'warning',
+        title: 'Carrito vacío',
+        message: 'Agrega productos al carrito antes de continuar con el pago.',
+        buttons: [
+          {
+            text: 'Aceptar',
+            className: 'modal-btn-primary',
+          },
+        ],
+      });
+      return;
     }
-    
-    // Guardar datos del carrito para el checkout
-    const sub = cart.reduce((acc, it) => {
-      const priceInUSD = toUSD(it.cost, it.currency || 'USD');
-      return acc + priceInUSD * (it.count ?? 1);
-    }, 0);
-    
+
+    const sub = computeSubtotalUSD();
+    const disc = getDiscountAmount(sub);
     const shipPct = Number(shippingRadios().find((r) => r.checked)?.value || 0.15);
-    const shipType = shippingRadios().find((r) => r.checked)?.parentElement?.textContent?.trim() || 'Premium 2 a 5 días (15%)';
-    
+    const shipType =
+      shippingRadios()
+        .find((r) => r.checked)
+        ?.parentElement?.textContent?.trim() || 'Premium 2 a 5 días (15%)';
+
+    const shippingCost = sub * shipPct;
+    const total = sub - disc + shippingCost;
+
     writeLS('checkoutData', {
       subtotal: sub,
-      shippingCost: sub * shipPct,
+      discount: disc,
+      couponCode: appliedCoupon,
+      shippingCost,
       shippingType: shipType,
-      total: sub + (sub * shipPct),
-      items: cart
+      total,
+      items: cart,
     });
-    
+
     // Redirigir a checkout
     window.location.href = 'checkout.html';
   });
