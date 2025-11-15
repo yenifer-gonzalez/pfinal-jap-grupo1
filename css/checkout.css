@@ -716,10 +716,6 @@
 }
 
 @media (max-width: 768px) {
-  .page-title {
-    font-size: 2rem;
-  }
-
   .section-header {
     padding: var(--space-md) var(--space-lg);
   }
@@ -742,10 +738,6 @@
 @media (max-width: 480px) {
   .checkout-container {
     padding: var(--space-xl) var(--space-md);
-  }
-
-  .page-title {
-    font-size: 1.75rem;
   }
 
   .section-header {
