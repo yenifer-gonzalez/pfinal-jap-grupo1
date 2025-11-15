@@ -7,8 +7,9 @@
   --color-secondary-dark: #1a272d; /* Azul oscuro - Hover en elementos secundarios */
 
   /* ========= COLORES DEL HEADER ========= */
-  --header-bg: rgba(255, 255, 255, 0.7);
+  --header-bg: rgba(255, 255, 255, 0.8);
   --header-text: var(--color-primary-orange);
+  --nav-bg: rgba(255, 255, 255, 0.7);
 
   /* ========= COLORES DE FONDO ========= */
   --bg-gradient-start: #fffaf5;
@@ -78,6 +79,7 @@
   /* ========= DIMENSIONES DE LAYOUT ========= */
   --container-max-width: 1200px;
   --product-card-width: 280px;
+  --sidebar-width: 320px;
   --header-height: 64px;
 
   /* ========= ANIMACIONES Y TRANSICIONES ========= */
@@ -93,6 +95,9 @@
   /* ========= VARIABLES ESPECÍFICAS - LOGIN  ========= */
   --bg-warm-1: #ffd19a; /* Naranja claro intermedio */
   --bg-warm-2: #ffead1; /* Beige anaranjado */
+
+  /* ========= ESTRELLAS ========= */
+  --inactive-color: #5f5050;
 }
 
 /* ========= DARK MODE ========= */
@@ -123,8 +128,9 @@
   --shadow-medium: rgba(0, 0, 0, 0.6);
 
   /* Header en modo oscuro */
-  --header-bg: #0f141780;
+  --header-bg: rgba(15, 20, 23, 0.8);
   --header-text: #f8f9fa;
+  --nav-bg: rgba(39, 70, 83, 0.7);
 
   /* Estados en modo oscuro */
   --color-error: #ff8c00; /* Naranja para errores */

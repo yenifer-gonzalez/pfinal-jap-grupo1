@@ -226,7 +226,7 @@ function renderItem(it, idx) {
 
     <div class="qty">
       <button class="btn-minus" aria-label="Restar">–</button>
-      <input class="qty-input" type="number" min="1" value="${currentCount}">
+      <input class="qty-input" name="quantity" type="number" min="1" value="${currentCount}">
       <button class="btn-plus" aria-label="Sumar">+</button>
     </div>
 

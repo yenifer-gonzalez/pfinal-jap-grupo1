@@ -6,33 +6,32 @@ const CACHE_IMAGES_NAME = 'emercado-images-v1';
 
 // Archivos que queremos guardar en caché
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/css/bootstrap.min.css',
-  '/css/variables.css',
-  '/css/styles.css',
-  '/css/home.css',
-  '/css/cart.css',
-  '/css/categories.css',
-  '/css/checkout.css',
-  '/css/my-profile.css',
-  '/css/order-confirmation.css',
-  '/js/bootstrap.bundle.min.js',
-  '/js/init.js',
-  '/img/logo-jap.svg'
+  './',
+  './index.html',
+  './css/bootstrap.min.css',
+  './css/variables.css',
+  './css/styles.css',
+  './css/home.css',
+  './css/cart.css',
+  './css/categories.css',
+  './css/checkout.css',
+  './css/my-profile.css',
+  './css/order-confirmation.css',
+  './js/bootstrap.bundle.min.js',
+  './js/init.js',
+  './img/logo-jap.svg',
 ];
 
 // URLs de la API
-const API_URLS = [
-  'https://japceibal.github.io/emercado-api'
-];
+const API_URLS = ['https://japceibal.github.io/emercado-api'];
 
 // Cuando se instala, guardamos los archivos en caché
 self.addEventListener('install', (event) => {
   console.log('[SW] Instalando...');
-  
+
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(CACHE_NAME)
       .then((cache) => {
         console.log('[SW] Guardando archivos en caché');
         return cache.addAll(STATIC_ASSETS);
@@ -47,15 +46,18 @@ self.addEventListener('install', (event) => {
 // Cuando se activa, limpiamos cachés viejos
 self.addEventListener('activate', (event) => {
   console.log('[SW] Activando...');
-  
+
   event.waitUntil(
-    caches.keys()
+    caches
+      .keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME && 
-                cacheName !== CACHE_API_NAME && 
-                cacheName !== CACHE_IMAGES_NAME) {
+            if (
+              cacheName !== CACHE_NAME &&
+              cacheName !== CACHE_API_NAME &&
+              cacheName !== CACHE_IMAGES_NAME
+            ) {
               console.log('[SW] Borrando caché viejo:', cacheName);
               return caches.delete(cacheName);
             }
@@ -92,13 +94,10 @@ self.addEventListener('fetch', (event) => {
               console.log('[SW] Usando caché (sin internet):', request.url);
               return cachedResponse;
             }
-            return new Response(
-              JSON.stringify({ error: 'Sin conexión', offline: true }),
-              { 
-                headers: { 'Content-Type': 'application/json' },
-                status: 503
-              }
-            );
+            return new Response(JSON.stringify({ error: 'Sin conexión', offline: true }), {
+              headers: { 'Content-Type': 'application/json' },
+              status: 503,
+            });
           });
         })
     );
@@ -175,7 +174,7 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
               return cachedResponse;
             }
-            return caches.match('/index.html');
+            return caches.match('./index.html');
           });
         })
     );
@@ -183,9 +182,5 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Para todo lo demás: intentamos internet, si falla usamos caché
-  event.respondWith(
-    fetch(request).catch(() => caches.match(request))
-  );
+  event.respondWith(fetch(request).catch(() => caches.match(request)));
 });
-
-
