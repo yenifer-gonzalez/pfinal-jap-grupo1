@@ -1,44 +1,51 @@
-// === FUNCIONALIDAD ESPECÍFICA DE PRODUCT-INFO ===
-// Las funciones updateUserInterface() y setupLogout() están centralizadas en init.js
-
 // === FUNCIONALIDAD DE INFORMACIÓN DEL PRODUCTO ===
 
-// Estado simple de la galería
+// Estado galería
 const galleryState = { images: [], index: 0, arrowsBound: false };
 
+// Inicializa la galería de imágenes del producto
 function setupGallery(images) {
   galleryState.images = Array.isArray(images) ? images : [];
   galleryState.index = 0;
+
   renderThumbnails();
   setMainImage(0);
   setupArrows();
 }
 
-// Setea imagen principal y activa la miniatura
+// Setea la imagen principal y actualiza el estado de la miniatura activa
 function setMainImage(i) {
   if (!galleryState.images.length) return;
+
   galleryState.index = (i + galleryState.images.length) % galleryState.images.length;
   const main = document.getElementById('pi-main-image');
-  if (main) main.src = galleryState.images[galleryState.index];
 
-  // activar miniatura seleccionada
+  if (main) {
+    main.src = galleryState.images[galleryState.index];
+    main.alt = `Imagen ${galleryState.index + 1} del producto`;
+  }
+
+  // Activar miniatura seleccionada
   const thumbs = document.querySelectorAll('.pi-thumb');
   thumbs.forEach((b, idx) => b.classList.toggle('is-active', idx === galleryState.index));
 }
 
-// Dibuja miniaturas y les agrega click
+// Dibuja las miniaturas y les asocia el click
 function renderThumbnails() {
   const wrap = document.getElementById('pi-thumbs');
   if (!wrap) return;
 
   wrap.innerHTML = galleryState.images
     .map(
-      (src, idx) =>
-        `<button class="pi-thumb${
-          idx === galleryState.index ? ' is-active' : ''
-        }" data-index="${idx}">
-         <img src="${src}" alt="Miniatura ${idx + 1}" loading="lazy">
-       </button>`
+      (src, idx) => `
+        <button
+          class="pi-thumb${idx === galleryState.index ? ' is-active' : ''}"
+          data-index="${idx}"
+          type="button"
+        >
+          <img src="${src}" alt="Miniatura ${idx + 1}" loading="lazy">
+        </button>
+      `
     )
     .join('');
 
@@ -47,187 +54,202 @@ function renderThumbnails() {
   });
 }
 
-// Flechas izquierda/derecha
+// Configura flechas izquierda/derecha de la galería
 function setupArrows() {
   if (galleryState.arrowsBound) return;
+
   const prev = document.querySelector('.pi-carousel-btn.left');
   const next = document.querySelector('.pi-carousel-btn.right');
-  if (prev) prev.addEventListener('click', () => setMainImage(galleryState.index - 1));
-  if (next) next.addEventListener('click', () => setMainImage(galleryState.index + 1));
+
+  if (prev) {
+    prev.addEventListener('click', () => setMainImage(galleryState.index - 1));
+  }
+
+  if (next) {
+    next.addEventListener('click', () => setMainImage(galleryState.index + 1));
+  }
+
   galleryState.arrowsBound = true;
 }
 
-//  BTN COMPRAR Y CARGAR ELEMENTOS A LOCAL STORAGE
+// Carrito: agregar productos (+ notificación)
+function updateCartWithProduct(product, quantity) {
+  const qty = Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
 
-// Función para agregar producto al carrito SIN redirigir (botón "Agregar al carrito")
-function addToCart(product) {
-  // Obtener la cantidad seleccionada del input
-  const qtyInput = document.getElementById('pi-qty');
-  const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-
-  // Obtener el carrito actual del localStorage o crear uno nuevo si no existe
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-  // Verificar si el producto ya existe en el carrito
-  const existingProductIndex = cart.findIndex((item) => item.id === product.id);
+  const index = cart.findIndex((item) => item.id === product.id);
 
-  if (existingProductIndex !== -1) {
-    // Si el producto ya existe, agregar la cantidad seleccionada
-    cart[existingProductIndex].count = (cart[existingProductIndex].count || 0) + quantity;
+  if (index !== -1) {
+    cart[index].count = (cart[index].count || 0) + qty;
   } else {
-    // Si no existe, crear el objeto del producto para el carrito
-    const cartItem = {
+    cart.push({
       id: product.id,
       name: product.name,
       currency: product.currency,
       cost: product.cost,
-      image: product.images[0], // Guardamos la primera imagen del producto
+      image: Array.isArray(product.images) ? product.images[0] : product.image,
       category: (product.category && product.category.name) || product.category || 'Sin categoría',
-      count: quantity, // Usar la cantidad seleccionada
-    };
-
-    // Agregar el producto al carrito
-    cart.push(cartItem);
+      count: qty,
+    });
   }
 
-  // Guardar el carrito actualizado en localStorage
   localStorage.setItem('cart', JSON.stringify(cart));
 
-  // Actualizar el badge si la función existe
   if (typeof updateCartBadge === 'function') {
     updateCartBadge();
   }
+}
 
-  // Mostrar notificación de éxito
+// Obtiene la cantidad actual desde el input de cantidad.
+function getSelectedQuantity() {
+  const qtyInput = document.getElementById('pi-qty');
+  return qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+}
+
+// Agregar producto al carrito SIN redirigir (botón "Agregar al carrito")
+function addToCart(product) {
+  const quantity = getSelectedQuantity();
+  updateCartWithProduct(product, quantity);
   showCartNotification(product.name);
 }
 
-// Función para agregar producto al carrito Y redirigir (botón "Comprar ahora")
+// Agregar producto al carrito Y redirigir (botón "Comprar ahora")
 function handleBuyProduct(product) {
-  // Obtener la cantidad seleccionada del input
-  const qtyInput = document.getElementById('pi-qty');
-  const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-
-  // Obtener el carrito actual del localStorage o crear uno nuevo si no existe
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-  // Verificar si el producto ya existe en el carrito
-  const existingProductIndex = cart.findIndex((item) => item.id === product.id);
-
-  if (existingProductIndex !== -1) {
-    // Si el producto ya existe, agregar la cantidad seleccionada
-    cart[existingProductIndex].count = (cart[existingProductIndex].count || 0) + quantity;
-  } else {
-    // Si no existe, crear el objeto del producto para el carrito
-    const cartItem = {
-      id: product.id,
-      name: product.name,
-      currency: product.currency,
-      cost: product.cost,
-      image: product.images[0], // Guardamos la primera imagen del producto
-      category: (product.category && product.category.name) || product.category || 'Sin categoría',
-      count: quantity, // Usar la cantidad seleccionada
-    };
-
-    // Agregar el producto al carrito
-    cart.push(cartItem);
-  }
-
-  // Guardar el carrito actualizado en localStorage
-  localStorage.setItem('cart', JSON.stringify(cart));
-
-  // Actualizar el badge si la función existe
-  if (typeof updateCartBadge === 'function') {
-    updateCartBadge();
-  }
-
-  // Redirigir al carrito
+  const quantity = getSelectedQuantity();
+  updateCartWithProduct(product, quantity);
   window.location.href = 'cart.html';
 }
 
-// Función para mostrar notificación cuando se agrega al carrito
+// Notificación flotante al agregar al carrito
 function showCartNotification(productName) {
-  // Crear el elemento de notificación
   const notification = document.createElement('div');
   notification.className = 'cart-notification';
   notification.innerHTML = `
     <i class="bi bi-check-circle-fill"></i>
-    <span>¡Producto agregado al carrito!</span>
+    <span>¡"${productName}" se agregó al carrito!</span>
   `;
 
-  // Agregar al body
   document.body.appendChild(notification);
 
   // Mostrar con animación
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     notification.classList.add('show');
-  }, 10);
+  });
 
   // Ocultar y eliminar después de 3 segundos
   setTimeout(() => {
     notification.classList.remove('show');
-    setTimeout(() => {
-      notification.remove();
-    }, 300);
+    setTimeout(() => notification.remove(), 300);
   }, 3000);
 }
 
+// Carga de producto principal
+function localShowError(message) {
+  if (typeof window !== 'undefined' && typeof window.showError === 'function') {
+    window.showError(message);
+    return;
+  }
+
+  const container = document.querySelector('.pi-container');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="error-state">
+      ${message}
+    </div>
+  `;
+}
+
+// Carga todos los datos de producto desde la API y rellena la UI
 async function loadProductInfo() {
   const productId = localStorage.getItem('selectedProduct');
   // Validar si existe un producto seleccionado en el localStorage
   if (!productId) {
-    showError('No se encontró el producto seleccionado.');
+    localShowError('No se encontró el producto seleccionado.');
     return;
   }
 
-  // CARGAR COMENTARIOS
+  // Cargar comentarios en paralelo
   loadProductComments(productId);
 
   const url = `https://japceibal.github.io/emercado-api/products/${productId}.json`;
   const resultObj = await getJSONData(url);
 
-  if (resultObj.status === 'ok') {
-    // Insertar datos en el HTML
-    const product = resultObj.data;
-    document.getElementById('pi-title').textContent = product.name;
-    document.getElementById('pi-price').textContent = `${product.currency} ${product.cost}`;
-    document.getElementById('pi-description').textContent = product.description;
-    // CAMBIO: soportar categoría como objeto o string
-    document.getElementById('pi-category').textContent =
-      (product.category && product.category.name) || product.category || '';
-    document.getElementById('pi-sold').textContent = product.soldCount;
-    // Inicializar galería con las imágenes del producto
-    setupGallery(product.images);
-
-    // Completar encabezado del formulario de reseña
-    const reviewName = document.getElementById('review-product-name');
-    if (reviewName) reviewName.textContent = product.name;
-
-    const reviewThumb = document.querySelector('.review-product-thumb');
-
-    // Configurar el botón "Agregar al carrito"
-    const addToCartButton = document.getElementById('pi-add');
-    if (addToCartButton) {
-      addToCartButton.addEventListener('click', () => addToCart(product));
-    }
-
-    // Configurar el botón "Comprar ahora"
-    const buyButton = document.getElementById('pi-buy');
-    if (buyButton) {
-      buyButton.addEventListener('click', () => handleBuyProduct(product));
-    }
-    
-    // Configurar el botón de favoritos
-    setupFavoriteButton(product);
-    
-    if (reviewThumb && Array.isArray(product.images) && product.images[0]) {
-      reviewThumb.src = product.images[0];
-      reviewThumb.alt = `Imagen de ${product.name}`;
-    }
-    renderRelatedProducts(product.relatedProducts);
-  } else {
-    showError('No se pudo cargar la información del producto');
+  if (resultObj.status !== 'ok') {
+    localShowError('No se pudo cargar la información del producto');
+    return;
   }
+
+  const product = resultObj.data;
+
+  // Título, precio, descripción
+  const titleEl = document.getElementById('pi-title');
+  const priceEl = document.getElementById('pi-price');
+  const descEl = document.getElementById('pi-description');
+  const categoryEl = document.getElementById('pi-category');
+  const soldEl = document.getElementById('pi-sold');
+
+  if (titleEl) titleEl.textContent = product.name || '';
+  if (descEl) descEl.textContent = product.description || '';
+
+  if (priceEl) {
+    if (typeof money === 'function') {
+      priceEl.textContent = money(product.cost, product.currency);
+    } else {
+      priceEl.textContent = `${product.currency || ''} ${product.cost ?? ''}`;
+    }
+  }
+
+  if (categoryEl) {
+    categoryEl.textContent = (product.category && product.category.name) || product.category || '';
+  }
+
+  if (soldEl) {
+    soldEl.textContent = product.soldCount ?? 0;
+  }
+
+  // Galería de imágenes
+  if (Array.isArray(product.images) && product.images.length > 0) {
+    setupGallery(product.images);
+  } else {
+    setupGallery([]);
+  }
+
+  // Encabezado del formulario de reseña
+  const reviewName = document.getElementById('review-product-name');
+  if (reviewName) reviewName.textContent = product.name || '';
+
+  const reviewThumb = document.querySelector('.review-product-thumb');
+  if (reviewThumb) {
+    const mainImg =
+      (Array.isArray(product.images) && product.images[0]) ||
+      product.image ||
+      'img/placeholder.jpg';
+
+    reviewThumb.src = mainImg;
+    reviewThumb.alt = `Imagen de ${product.name || 'producto'}`;
+  }
+
+  // Botones de acciones
+  const addToCartButton = document.getElementById('pi-add');
+  if (addToCartButton) {
+    addToCartButton.addEventListener('click', () => addToCart(product));
+  }
+
+  const buyButton = document.getElementById('pi-buy');
+  if (buyButton) {
+    buyButton.addEventListener('click', () => handleBuyProduct(product));
+  }
+
+  // Favoritos
+  setupFavoriteButton(product);
+
+  // Vistos recientemente
+  addRecentlyViewed(product);
+
+  // Productos relacionados
+  renderRelatedProducts(product.relatedProducts);
 }
 
 // Swipe izquierda/derecha en la galería
@@ -235,10 +257,10 @@ async function loadProductInfo() {
   const area = document.querySelector('.pi-carousel');
   if (!area) return;
 
-  let startX = 0,
-    startY = 0,
-    dx = 0,
-    dragging = false;
+  let startX = 0;
+  let startY = 0;
+  let dx = 0;
+  let dragging = false;
   const THRESHOLD = 50;
 
   const getPoint = (e) => ('touches' in e && e.touches[0]) || e;
@@ -289,32 +311,33 @@ async function loadProductInfo() {
   }
 })();
 
-// === INPUT DE CANTIDAD ===
+// === Input de cantidad ===
 function setupQuantityControls() {
   const minusBtn = document.querySelector('.pi-qty button[aria-label="Disminuir"]');
   const plusBtn = document.querySelector('.pi-qty button[aria-label="Aumentar"]');
   const input = document.getElementById('pi-qty');
 
-  if (!input) return;
+  if (!input || !minusBtn || !plusBtn) return;
 
-  const min = parseInt(input.min) || 1;
-  const max = parseInt(input.max) || 10;
+  const min = parseInt(input.min, 10) || 1;
+  const max = parseInt(input.max, 10) || 10;
 
   minusBtn.addEventListener('click', () => {
-    let val = parseInt(input.value);
+    const val = parseInt(input.value, 10) || min;
     if (val > min) input.value = val - 1;
   });
 
   plusBtn.addEventListener('click', () => {
-    let val = parseInt(input.value);
+    const val = parseInt(input.value, 10) || min;
     if (val < max) input.value = val + 1;
   });
 }
 
-// Estrellas con Bootstrap Icons
+// Genera HTML de estrellas usando Bootstrap Icons (para opiniones listadas)
 function starsHTML(score, max = 5) {
-  const full = Math.floor(score);
-  const hasHalf = score - full >= 0.5;
+  const rating = Number(score) || 0;
+  const full = Math.floor(rating);
+  const hasHalf = rating - full >= 0.5;
   const icons = [];
 
   for (let i = 1; i <= max; i++) {
@@ -329,19 +352,21 @@ function starsHTML(score, max = 5) {
   return icons.join('');
 }
 
-function formatDate(dstr) {
+function formatReviewDate(dstr) {
   try {
     const [datePart] = String(dstr).split(' ');
     const [yyyy, mm, dd] = datePart.split('-');
     if (yyyy && mm && dd) return `${dd}/${mm}/${yyyy}`;
-  } catch (e) {}
+  } catch (e) {
+    // Ignorar y devolver sin formatear
+  }
   return dstr || '';
 }
 
 function reviewItemHTML({ user, dateTime, score, description }) {
   const safeUser = user || 'Usuario';
   const safeText = description || '';
-  const safeDate = formatDate(dateTime || '');
+  const safeDate = formatReviewDate(dateTime || '');
 
   return `
     <article class="review-item">
@@ -403,20 +428,32 @@ async function loadProductComments(productId) {
 // Carga y render de Productos Relacionados
 function renderRelatedProducts(relatedProducts) {
   const container = document.getElementById('related-grid');
+  if (!container) return;
+
   container.innerHTML = ''; // Limpiamos contenido previo
 
+  if (!Array.isArray(relatedProducts) || relatedProducts.length === 0) {
+    container.innerHTML = '<p class="text-muted">No hay productos relacionados.</p>';
+    return;
+  }
+
   relatedProducts.forEach((product) => {
-    const card = document.createElement('div');
-    card.classList.add('related-item');
+    const card = document.createElement('a');
+    card.href = 'product-info.html';
+    card.classList.add('related-product-card');
+    card.dataset.id = product.id;
 
     card.innerHTML = `
-    <a href="product-info.html" data-id="${product.id}">
-    <img src="${product.image}" alt="${product.name}" loading="lazy">
-    <h3 class="related-name">${product.name}</h3>
-    </a>
+      <div class="related-product-image">
+        <img src="${product.image}" alt="${product.name}" loading="lazy">
+      </div>
+      <div class="related-product-info">
+        <h3 class="related-product-name">${product.name}</h3>
+      </div>
     `;
 
-    card.addEventListener('click', () => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
       localStorage.setItem('selectedProduct', product.id);
       window.location.href = 'product-info.html';
     });
@@ -425,9 +462,8 @@ function renderRelatedProducts(relatedProducts) {
   });
 }
 
-// === DESAFÍO: AGREGAR CALIFICACIÓN LOCALMENTE ===
+// Sistema de reseñas locales (una reseña por usuario)
 
-// Función para limpiar el username (quitar dominio del email)
 function cleanUsername(username) {
   if (!username) return 'Usuario Anónimo';
 
@@ -435,7 +471,6 @@ function cleanUsername(username) {
   if (username.includes('@')) {
     return username.split('@')[0];
   }
-
   return username;
 }
 
@@ -453,11 +488,10 @@ function hasUserAlreadyReviewed(username) {
       return true;
     }
   }
-
   return false;
 }
 
-// Función para manejar la selección de estrellas
+// Configura interacción con las estrellas (Font Awesome)
 function setupStarRating() {
   const starButtons = document.querySelectorAll('.star-btn');
   const ratingInput = document.getElementById('rating');
@@ -491,14 +525,12 @@ function setupStarRating() {
   }
 }
 
-// Función para actualizar la visualización de estrellas seleccionadas
 function updateStarDisplay(rating) {
   const starButtons = document.querySelectorAll('.star-btn');
   const totalStars = starButtons.length;
 
   starButtons.forEach((button, index) => {
     const visualPosition = totalStars - index;
-
     if (visualPosition <= rating) {
       button.classList.add('selected');
     } else {
@@ -507,7 +539,6 @@ function updateStarDisplay(rating) {
   });
 }
 
-// Función para resaltar estrellas en hover
 function highlightStars(rating) {
   const starButtons = document.querySelectorAll('.star-btn');
   const totalStars = starButtons.length;
@@ -523,6 +554,7 @@ function highlightStars(rating) {
   });
 }
 
+// Configura el submit del formulario de reseña local
 function setupReviewForm() {
   const form = document.getElementById('review-form');
   if (!form) return;
@@ -566,26 +598,18 @@ function setupReviewForm() {
     // Crear objeto de nueva calificación
     const newReview = {
       user: username,
-      dateTime: dateTime,
-      score: parseInt(score),
-      description: description,
+      dateTime,
+      score,
+      description,
     };
 
-    // Agregar la calificación a la lista
     addReviewToList(newReview);
-
-    // Limpiar el formulario
     form.reset();
-
-    // Deshabilitar el formulario para evitar múltiples envíos
     disableReviewForm('Ya has calificado este producto');
-
-    // Mostrar mensaje de éxito
     showSuccessMessage();
   });
 }
 
-// Función para deshabilitar el formulario después de enviar
 function disableReviewForm(message) {
   const form = document.getElementById('review-form');
   if (!form) return;
@@ -625,11 +649,12 @@ function addReviewToList(review) {
 
   // Agregar animación de entrada
   const newReviewElement = list.firstElementChild;
-  newReviewElement.style.animation = 'fadeIn 0.5s ease-in';
+  if (newReviewElement) {
+    newReviewElement.style.animation = 'fadeIn 0.5s ease-in';
+  }
 }
 
 function showSuccessMessage() {
-  // Crear mensaje temporal de éxito
   const message = document.createElement('div');
   message.className = 'success-message';
   message.textContent = '✓ Tu calificación ha sido agregada exitosamente';
@@ -659,8 +684,9 @@ function showSuccessMessage() {
 
 // Función para verificar al cargar si el usuario ya comentó
 function checkIfUserAlreadyReviewed() {
-  // Esperar un momento para que se carguen los comentarios
   setTimeout(() => {
+    if (typeof getCurrentUser !== 'function') return;
+
     const currentUser = getCurrentUser();
     if (!currentUser) return;
 
@@ -673,24 +699,17 @@ function checkIfUserAlreadyReviewed() {
 }
 
 // === SISTEMA DE FAVORITOS ===
-
-/**
- * Verifica si un producto está en favoritos
- */
 function isProductInFavorites(productId) {
   const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-  return wishlist.some(item => item.productId == productId);
+  return wishlist.some((item) => item.productId == productId);
 }
 
-/**
- * Actualiza el estado visual del botón de favoritos
- */
 function updateFavoriteButton(productId) {
   const btn = document.getElementById('pi-fav');
   if (!btn) return;
 
   const isFavorite = isProductInFavorites(productId);
-  
+
   if (isFavorite) {
     btn.classList.add('active');
     btn.innerHTML = '<i class="bi bi-heart-fill"></i>';
@@ -702,18 +721,13 @@ function updateFavoriteButton(productId) {
   }
 }
 
-/**
- * Alterna el estado de favorito del producto actual
- */
 function toggleProductFavorite(product) {
   let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-  const isFavorite = wishlist.some(item => item.productId == product.id);
+  const isFavorite = wishlist.some((item) => item.productId == product.id);
 
   if (isFavorite) {
-    // Remover de favoritos
-    wishlist = wishlist.filter(item => item.productId != product.id);
+    wishlist = wishlist.filter((item) => item.productId != product.id);
   } else {
-    // Agregar a favoritos
     wishlist.push({
       productId: product.id,
       name: product.name,
@@ -723,7 +737,7 @@ function toggleProductFavorite(product) {
       image: product.images[0] || 'img/cars_index.jpg',
       soldCount: product.soldCount,
       addedAt: new Date().toISOString(),
-      priceWhenAdded: product.cost
+      priceWhenAdded: product.cost,
     });
   }
 
@@ -731,36 +745,63 @@ function toggleProductFavorite(product) {
   updateFavoriteButton(product.id);
 }
 
-/**
- * Configura el botón de favoritos
- */
 function setupFavoriteButton(product) {
   const btn = document.getElementById('pi-fav');
   if (!btn) return;
 
-  // Actualizar estado inicial
   updateFavoriteButton(product.id);
 
-  // Agregar event listener
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     toggleProductFavorite(product);
   });
 }
 
+// Vistos recientemente
+function addRecentlyViewed(product) {
+  if (!product || !product.id) return;
+
+  try {
+    const KEY = 'recentlyViewed';
+    const MAX = 10;
+
+    const raw = localStorage.getItem(KEY);
+    const list = raw ? JSON.parse(raw) : [];
+
+    const filtered = list.filter((p) => String(p.id) !== String(product.id));
+
+    filtered.unshift({
+      id: product.id,
+      name: product.name,
+      image:
+        (Array.isArray(product.images) && product.images[0]) ||
+        product.image ||
+        'img/placeholder.jpg',
+      category:
+        (product.category && product.category.name) ||
+        product.category ||
+        product.categoryName ||
+        'Otros',
+      cost: product.cost ?? 0,
+      currency: product.currency || '',
+      addedAt: new Date().toISOString(),
+    });
+
+    const sliced = filtered.slice(0, MAX);
+    localStorage.setItem(KEY, JSON.stringify(sliced));
+  } catch (e) {
+    console.error('addRecentlyViewed error:', e);
+  }
+}
+
 // === INICIALIZACIÓN ===
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Session control is handled globally by init.js
-  // updateUserInterface() and setupLogout() are now in init.js
   loadProductInfo();
-
   setupQuantityControls();
 
-  // DESAFÍO: Configurar formulario de calificación
-  setupStarRating(); // Configurar interacción con estrellas
+  // Reseñas locales
+  setupStarRating();
   setupReviewForm();
-
-  // Verificar si el usuario ya comentó este producto
   checkIfUserAlreadyReviewed();
 });
