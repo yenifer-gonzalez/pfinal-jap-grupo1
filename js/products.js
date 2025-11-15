@@ -1,43 +1,45 @@
-// === FUNCIONALIDAD ESPECÍFICA DE PRODUCTS ===
-// Las funciones updateUserInterface() y setupLogout() están centralizadas en init.js
-
 // === VARIABLES GLOBALES ===
-// Agregadas para soportar paginación y filtrado
 let currentProducts = [];
 let filteredProducts = [];
+
+// Paginación / infinite scroll
 let currentPage = 1;
 const productsPerPage = 9;
+
+// Cache en memoria de respuestas de la API
 const productsCache = new Map();
-const CACHE_DURATION = 5 * 60 * 1000;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
 // === INFINITE SCROLL VARIABLES ===
 let isLoadingMore = false;
 let intersectionObserver = null;
 let loadMoreSentinel = null;
 
-// --- BRIDGE ---
-// "Puente" para que los selects del sidebar mobile y los de desktop
-// se mantengan sincornizados y se pueda utilizar la misma lógica de applyFilters().
-let FILTERS = null; // variable para guardar las referencias de todos los controles.
+// === BRIDGE FILTROS (desktop + mobile) ===
+// "Puente" para que los controles del sidebar mobile y desktop
+// se mantengan sincronizados y usen la misma lógica de filtros.
+let FILTERS = null;
 
+// Recolecta referencias a todos los controles de filtros
+// (desktop y mobile) agrupándolos por tipo.
 function collectFilters() {
-  // buscar por ID cada par de selects/buttons.
   const $ = (id) => document.getElementById(id);
+
   return {
-    search: [$("searchFilter"), $("searchFilterM")].filter(Boolean),
-    brand: [$("brandFilter"), $("brandFilterM")].filter(Boolean),
-    model: [$("modelFilter"), $("modelFilterM")].filter(Boolean),
-    minPrice: [$("minPriceFilter"), $("minPriceFilterM")].filter(Boolean),
-    maxPrice: [$("maxPriceFilter"), $("maxPriceFilterM")].filter(Boolean),
-    sort: [$("sortFilter"), $("sortFilterM")].filter(Boolean),
-    clear: [$("clearFilters"), $("clearFiltersMobile")].filter(Boolean),
+    search: [$('searchFilter'), $('searchFilterM')].filter(Boolean),
+    brand: [$('brandFilter'), $('brandFilterM')].filter(Boolean),
+    model: [$('modelFilter'), $('modelFilterM')].filter(Boolean),
+    minPrice: [$('minPriceFilter'), $('minPriceFilterM')].filter(Boolean),
+    maxPrice: [$('maxPriceFilter'), $('maxPriceFilterM')].filter(Boolean),
+    sort: [$('sortFilter'), $('sortFilterM')].filter(Boolean),
+    clear: [$('clearFilters'), $('clearFiltersMobile')].filter(Boolean),
   };
 }
 
-// Recorre una lista de elementos y devuelve el primer value no vacio.
+// Devuelve el primer value no vacío de una lista de inputs/selects.
 const firstVal = (els) => {
   for (const el of els || []) if (el && el.value) return el.value;
-  return "";
+  return '';
 };
 
 // Copia el valor del elemento que disparó el cambio (source)
@@ -48,28 +50,78 @@ const mirror = (els, source) => {
   });
 };
 
-// Función completa para renderizar página con infinite scroll
-function renderPage() {
-  const productsToShow = filteredProducts.slice(0, currentPage * productsPerPage);
-  
-  mostrarProductos(productsToShow);
-  setupInfiniteScroll();
-  
-  // Ocultar paginación clásica (ya no se usa)
-  document.getElementById("pagination").innerHTML = "";
+// Helper genérico para obtener el valor de un grupo de filtros
+// con fallback a un input por ID (por si FILTERS aún no está listo).
+const getFilterValue = (group, fallbackId) => {
+  if (FILTERS && group) return firstVal(group);
+  const el = document.getElementById(fallbackId);
+  return el ? el.value : '';
+};
+
+// Resalta el término de búsqueda dentro de un texto usando <mark>.
+function highlightText(text, term) {
+  if (!term || !text) return text;
+  const safeTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${safeTerm})`, 'gi');
+  return text.replace(regex, '<mark>$1</mark>');
 }
 
-// Versión mejorada de la función original con cache y error handling
-async function fetchProducts(categoryId = 101) {
+// === RENDER PRINCIPAL ===
+
+// Renderiza la página actual de productos con infinite scroll.
+function renderPage() {
+  const total = filteredProducts.length;
+  const container = document.getElementById('productsContainer');
+
+  if (!container) return;
+
+  // Si no hay productos para mostrar con los filtros actuales
+  if (total === 0) {
+    cleanupInfiniteScroll();
+
+    container.innerHTML = '';
+
+    const emptyState = document.createElement('div');
+    emptyState.className = 'end-of-results empty-state';
+    emptyState.innerHTML = `
+    <div class="text-center py-4">
+      <i class="bi bi-search text-muted" style="font-size: 2rem;"></i>
+      <p class="mt-2 mb-0">No se encontraron productos para los filtros seleccionados.</p>
+    </div>
+  `;
+
+    if (container.parentElement) {
+      container.parentElement.appendChild(emptyState);
+    }
+
+    const pagination = document.getElementById('pagination');
+    if (pagination) pagination.innerHTML = '';
+    return;
+  }
+
+  const productsToShow = filteredProducts.slice(0, currentPage * productsPerPage);
+
+  mostrarProductos(productsToShow);
+  setupInfiniteScroll();
+
+  const pagination = document.getElementById('pagination');
+  if (pagination) pagination.innerHTML = '';
+}
+
+// === FETCH DE PRODUCTOS ===
+
+// Obtiene todos los productos de todas las categorías.
+// Usa cache en memoria y muestra skeleton mientras carga.
+async function fetchAllProducts() {
   try {
-    // Verificar cache primero
-    const cacheKey = `products_${categoryId}`;
+    const cacheKey = 'products_all';
     const cached = productsCache.get(cacheKey);
 
+    // Usar cache si sigue vigente
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      currentProducts = cached.data.products || [];
+      currentProducts = cached.data || [];
       filteredProducts = [...currentProducts];
-      populateFilters(); // AÑADIDO: Poblar filtros con datos
+      populateFilters();
       renderPage();
       return;
     }
@@ -77,241 +129,245 @@ async function fetchProducts(categoryId = 101) {
     // Mostrar loading skeleton
     showLoadingSkeleton();
 
-    // Lógica original
-    // Relleno de data para hacer la petición Web - CÓDIGO ORIGINAL
-    // URL fija para la categoría 101 de autos
+    // Obtener todas las categorías del localStorage
+    const categoriesRaw = localStorage.getItem('categoriesArray');
+    if (!categoriesRaw) {
+      showError('Error: No se encontraron categorías');
+      return;
+    }
+
+    const categories = JSON.parse(categoriesRaw);
+    // Pedir productos de todas las categorías en paralelo
+    const productPromises = categories.map((cat) => getJSONData(PRODUCTS_URL + cat.id + EXT_TYPE));
+    const results = await Promise.all(productPromises);
+
+    let allProducts = [];
+    results.forEach((resultObj) => {
+      if (resultObj.status === 'ok' && resultObj.data.products) {
+        allProducts = allProducts.concat(resultObj.data.products);
+      }
+    });
+
+    currentProducts = allProducts;
+    filteredProducts = [...allProducts];
+
+    // Guardar en cache
+    productsCache.set(cacheKey, {
+      data: allProducts,
+      timestamp: Date.now(),
+    });
+
+    populateFilters();
+    renderPage();
+  } catch (error) {
+    showError('Error al cargar productos');
+  }
+}
+
+// Obtiene los productos de una categoría específica.
+async function fetchProducts(categoryId = 101) {
+  try {
+    const cacheKey = `products_${categoryId}`;
+    const cached = productsCache.get(cacheKey);
+
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      currentProducts = cached.data.products || [];
+      filteredProducts = [...currentProducts];
+      populateFilters();
+      renderPage();
+      return;
+    }
+
+    showLoadingSkeleton();
+
     const url = PRODUCTS_URL + categoryId + EXT_TYPE;
     const resultObj = await getJSONData(url);
 
-    if (resultObj.status === "ok") {
+    if (resultObj.status === 'ok') {
       const productos = resultObj.data.products;
       currentProducts = productos;
       filteredProducts = [...productos];
 
-      // Guardar en cache
       productsCache.set(cacheKey, {
         data: resultObj.data,
         timestamp: Date.now(),
       });
 
-      populateFilters(); //Poblar filtros con datos reales
+      populateFilters();
       renderPage();
+    } else {
+      showError('Error al cargar productos');
     }
   } catch (error) {
-    showError("Error al cargar productos");
+    showError('Error al cargar productos');
   }
 }
 
-// Función original mejorada para trabajar con paginación
+// === RENDER DE CARDS DE PRODUCTOS ===
+
+// Renderiza una lista de productos dentro del contenedor principal
 function mostrarProductos(productos) {
-  let html = "";
+  const container = document.getElementById('productsContainer');
+  if (!container) return;
 
-  // Obtener término de búsqueda para highlighting
-  const val = (arr, fallbackId) =>
-    FILTERS && arr
-      ? firstVal(arr)
-      : document.getElementById(fallbackId)?.value || "";
+  let html = '';
 
-  const search = val(FILTERS?.search, "searchFilter");
-  const searchTerm = search && search.trim() !== "" ? search.trim() : null;
+  const search = getFilterValue(FILTERS?.search, 'searchFilter');
+  const searchTerm = search && search.trim() !== '' ? search.trim() : null;
 
-  // Obtener favoritos del localStorage
   const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-  const favoriteIds = wishlist.map(item => item.productId);
+  const favoriteIds = wishlist.map((item) => item.productId);
 
   productos.forEach((producto) => {
-    // Función para resaltar términos de búsqueda
-    const highlightText = (text, term) => {
-      if (!term) return text;
-      const regex = new RegExp(
-        `(${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
-        "gi"
-      );
-      return text.replace(regex, "<mark>$1</mark>");
-    };
-
-    // Aplicar highlighting si hay búsqueda
     const highlightedName = highlightText(producto.name, searchTerm);
-    const highlightedDescription = highlightText(
-      producto.description,
-      searchTerm
-    );
+    const highlightedDescription = highlightText(producto.description, searchTerm);
 
-    // generacion de las tarjetas de productos
     html += `
-            <div class="product-card" data-product-id="${
-              producto.id
-            }" onclick="goToProduct(${producto.id})">
-                <div class="product-image">
-                    <img src="${producto.image}" alt="${producto.name}" 
-                        loading="lazy"
-                        onerror="this.src='img/cars_index.jpg'"
-                        style="opacity: 0; transition: opacity 0.3s ease;"
-                        onload="this.style.opacity='1'">
-                    <button class="favorite-btn ${favoriteIds.includes(producto.id) ? 'toggle-fav' : ''}" 
-                        onclick="toggleFavorite(event, ${producto.id})"
-                        style="${favoriteIds.includes(producto.id) ? 'color: var(--color-primary-orange);' : ''}"
-                    >${favoriteIds.includes(producto.id) ? '♥' : '♡'}</button>
-                </div>
-                <div class="product-info">
-                  <h3 class="product-name">${highlightedName}</h3>
-                  <p class="product-description">${highlightedDescription}</p>
-                  <div class="product-wrapper">
-                    <div class="product-stats">
-                      <span class="product-sold">${
-                        producto.soldCount
-                      } vendidos</span>
-                    </div>
-                    <div class="product-meta">
-                      <span class="product-price">${
-                        producto.currency
-                      } ${new Intl.NumberFormat("es-UY").format(
-      producto.cost
-    )}</span>
-                    </div>
-                  </div>
-                </div>
+      <div class="product-card" data-product-id="${producto.id}" onclick="goToProduct(${
+      producto.id
+    })">
+        <div class="product-image">
+          <img src="${producto.image}" alt="${producto.name}" 
+            loading="lazy"
+            onerror="this.src='img/cars_index.jpg'"
+            style="opacity: 0; transition: opacity 0.3s ease;"
+            onload="this.style.opacity='1'">
+          <button
+            class="favorite-btn ${favoriteIds.includes(producto.id) ? 'toggle-fav' : ''}"
+            onclick="toggleFavorite(event, ${producto.id})"
+            style="${
+              favoriteIds.includes(producto.id) ? 'color: var(--color-primary-orange);' : ''
+            }"
+          >
+            ${favoriteIds.includes(producto.id) ? '♥' : '♡'}
+          </button>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">${highlightedName}</h3>
+          <p class="product-description">${highlightedDescription}</p>
+          <div class="product-wrapper">
+            <div class="product-stats">
+              <span class="product-sold">${producto.soldCount} vendidos</span>
             </div>
-        `;
+            <div class="product-meta">
+              <span class="product-price">${formatCurrency(producto.cost, producto.currency)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   });
 
-  document.getElementById("productsContainer").innerHTML = html;
+  container.innerHTML = html;
 }
 
-// === FUNCIONES DE FILTRADO Y ORDENAMIENTO ===
-// MEJORADO: Filtros optimizados para trabajar con datos reales de la API
+// === FILTRADO Y ORDENAMIENTO ===
 
-// Función para extraer marca del nombre del producto
+// Deriva la "marca" desde el nombre del producto
 function extractBrand(productName) {
-  const brands = [
-    "chevrolet",
-    "fiat",
-    "suzuki",
-    "peugeot",
-    "bugatti",
-    "toyota",
-    "hyundai",
-    "volkswagen",
-    "ford",
-    "honda",
-  ];
-  const nameLower = productName.toLowerCase();
-
-  for (const brand of brands) {
-    if (nameLower.includes(brand)) {
-      return brand;
-    }
-  }
-  return null;
+  if (!productName) return null;
+  const words = productName.trim().split(/\s+/);
+  return words[0]?.toLowerCase() || null;
 }
 
-// Función para extraer modelo del nombre del producto
+// Deriva el "modelo" desde el nombre del producto.
 function extractModel(productName) {
-  // Extraer la segunda palabra como modelo (después de la marca)
-  const words = productName.split(" ");
-  if (words.length >= 2) {
-    return words[1].toLowerCase();
-  }
-  return null;
+  if (!productName) return null;
+  const words = productName.trim().split(/\s+/);
+  return words.length >= 2 ? words[1].toLowerCase() : null;
 }
 
-// Función para poblar filtros dinámicamente basado en productos actuales
+// Pobla dinámicamente los selects de Marca y Modelo
+// utilizando los productos actualmente cargados.
 function populateFilters() {
   const brands = new Set();
   const models = new Set();
 
-  currentProducts.forEach((product) => {
-    const brand = extractBrand(product.name);
-    const model = extractModel(product.name);
+  // Solo generar marcas y modelos en categoría autos (101)
+  const currentCat = localStorage.getItem('catID');
 
-    if (brand) brands.add(brand);
-    if (model) models.add(model);
-  });
+  if (currentCat === '101') {
+    currentProducts.forEach((product) => {
+      const brand = extractBrand(product.name);
+      const model = extractModel(product.name);
 
-  // Poblar filtro de marcas
-  (FILTERS.brand || []).forEach((brandFilter) => {
+      if (brand) brands.add(brand);
+      if (model) models.add(model);
+    });
+  }
+
+  // Marcas
+  (FILTERS?.brand || []).forEach((brandFilter) => {
     const currentValue = brandFilter.value;
-    brandFilter.innerHTML =
-      '<option value="" disabled selected hidden>Marca</option>';
+    brandFilter.innerHTML = '<option value="" disabled selected hidden>Marca</option>';
+
     Array.from(brands)
       .sort()
       .forEach((brand) => {
-        const option = document.createElement("option");
+        const option = document.createElement('option');
         option.value = brand;
         option.textContent = brand.charAt(0).toUpperCase() + brand.slice(1);
         brandFilter.appendChild(option);
       });
 
-    // Restaurar valor seleccionado si existía
-    if (currentValue && brands.has(currentValue))
-      brandFilter.value = currentValue;
+    if (currentValue && brands.has(currentValue)) brandFilter.value = currentValue;
   });
 
-  // Poblar filtro de modelos
-  (FILTERS.model || []).forEach((modelFilter) => {
+  // Modelos
+  (FILTERS?.model || []).forEach((modelFilter) => {
     const currentValue = modelFilter.value;
-    modelFilter.innerHTML =
-      '<option value="" disabled selected hidden>Modelo</option>';
+    modelFilter.innerHTML = '<option value="" disabled selected hidden>Modelo</option>';
 
     Array.from(models)
       .sort()
       .forEach((model) => {
-        const option = document.createElement("option");
+        const option = document.createElement('option');
         option.value = model;
         option.textContent = model.charAt(0).toUpperCase() + model.slice(1);
         modelFilter.appendChild(option);
       });
 
-    // Restaurar valor seleccionado si existía
-    if (currentValue && models.has(currentValue))
-      modelFilter.value = currentValue;
+    if (currentValue && models.has(currentValue)) modelFilter.value = currentValue;
   });
 }
 
-// Función para ordenar productos (CONSIGNA PUNTO 2)
+// Ordena la lista de productos según el criterio seleccionado
 function sortProducts(products, sortType) {
   switch (sortType) {
-    case "price-asc":
+    case 'price-asc':
       return products.sort((a, b) => a.cost - b.cost);
-    case "price-desc":
+    case 'price-desc':
       return products.sort((a, b) => b.cost - a.cost);
-    case "relevance":
+    case 'relevance':
       return products.sort((a, b) => b.soldCount - a.soldCount);
     default:
       return products;
   }
 }
 
-// Función para aplicar filtros
+// Aplica todos los filtros (búsqueda, marca, modelo, precio y ordenamiento)
+// sobre la lista currentProducts y vuelve a renderizar
 function applyFilters() {
   let filtered = [...currentProducts];
 
-  const val = (arr, fallbackId) =>
-    FILTERS && arr
-      ? firstVal(arr)
-      : document.getElementById(fallbackId)?.value || "";
+  const search = getFilterValue(FILTERS?.search, 'searchFilter');
+  const brand = getFilterValue(FILTERS?.brand, 'brandFilter');
+  const model = getFilterValue(FILTERS?.model, 'modelFilter');
+  const minPrice = getFilterValue(FILTERS?.minPrice, 'minPriceFilter');
+  const maxPrice = getFilterValue(FILTERS?.maxPrice, 'maxPriceFilter');
+  const sort = getFilterValue(FILTERS?.sort, 'sortFilter');
 
-  // Nuevos filtros según consigna
-  const search = val(FILTERS?.search, "searchFilter");
-  const brand = val(FILTERS?.brand, "brandFilter");
-  const model = val(FILTERS?.model, "modelFilter");
-  const minPrice = val(FILTERS?.minPrice, "minPriceFilter");
-  const maxPrice = val(FILTERS?.maxPrice, "maxPriceFilter");
-  const sort = val(FILTERS?.sort, "sortFilter");
-
-  // Filtro de búsqueda (DESAFÍO)
-  if (search && search.trim() !== "") {
+  // Búsqueda en nombre / descripción
+  if (search && search.trim() !== '') {
     const searchTerm = search.toLowerCase().trim();
     filtered = filtered.filter((product) => {
       const nameMatch = product.name.toLowerCase().includes(searchTerm);
-      const descriptionMatch = product.description
-        .toLowerCase()
-        .includes(searchTerm);
+      const descriptionMatch = product.description.toLowerCase().includes(searchTerm);
       return nameMatch || descriptionMatch;
     });
   }
 
-  // Filtro de precio mínimo y máximo (CONSIGNA PUNTO 2)
+  // Precio mínimo / máximo
   if (minPrice && !isNaN(minPrice)) {
     filtered = filtered.filter((p) => p.cost >= parseInt(minPrice));
   }
@@ -320,17 +376,17 @@ function applyFilters() {
     filtered = filtered.filter((p) => p.cost <= parseInt(maxPrice));
   }
 
-  // Filtro de marca - usa extracción dinámica
+  // Filtro de marca
   if (brand) {
     filtered = filtered.filter((p) => extractBrand(p.name) === brand);
   }
 
-  // Filtro de modelo - usa extracción dinámica
+  // Filtro de modelo
   if (model) {
     filtered = filtered.filter((p) => extractModel(p.name) === model);
   }
 
-  // Aplicar ordenamiento (CONSIGNA PUNTO 2)
+  // Ordenamiento
   if (sort) {
     filtered = sortProducts(filtered, sort);
   }
@@ -340,38 +396,38 @@ function applyFilters() {
   renderPage();
 }
 
-// === FUNCIONES DE PAGINACIÓN ===
-// Ya no se usan botones de paginación, solo infinite scroll
-
-// Función para ir a una página específica (solo para reset en filtros)
+// === PAGINACIÓN (solo para reset desde filtros) ===
 function goToPage(page) {
   currentPage = page;
   renderPage();
-  
-  // Scroll suave al inicio de los productos
-  document.getElementById('productsContainer').scrollIntoView({ 
-    behavior: 'smooth',
-    block: 'start'
-  });
+
+  const container = document.getElementById('productsContainer');
+  if (container) {
+    container.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  }
 }
 
-// === FUNCIONES DE INFINITE SCROLL ===
+// === INFINITE SCROLL ===
 
-// Función para configurar el Intersection Observer
+// Configura el IntersectionObserver para cargar más productos
+// cuando el usuario llega al final de la lista.
 function setupInfiniteScroll() {
   const totalProducts = filteredProducts.length;
   const loadedProducts = currentPage * productsPerPage;
-  
-  // Si ya se cargaron todos los productos, no hacer nada
+
+  // Si ya se cargaron todos, limpiar y mostrar mensaje de fin
   if (loadedProducts >= totalProducts) {
+    cleanupInfiniteScroll();
     showEndOfResults();
     return;
   }
-  
-  // Limpiar observer anterior si existe
+
+  // Limpiar observer / sentinel anteriores
   cleanupInfiniteScroll();
-  
-  // Crear sentinel (elemento que detecta cuando llegamos al final)
+
   loadMoreSentinel = document.createElement('div');
   loadMoreSentinel.id = 'load-more-sentinel';
   loadMoreSentinel.className = 'load-more-container';
@@ -383,51 +439,50 @@ function setupInfiniteScroll() {
       <p class="mt-2">Cargando más productos...</p>
     </div>
   `;
-  
-  // Agregar sentinel después del container de productos
+
   const container = document.getElementById('productsContainer');
+  if (!container || !container.parentElement) return;
+
   container.parentElement.appendChild(loadMoreSentinel);
-  
+
   // Crear Intersection Observer
-  intersectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !isLoadingMore) {
-        loadMoreProducts();
-      }
-    });
-  }, {
-    threshold: 0.1,
-    rootMargin: '100px' // Cargar antes de llegar al final
-  });
-  
+  intersectionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !isLoadingMore) {
+          loadMoreProducts();
+        }
+      });
+    },
+    {
+      threshold: 0.1,
+      rootMargin: '100px', // Cargar antes de llegar al final
+    }
+  );
+
   // Observar el sentinel
   intersectionObserver.observe(loadMoreSentinel);
 }
 
-// Función para cargar más productos (infinite scroll)
+// Carga el siguiente "chunk" de productos
 function loadMoreProducts() {
   const totalProducts = filteredProducts.length;
   const loadedProducts = currentPage * productsPerPage;
-  
-  if (isLoadingMore || loadedProducts >= totalProducts) {
-    return;
-  }
-  
+
+  if (isLoadingMore || loadedProducts >= totalProducts) return;
+
   isLoadingMore = true;
-  
-  // Simular pequeño delay para mejor UX
+
   setTimeout(() => {
     currentPage++;
-    
+
     const startIndex = (currentPage - 1) * productsPerPage;
     const endIndex = startIndex + productsPerPage;
     const newProducts = filteredProducts.slice(startIndex, endIndex);
-    
-    // Agregar nuevos productos al final
+
     appendProducts(newProducts);
-    
     isLoadingMore = false;
-    
+
     // Verificar si hay más productos
     const newLoadedProducts = currentPage * productsPerPage;
     if (newLoadedProducts >= totalProducts) {
@@ -437,50 +492,41 @@ function loadMoreProducts() {
   }, 300);
 }
 
-// Función para agregar productos al contenedor existente
+// Agrega nuevas cards de productos al contenedor existente
 function appendProducts(productos) {
   const container = document.getElementById('productsContainer');
-  
-  // Obtener término de búsqueda
-  const val = (arr, fallbackId) =>
-    FILTERS && arr
-      ? firstVal(arr)
-      : document.getElementById(fallbackId)?.value || "";
+  if (!container) return;
 
-  const search = val(FILTERS?.search, "searchFilter");
-  const searchTerm = search && search.trim() !== "" ? search.trim() : null;
+  const search = getFilterValue(FILTERS?.search, 'searchFilter');
+  const searchTerm = search && search.trim() !== '' ? search.trim() : null;
 
-  // Obtener favoritos
   const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-  const favoriteIds = wishlist.map(item => item.productId);
-  
-  // Función para resaltar términos
-  const highlightText = (text, term) => {
-    if (!term) return text;
-    const regex = new RegExp(
-      `(${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
-      "gi"
-    );
-    return text.replace(regex, "<mark>$1</mark>");
-  };
-  
-  let html = "";
+  const favoriteIds = wishlist.map((item) => item.productId);
+
+  let html = '';
   productos.forEach((producto) => {
     const highlightedName = highlightText(producto.name, searchTerm);
     const highlightedDescription = highlightText(producto.description, searchTerm);
-    
+
     html += `
-      <div class="product-card" data-product-id="${producto.id}" onclick="goToProduct(${producto.id})">
+      <div class="product-card" data-product-id="${producto.id}" onclick="goToProduct(${
+      producto.id
+    })">
         <div class="product-image">
           <img src="${producto.image}" alt="${producto.name}" 
             loading="lazy"
             onerror="this.src='img/cars_index.jpg'"
             style="opacity: 0; transition: opacity 0.3s ease;"
             onload="this.style.opacity='1'">
-          <button class="favorite-btn ${favoriteIds.includes(producto.id) ? 'toggle-fav' : ''}" 
+          <button
+            class="favorite-btn ${favoriteIds.includes(producto.id) ? 'toggle-fav' : ''}"
             onclick="toggleFavorite(event, ${producto.id})"
-            style="${favoriteIds.includes(producto.id) ? 'color: var(--color-primary-orange);' : ''}"
-          >${favoriteIds.includes(producto.id) ? '♥' : '♡'}</button>
+            style="${
+              favoriteIds.includes(producto.id) ? 'color: var(--color-primary-orange);' : ''
+            }"
+          >
+            ${favoriteIds.includes(producto.id) ? '♥' : '♡'}
+          </button>
         </div>
         <div class="product-info">
           <h3 class="product-name">${highlightedName}</h3>
@@ -490,38 +536,40 @@ function appendProducts(productos) {
               <span class="product-sold">${producto.soldCount} vendidos</span>
             </div>
             <div class="product-meta">
-              <span class="product-price">${producto.currency} ${new Intl.NumberFormat("es-UY").format(producto.cost)}</span>
+              <span class="product-price">${formatCurrency(producto.cost, producto.currency)}</span>
             </div>
           </div>
         </div>
       </div>
     `;
   });
-  
-  // Agregar nuevos productos con animación
+
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = html;
-  
+
   Array.from(tempDiv.children).forEach((card, index) => {
     setTimeout(() => {
       card.style.opacity = '0';
       card.style.transform = 'translateY(20px)';
       container.appendChild(card);
-      
-      // Animar entrada
-      setTimeout(() => {
+
+      requestAnimationFrame(() => {
         card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
         card.style.opacity = '1';
         card.style.transform = 'translateY(0)';
-      }, 10);
-    }, index * 50); // Escalonar la aparición
+      });
+    }, index * 50);
   });
 }
 
 // Función para mostrar mensaje de fin de resultados
 function showEndOfResults() {
   const totalProducts = filteredProducts.length;
-  
+
+  // Eliminar mensaje anterior si existe
+  const existingMessage = document.querySelector('.end-of-results');
+  if (existingMessage) existingMessage.remove();
+
   const endMessage = document.createElement('div');
   endMessage.className = 'end-of-results';
   endMessage.innerHTML = `
@@ -530,63 +578,65 @@ function showEndOfResults() {
       <p class="mt-2 mb-0">Has visto todos los ${totalProducts} productos</p>
     </div>
   `;
-  
+
   const container = document.getElementById('productsContainer');
-  container.parentElement.appendChild(endMessage);
+  if (container && container.parentElement) {
+    container.parentElement.appendChild(endMessage);
+  }
 }
 
-// Función para limpiar infinite scroll
+// Limpia cualquier rastro de infinite scroll:
+// observer, sentinel y mensaje de fin
 function cleanupInfiniteScroll() {
   if (intersectionObserver) {
     intersectionObserver.disconnect();
     intersectionObserver = null;
   }
-  
+
   if (loadMoreSentinel) {
     loadMoreSentinel.remove();
     loadMoreSentinel = null;
   }
-  
+
   // Remover mensaje de fin de resultados
   const endMessage = document.querySelector('.end-of-results');
-  if (endMessage) {
-    endMessage.remove();
-  }
+  if (endMessage) endMessage.remove();
 }
 
-// === FUNCIONES DE UTILIDAD ===
+// === UTILIDADES ===
 
-// Función debounce para optimizar filtros
+// Debounce simple para evitar recalcular filtros en cada pulsación
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+    timeout = setTimeout(() => func(...args), wait);
   };
 }
 
-// Función para formatear precio
-function formatCurrency(amount) {
-  return new Intl.NumberFormat("es-UY", {
-    style: "currency",
-    currency: "USD",
+// Formatea un monto según la moneda del producto
+function formatCurrency(amount, currency = 'USD') {
+  return new Intl.NumberFormat('es-UY', {
+    style: 'currency',
+    currency,
     minimumFractionDigits: 0,
   }).format(amount);
 }
 
-// Función para mostrar errores
+// Muestra un estado de error dentro del contenedor de productos
 function showError(message) {
-  const container = document.getElementById("productsContainer");
+  cleanupInfiniteScroll();
+  const container = document.getElementById('productsContainer');
+  if (!container) return;
   container.innerHTML = `<div class="error-state">${message}</div>`;
 }
 
-// Función para mostrare el esqueleto de carga
+// Muestra skeletons de carga mientras se obtienen los productos
 function showLoadingSkeleton() {
-  const container = document.getElementById("productsContainer");
+  cleanupInfiniteScroll();
+  const container = document.getElementById('productsContainer');
+  if (!container) return;
+
   const skeletonHTML = Array(6)
     .fill()
     .map(
@@ -601,39 +651,39 @@ function showLoadingSkeleton() {
         </div>
     `
     )
-    .join("");
+    .join('');
 
   container.innerHTML = skeletonHTML;
 }
 
-// === FUNCIONES DE INTERACCIÓN ===
+// === INTERACCIÓN ===
 
-// Función para ir a la página de detalle del producto
+// Navega a la página de detalle de un producto
 function goToProduct(productId) {
   // Guardar el ID del producto para la próxima página
-  localStorage.setItem("selectedProduct", productId);
-  window.location.href = "product-info.html";
+  localStorage.setItem('selectedProduct', productId);
+  window.location.href = 'product-info.html';
 }
 
-// Función para alternar favorito
+// Marca / desmarca un producto como favorito y lo guarda en localStorage
 function toggleFavorite(event, productId) {
   event.stopPropagation(); // Evitar que se active el click del card
 
   const favoriteBtn = event.target;
-  const isFavorite = favoriteBtn.textContent === "♥";
+  const isFavorite = favoriteBtn.textContent === '♥';
 
   // Obtener favoritos actuales del localStorage
   let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
 
   if (isFavorite) {
     // Remover de favoritos
-    wishlist = wishlist.filter(item => item.productId !== productId);
-    favoriteBtn.textContent = "♡";
-    favoriteBtn.style.color = "";
-    favoriteBtn.classList.remove("toggle-fav");
+    wishlist = wishlist.filter((item) => item.productId !== productId);
+    favoriteBtn.textContent = '♡';
+    favoriteBtn.style.color = '';
+    favoriteBtn.classList.remove('toggle-fav');
   } else {
     // Agregar a favoritos
-    const product = currentProducts.find(p => p.id === productId);
+    const product = currentProducts.find((p) => p.id === productId);
     if (product) {
       wishlist.push({
         productId: product.id,
@@ -644,51 +694,51 @@ function toggleFavorite(event, productId) {
         image: product.image,
         soldCount: product.soldCount,
         addedAt: new Date().toISOString(),
-        priceWhenAdded: product.cost
+        priceWhenAdded: product.cost,
       });
     }
-    favoriteBtn.textContent = "♥";
-    favoriteBtn.style.color = "var(--color-primary-orange)";
-    favoriteBtn.classList.add("toggle-fav");
+    favoriteBtn.textContent = '♥';
+    favoriteBtn.style.color = 'var(--color-primary-orange)';
+    favoriteBtn.classList.add('toggle-fav');
   }
 
   // Guardar en localStorage
   localStorage.setItem('wishlist', JSON.stringify(wishlist));
 }
 
-// === FUNCIONES DE CONFIGURACIÓN ===
+// === CONFIGURACIÓN DE FILTROS ===
 
-// Función para configurar los filtros
+// Configura listeners de filtros (desktop + mobile) usando el bridge FILTERS
 function setupFilters() {
   const debouncedApply = debounce(applyFilters, 250);
 
-  // Búsqueda (DESAFÍO)
+  // Búsqueda
   (FILTERS.search || []).forEach((el) =>
-    el.addEventListener("input", (e) => {
+    el.addEventListener('input', (e) => {
       mirror(FILTERS.search, e.target);
       debouncedApply();
     })
   );
 
-  // Precio mínimo (CONSIGNA PUNTO 2)
+  // Precio mínimo
   (FILTERS.minPrice || []).forEach((el) =>
-    el.addEventListener("input", (e) => {
+    el.addEventListener('input', (e) => {
       mirror(FILTERS.minPrice, e.target);
       debouncedApply();
     })
   );
 
-  // Precio máximo (CONSIGNA PUNTO 2)
+  // Precio máximo
   (FILTERS.maxPrice || []).forEach((el) =>
-    el.addEventListener("input", (e) => {
+    el.addEventListener('input', (e) => {
       mirror(FILTERS.maxPrice, e.target);
       debouncedApply();
     })
   );
 
-  // Ordenamiento (CONSIGNA PUNTO 2)
+  // Ordenamiento
   (FILTERS.sort || []).forEach((el) =>
-    el.addEventListener("change", (e) => {
+    el.addEventListener('change', (e) => {
       mirror(FILTERS.sort, e.target);
       debouncedApply();
     })
@@ -696,7 +746,7 @@ function setupFilters() {
 
   // Marca
   (FILTERS.brand || []).forEach((el) =>
-    el.addEventListener("change", (e) => {
+    el.addEventListener('change', (e) => {
       mirror(FILTERS.brand, e.target);
       updateModelFilter();
       debouncedApply();
@@ -705,15 +755,15 @@ function setupFilters() {
 
   // Modelo
   (FILTERS.model || []).forEach((el) =>
-    el.addEventListener("change", (e) => {
+    el.addEventListener('change', (e) => {
       mirror(FILTERS.model, e.target);
       debouncedApply();
     })
   );
 
-  // Limpiar (los dos botones) - ACTUALIZADO para nuevos filtros
+  // Limpiar filtros (botón desktop + mobile)
   (FILTERS.clear || []).forEach((btn) =>
-    btn.addEventListener("click", () => {
+    btn.addEventListener('click', () => {
       [
         ...FILTERS.search,
         ...FILTERS.minPrice,
@@ -721,14 +771,15 @@ function setupFilters() {
         ...FILTERS.sort,
         ...FILTERS.brand,
         ...FILTERS.model,
-      ].forEach((el) => el && (el.value = ""));
+      ].forEach((el) => el && (el.value = ''));
+
       populateFilters();
       applyFilters();
     })
   );
 }
 
-// Función para actualizar filtro de modelos basado en marca seleccionada
+// Actualiza la lista de modelos disponible según la marca seleccionada
 function updateModelFilter() {
   const selectedBrand = firstVal(FILTERS.brand);
   const models = new Set();
@@ -744,64 +795,81 @@ function updateModelFilter() {
   (FILTERS.model || []).forEach((modelFilter) => {
     const prev = modelFilter.value;
     modelFilter.innerHTML = '<option value="">Modelo</option>';
+
     Array.from(models)
       .sort()
       .forEach((m) => {
-        const opt = document.createElement("option");
+        const opt = document.createElement('option');
         opt.value = m;
         opt.textContent = m.charAt(0).toUpperCase() + m.slice(1);
         modelFilter.appendChild(opt);
       });
-    modelFilter.value = prev && models.has(prev) ? prev : "";
+
+    modelFilter.value = prev && models.has(prev) ? prev : '';
   });
 }
 
-document.addEventListener("DOMContentLoaded", async function () {
-  // Session control is handled globally by init.js
-  // updateUserInterface() and setupLogout() are now in init.js
-
+// === INICIALIZACIÓN ===
+document.addEventListener('DOMContentLoaded', async function () {
   try {
-    // Configurar filtros
+    // Bridge de filtros (desktop + mobile)
     FILTERS = collectFilters();
     setupFilters();
 
-    // CAMBIO: Ahora se obtiene el id de categoría desde localStorage (clave 'catID')
-    // Esto permite que el listado de productos se adapte a la categoría seleccionada por el usuario.
-    // Si no existe, se usa 101 como valor por defecto (autos).
-    let categoryId = localStorage.getItem("catID");
-    if (!categoryId) {
-      // Si no existe, usar 101 como fallback
-      categoryId = 101;
-    }
-    // === CAMBIO: Actualización dinámica del título de la categoría ===
-    // 1. Se obtiene el elemento del título de la categoría (h1 con id 'categoryTitle').
-    // 2. Se intenta recuperar el nombre de la categoría desde un array guardado en localStorage ('categoriesArray'),
-    //    que debería contener todas las categorías disponibles (esto lo puede guardar categories.js al cargar las categorías).
-    // 3. Si se encuentra la categoría por id, se usa su nombre real.
-    // 4. Si no se encuentra, se usan nombres por defecto para los ids conocidos (101, 102, 103),
-    //    y para cualquier otro id se muestra 'Categoría <id>' como fallback.
-    // 5. Finalmente, se actualiza el texto del título en la página para reflejar la categoría seleccionada.
-    const categoryTitle = document.getElementById("categoryTitle");
-    let categoryName = "";
-    try {
-      const categoriesRaw = localStorage.getItem("categoriesArray");
-      if (categoriesRaw) {
-        const categories = JSON.parse(categoriesRaw);
-        // Buscar el nombre de la categoría por id (comparando como string para evitar errores de tipo)
-        const found = categories.find(
-          (cat) => String(cat.id) === String(categoryId)
-        );
-        if (found && found.name) categoryName = found.name;
-      }
-    } catch (e) {}
-    // Si no se encuentra el nombre, mostrar 'Otros'
-    if (!categoryName) {
-      categoryName = "Otros";
-    }
-    if (categoryTitle) categoryTitle.textContent = categoryName;
+    // === LÓGICA DE VISTA INICIAL ===
+    const showAllProducts = localStorage.getItem('showAllProducts'); // "true" | "false" | null
+    let categoryId = localStorage.getItem('catID');
 
-    await fetchProducts(categoryId);
+    // Si viene el flag showAllProducts === "true" -> mostrar todos
+    // Si NO hay catID guardado -> mostrar todos
+    const shouldShowAll = showAllProducts === 'true' || !categoryId;
+
+    if (shouldShowAll) {
+      // Limpiar flags solo si se viene explícitamente de "ver todos"
+      if (showAllProducts === 'true') {
+        localStorage.removeItem('showAllProducts');
+        localStorage.removeItem('catID');
+      }
+
+      // Título y breadcrumb para Productos
+      const categoryTitle = document.getElementById('categoryTitle');
+      if (categoryTitle) categoryTitle.textContent = 'Productos';
+
+      const breadcrumbCategory = document.getElementById('breadcrumb-category');
+      if (breadcrumbCategory) {
+        breadcrumbCategory.innerHTML = `<i class="bi bi-grid"></i> Productos`;
+      }
+
+      // Cargar TODOS los productos (todas las categorías)
+      await fetchAllProducts();
+    } else {
+      // === COMPORTAMIENTO ORIGINAL: productos por categoría ===
+      const categoryTitle = document.getElementById('categoryTitle');
+      let categoryName = '';
+
+      try {
+        const categoriesRaw = localStorage.getItem('categoriesArray');
+        if (categoriesRaw) {
+          const categories = JSON.parse(categoriesRaw);
+          const found = categories.find((cat) => String(cat.id) === String(categoryId));
+          if (found && found.name) categoryName = found.name;
+        }
+      } catch (e) {
+        // Si falla el parse, se usa el fallback
+      }
+
+      if (!categoryName) categoryName = 'Otros';
+      if (categoryTitle) categoryTitle.textContent = categoryName;
+
+      // Actualizar breadcrumb con el nombre de la categoría
+      const breadcrumbCategory = document.getElementById('breadcrumb-category');
+      if (breadcrumbCategory) {
+        breadcrumbCategory.innerHTML = `<i class="bi bi-grid"></i> ${categoryName}`;
+      }
+
+      await fetchProducts(categoryId);
+    }
   } catch (error) {
-    showError("Error al inicializar la página");
+    showError('Error al inicializar la página');
   }
 });

@@ -6,16 +6,6 @@
 }
 
 /* ========= ENCABEZADO ========= */
-.filters-container {
-  display: flex;
-  gap: var(--space-xl);
-  align-items: flex-end;
-  justify-content: space-between;
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--border-light);
-  margin-bottom: var(--space-xl);
-}
-
 .page-sub {
   margin: 0;
   color: var(--text-secondary);
@@ -168,12 +158,6 @@
 
 /* ========= RESPONSIVE ========= */
 @media (max-width: 1200px) {
-  .categories-container .filters-container {
-    flex-direction: column;
-    align-items: center !important;
-    gap: var(--space-md);
-  }
-
   .categories-container .filters-left {
     width: 100%;
     display: flex;
@@ -194,10 +178,6 @@
 }
 
 @media (max-width: 1024px) {
-  .filters-container {
-    align-items: center;
-  }
-
   .filters-left {
     align-self: center;
     text-align: center;
