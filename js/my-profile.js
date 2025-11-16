@@ -901,18 +901,6 @@ function getOrders() {
   return readLS(ORDERS_KEY, []);
 }
 
-// Formatea una fecha ISO a formato legible
-function formatOrderDate(isoDate) {
-  const date = new Date(isoDate);
-  return date.toLocaleDateString('es-UY', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
 // Obtiene el nombre del estado en español
 function getStatusName(status) {
   const statusMap = {
@@ -969,7 +957,7 @@ function renderOrders(filter = 'all') {
           <span class="order-number">#${order.id}</span>
           <span class="order-date">
             <i class="bi bi-calendar3"></i>
-            ${formatOrderDate(order.date)}
+            ${formatDate(order.date)}
           </span>
         </div>
         <span class="order-status ${order.status}">

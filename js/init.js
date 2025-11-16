@@ -60,10 +60,22 @@ function writeLS(key, value) {
 }
 
 // Formatea un monto en forma amigable, mostrando decimales solo si son necesarios
-function money(amount, currency = 'USD') {
+// Si withSymbol es true, muestra el símbolo de la moneda (ej: "USD $1,234.56")
+// Si withSymbol es false, muestra solo el código (ej: "USD 1234.56")
+function money(amount, currency = 'USD', withSymbol = false) {
   const raw = Number(amount) || 0;
   const value = Math.round((raw + Number.EPSILON) * 100) / 100;
 
+  if (withSymbol) {
+    // Formato con símbolo de moneda
+    return new Intl.NumberFormat('es-UY', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 0,
+    }).format(value);
+  }
+
+  // Formato simple sin símbolo (comportamiento original)
   const hasDecimals = Math.abs(value - Math.round(value)) > 1e-6;
   const fractionDigits = hasDecimals ? 2 : 0;
 
@@ -71,6 +83,53 @@ function money(amount, currency = 'USD') {
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits,
   })}`;
+}
+
+// Formatea una fecha ISO o timestamp a formato legible en español
+// Soporta múltiples formatos de entrada:
+// - ISO string: "2024-01-15T10:30:00"
+// - Date string: "2024-01-15 10:30:00"
+// - Simple date: "2024-01-15"
+// shortFormat = true: "15/01/2024" (solo fecha)
+// shortFormat = false: "15 de enero de 2024, 10:30" (fecha y hora)
+function formatDate(dateInput, shortFormat = false) {
+  if (!dateInput) return '';
+
+  let date;
+
+  // Si es string tipo "2024-01-15" o "2024-01-15 10:30:00"
+  if (typeof dateInput === 'string') {
+    // Formato corto dd/mm/yyyy para fechas de reviews
+    if (shortFormat && dateInput.includes('-')) {
+      try {
+        const [datePart] = dateInput.split(' ');
+        const [yyyy, mm, dd] = datePart.split('-');
+        if (yyyy && mm && dd) {
+          return `${dd}/${mm}/${yyyy}`;
+        }
+      } catch (e) {
+        // Si falla, continuar con formato normal
+      }
+    }
+
+    date = new Date(dateInput);
+  } else {
+    date = new Date(dateInput);
+  }
+
+  // Verificar que la fecha es válida
+  if (isNaN(date.getTime())) {
+    return String(dateInput);
+  }
+
+  // Formato largo con fecha y hora
+  return date.toLocaleDateString('es-UY', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 function isMobile() {

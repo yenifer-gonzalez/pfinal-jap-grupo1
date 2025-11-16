@@ -614,13 +614,9 @@ function debounce(func, wait) {
   };
 }
 
-// Formatea un monto según la moneda del producto
+// Formatea un monto según la moneda del producto (usa money() de init.js con símbolo)
 function formatCurrency(amount, currency = 'USD') {
-  return new Intl.NumberFormat('es-UY', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 0,
-  }).format(amount);
+  return money(amount, currency, true);
 }
 
 // Muestra un estado de error dentro del contenedor de productos

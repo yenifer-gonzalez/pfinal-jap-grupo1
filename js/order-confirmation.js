@@ -6,18 +6,6 @@ function getOrderIdFromURL() {
   return params.get('order');
 }
 
-// Formatear fecha
-function formatDate(isoString) {
-  const date = new Date(isoString);
-  return date.toLocaleDateString('es-UY', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
 // Cargar datos del pedido
 function loadOrderData() {
   const orderId = getOrderIdFromURL();

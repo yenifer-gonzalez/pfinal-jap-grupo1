@@ -352,21 +352,10 @@ function starsHTML(score, max = 5) {
   return icons.join('');
 }
 
-function formatReviewDate(dstr) {
-  try {
-    const [datePart] = String(dstr).split(' ');
-    const [yyyy, mm, dd] = datePart.split('-');
-    if (yyyy && mm && dd) return `${dd}/${mm}/${yyyy}`;
-  } catch (e) {
-    // Ignorar y devolver sin formatear
-  }
-  return dstr || '';
-}
-
 function reviewItemHTML({ user, dateTime, score, description }) {
   const safeUser = user || 'Usuario';
   const safeText = description || '';
-  const safeDate = formatReviewDate(dateTime || '');
+  const safeDate = formatDate(dateTime || '', true); // true = formato corto dd/mm/yyyy
 
   return `
     <article class="review-item">
