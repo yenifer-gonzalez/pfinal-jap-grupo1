@@ -2,14 +2,14 @@
 <html lang="es">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Mi Perfil - e-Mercado | Gestiona tu cuenta</title>
-    <meta name="description" content="Administra tu información personal, historial de compras y preferencias. Tu espacio personal en e-Mercado." />
+    <meta
+      name="description"
+      content="Administra tu información personal, historial de compras y preferencias. Tu espacio personal en e-Mercado."
+    />
     <meta name="author" content="Grupo 1 - JAP 2024" />
-    
+
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -43,7 +43,11 @@
       <div class="header-container">
         <div class="header-logo">
           <a href="index.html" class="logo-icon">
-            <img src="img/logo-jap.svg" alt="e-Mercado - Tienda online de productos" class="logo-img" />
+            <img
+              src="img/logo-jap.svg"
+              alt="e-Mercado - Tienda online de productos"
+              class="logo-img"
+            />
           </a>
         </div>
 
@@ -67,15 +71,9 @@
               <i class="bi bi-person me-2"></i>
               <span id="usernameDisplay"></span>
             </button>
-            <ul
-              class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="userDropdown"
-            >
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li>
-                <a
-                  class="dropdown-item active"
-                  aria-current="page"
-                  href="my-profile.html"
+                <a class="dropdown-item active" aria-current="page" href="my-profile.html"
                   ><i class="bi bi-person-circle me-2"></i>Mi perfil</a
                 >
               </li>
@@ -105,13 +103,25 @@
           </div>
           <a href="cart.html" class="cart-icon" aria-label="Ir al carrito">
             <i class="bi bi-cart3"></i>
-            <span id="cartBadge" class="cart-badge" aria-live="polite" aria-label="Productos en carrito">0</span>
+            <span
+              id="cartBadge"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
           </a>
         </div>
         <div class="mobile-actions">
           <a href="cart.html" class="cart-icon-mobile" aria-label="Ir al carrito">
             <i class="bi bi-cart3"></i>
-            <span id="cartBadgeMobile" class="cart-badge" aria-live="polite" aria-label="Productos en carrito">0</span>
+            <span
+              id="cartBadgeMobile"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
           </a>
           <button id="menuButton" class="btn menu-toggle" aria-label="Abrir menú">
             <i class="bi bi-list"></i>
@@ -120,23 +130,30 @@
       </div>
     </header>
 
-    <!-- Sidebar navegación responsive -->
+    <!-- Sidebar Navegación -->
     <aside id="navSidebar" class="sidebar right hidden">
       <div class="sidebar-content">
         <div class="user-info">
           <i class="bi bi-person-circle"></i>
           <p id="sidebarUsername">example@gmail.com</p>
         </div>
-
         <nav class="sidebar-nav">
           <a href="index.html">Inicio</a>
           <a href="categories.html">Categorías</a>
           <a href="products.html">Productos</a>
           <a href="sell.html">Vender</a>
-          <a href="my-profile.html" class="active">Mi perfil</a>
+          <a href="my-profile.html">Mi perfil</a>
           <a href="cart.html">Mi carrito</a>
         </nav>
         <hr />
+        <button
+          class="sidebar-theme-toggle"
+          id="theme-toggle-sidebar"
+          aria-label="Toggle dark/light theme"
+        >
+          <span>Modo oscuro</span>
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </button>
         <a href="#" class="sidebar-logout" data-logout>
           <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
         </a>
@@ -205,22 +222,6 @@
               >
                 <i class="bi bi-credit-card me-2"></i> Métodos de pago
               </button>
-              <button
-                id="tab-security"
-                class="profile-tab-btn"
-                type="button"
-                data-target="panel-security"
-              >
-                <i class="bi bi-shield-lock me-2"></i> Seguridad
-              </button>
-              <button
-                id="tab-settings"
-                class="profile-tab-btn"
-                type="button"
-                data-target="panel-settings"
-              >
-                <i class="bi bi-gear me-2"></i> Configuración
-              </button>
             </nav>
           </div>
         </aside>
@@ -228,11 +229,7 @@
         <!-- Columna derecha: contenido -->
         <section class="profile-content">
           <!-- Panel: Mis datos (default) -->
-          <article
-            id="panel-data"
-            class="profile-panel"
-            aria-labelledby="panel-data-title"
-          >
+          <article id="panel-data" class="profile-panel" aria-labelledby="panel-data-title">
             <header class="profile-panel-header">
               <h2 id="panel-data-title">Datos del usuario</h2>
             </header>
@@ -249,25 +246,14 @@
               </div>
 
               <div class="photo-actions vertical">
-                <input
-                  id="profilePhotoInput"
-                  type="file"
-                  accept="image/*"
-                  hidden
-                />
-                <button
-                  id="btnPhotoEdit"
-                  class="btn-photo btn-sm"
-                  type="button"
-                >
-                  Editar
+                <input id="profilePhotoInput" type="file" accept="image/*" hidden />
+                <button id="btnPhotoEdit" class="btn-photo btn-sm" type="button">
+                  <i class="bi bi-pencil-fill"></i>
+                  <span class="btn-text">Editar</span>
                 </button>
-                <button
-                  id="btnPhotoRemove"
-                  class="btn-photo btn-sm"
-                  type="button"
-                >
-                  Eliminar
+                <button id="btnPhotoRemove" class="btn-photo btn-sm" type="button">
+                  <i class="bi bi-trash-fill"></i>
+                  <span class="btn-text">Eliminar</span>
                 </button>
               </div>
             </div>
@@ -276,22 +262,12 @@
             <form id="profileForm" action="#" method="post" novalidate>
               <div class="form-row">
                 <label for="firstName">Nombre</label>
-                <input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  autocomplete="given-name"
-                />
+                <input id="firstName" name="firstName" type="text" autocomplete="given-name" />
               </div>
 
               <div class="form-row">
                 <label for="lastName">Apellido</label>
-                <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  autocomplete="family-name"
-                />
+                <input id="lastName" name="lastName" type="text" autocomplete="family-name" />
               </div>
 
               <div class="form-row">
@@ -318,9 +294,7 @@
               </div>
 
               <div class="form-actions">
-                <button id="btnSaveProfile" type="submit">
-                  Guardar cambios
-                </button>
+                <button id="btnSaveProfile" type="submit">Guardar cambios</button>
                 <button id="btnResetProfile" type="reset">Restablecer</button>
               </div>
             </form>
@@ -343,11 +317,12 @@
 
             <!-- Lista de direcciones -->
             <div id="addressesList" class="addresses-list">
-              <!-- Las direcciones se cargarán dinámicamente aquí -->
               <div class="no-addresses">
                 <i class="bi bi-geo-alt"></i>
                 <p>No tienes direcciones guardadas</p>
-                <p class="text-muted">Agrega tu primera dirección para hacer tus compras más rápido</p>
+                <p class="text-muted">
+                  Agrega tu primera dirección para hacer tus compras más rápido
+                </p>
               </div>
             </div>
           </article>
@@ -393,7 +368,11 @@
               <!-- Nota de simulación -->
               <div class="simulation-notice">
                 <i class="bi bi-info-circle"></i>
-                <span><strong>Simulación:</strong> En un entorno real, los pedidos cambiarían de estado automáticamente (pendiente → confirmado → completado). Por ahora, todos los pedidos se crean como "Pendientes".</span>
+                <span
+                  ><strong>Simulación:</strong> En un entorno real, los pedidos cambiarían de estado
+                  automáticamente (pendiente → confirmado → completado). Por ahora, todos los
+                  pedidos se crean como "Pendientes".</span
+                >
               </div>
 
               <!-- Filtros de pedidos -->
@@ -413,9 +392,7 @@
               </div>
 
               <!-- Lista de pedidos -->
-              <div id="ordersList" class="orders-list">
-                <!-- Se llena dinámicamente con JavaScript -->
-              </div>
+              <div id="ordersList" class="orders-list"></div>
             </div>
           </article>
 
@@ -432,42 +409,7 @@
 
             <div class="favorites-content">
               <!-- Lista de favoritos -->
-              <div id="favoritesList" class="favorites-grid">
-                <!-- Se llena dinámicamente con JavaScript -->
-              </div>
-            </div>
-          </article>
-
-          <!-- ========= Panel: Seguridad ========= -->
-          <article
-            id="panel-security"
-            class="profile-panel"
-            aria-labelledby="panel-security-title"
-            hidden
-          >
-            <header class="profile-panel-header">
-              <h2 id="panel-security-title">Seguridad</h2>
-            </header>
-
-            <div class="security-placeholder">
-              <p>Opciones para cambiar contraseña, activar 2FA, etc.</p>
-            </div>
-          </article>
-
-          <!-- ========= Panel: Configuración ========= -->
-          <article
-            id="panel-settings"
-            class="profile-panel"
-            aria-labelledby="panel-settings-title"
-            hidden
-          >
-            <header class="profile-panel-header">
-              <h2 id="panel-settings-title">Configuración</h2>
-            </header>
-
-            <!-- Placeholder de contenido -->
-            <div class="settings-placeholder">
-              <p>Preferencias de idioma, tema, notificaciones, etc.</p>
+              <div id="favoritesList" class="favorites-grid"></div>
             </div>
           </article>
         </section>
@@ -477,11 +419,22 @@
       <div id="modalOverlay" class="modal-overlay"></div>
 
       <!-- Modal para agregar/editar dirección -->
-      <aside id="addressModal" class="address-modal" role="dialog" aria-modal="true" aria-labelledby="addressModalTitle">
+      <aside
+        id="addressModal"
+        class="address-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="addressModalTitle"
+      >
         <div class="address-modal-dialog">
           <header class="address-modal-header">
             <h3 id="addressModalTitle">Agregar dirección</h3>
-            <button id="closeAddressModalBtn" type="button" class="btn-close-modal" aria-label="Cerrar">
+            <button
+              id="closeAddressModalBtn"
+              type="button"
+              class="btn-close-modal"
+              aria-label="Cerrar"
+            >
               <i class="bi bi-x-lg"></i>
             </button>
           </header>
@@ -498,6 +451,7 @@
                 name="alias"
                 placeholder="Ej: Casa, Oficina, Trabajo"
                 required
+                autocomplete="off"
               />
             </div>
 
@@ -510,6 +464,7 @@
                 name="street"
                 placeholder="Ej: Av. 18 de Julio 1234"
                 required
+                autocomplete="address-line1"
               />
             </div>
 
@@ -521,6 +476,7 @@
                 id="addressCorner"
                 name="corner"
                 placeholder="Ej: Esquina Ejido"
+                autocomplete="address-line2"
               />
             </div>
 
@@ -532,6 +488,7 @@
                 id="addressApartment"
                 name="apartment"
                 placeholder="Ej: Apto 4B, Casa 5"
+                autocomplete="address-line2"
               />
             </div>
 
@@ -545,6 +502,7 @@
                   name="city"
                   placeholder="Montevideo"
                   required
+                  autocomplete="address-level2"
                 />
               </div>
 
@@ -556,6 +514,7 @@
                   name="state"
                   placeholder="Montevideo"
                   required
+                  autocomplete="address-level1"
                 />
               </div>
             </div>
@@ -570,6 +529,7 @@
                   name="zipCode"
                   placeholder="11200"
                   required
+                  autocomplete="postal-code"
                 />
               </div>
 
@@ -581,6 +541,7 @@
                   name="country"
                   value="Uruguay"
                   required
+                  autocomplete="country"
                 />
               </div>
             </div>
@@ -594,6 +555,7 @@
                 name="phone"
                 placeholder="+598 99 123 456"
                 required
+                autocomplete="tel"
               />
             </div>
 
@@ -626,9 +588,7 @@
 
           <!-- Botones de acción -->
           <div class="address-modal-footer">
-            <button id="cancelAddressModal" type="button" class="btn-cancel-modal">
-              Cancelar
-            </button>
+            <button id="cancelAddressModal" type="button" class="btn-cancel-modal">Cancelar</button>
             <button type="submit" form="addressForm" class="btn-save-address">
               <i class="bi bi-check-circle me-2"></i>
               Guardar dirección
@@ -639,7 +599,13 @@
     </main>
 
     <!-- ========= Modal: Agregar/Editar Tarjeta ========= -->
-    <aside id="cardModal" class="address-modal" role="dialog" aria-modal="true" aria-labelledby="cardModalTitle">
+    <aside
+      id="cardModal"
+      class="address-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cardModalTitle"
+    >
       <div class="address-modal-dialog">
         <header class="address-modal-header">
           <h3 id="cardModalTitle">Agregar tarjeta de pago</h3>
@@ -653,9 +619,7 @@
 
           <!-- Número de tarjeta -->
           <div class="form-group">
-            <label for="cardNumber">
-              Número de tarjeta <span class="text-danger">*</span>
-            </label>
+            <label for="cardNumber"> Número de tarjeta <span class="text-danger">*</span> </label>
             <input
               type="text"
               id="cardNumber"
@@ -671,9 +635,7 @@
 
           <!-- Nombre en la tarjeta -->
           <div class="form-group">
-            <label for="cardName">
-              Nombre en la tarjeta <span class="text-danger">*</span>
-            </label>
+            <label for="cardName"> Nombre en la tarjeta <span class="text-danger">*</span> </label>
             <input
               type="text"
               id="cardName"
@@ -688,9 +650,7 @@
           <!-- Fecha de vencimiento y CVV -->
           <div class="form-row-group">
             <div class="form-group">
-              <label for="cardExpiry">
-                Vencimiento <span class="text-danger">*</span>
-              </label>
+              <label for="cardExpiry"> Vencimiento <span class="text-danger">*</span> </label>
               <input
                 type="text"
                 id="cardExpiry"
@@ -705,9 +665,7 @@
             </div>
 
             <div class="form-group">
-              <label for="cardCvv">
-                CVV <span class="text-danger">*</span>
-              </label>
+              <label for="cardCvv"> CVV <span class="text-danger">*</span> </label>
               <input
                 type="text"
                 id="cardCvv"
@@ -724,9 +682,7 @@
 
           <!-- Alias de la tarjeta -->
           <div class="form-group">
-            <label for="cardAlias">
-              Alias (opcional)
-            </label>
+            <label for="cardAlias"> Alias (opcional) </label>
             <input
               type="text"
               id="cardAlias"
@@ -756,9 +712,7 @@
 
         <!-- Botones de acción -->
         <div class="address-modal-footer">
-          <button id="cancelCardModal" type="button" class="btn-cancel-modal">
-            Cancelar
-          </button>
+          <button id="cancelCardModal" type="button" class="btn-cancel-modal">Cancelar</button>
           <button type="submit" form="cardForm" class="btn-save-address">
             <i class="bi bi-check-circle me-2"></i>
             Guardar tarjeta
@@ -768,23 +722,19 @@
     </aside>
 
     <!-- ======= Footer ======= -->
-    <footer class="text-muted">
-      <div class="container">
-        <p>
+    <footer>
+      <div class="footer-container">
+        <p class="footer-text">
           Este sitio forma parte de
-          <a href="https://jovenesaprogramar.edu.uy/" target="_blank"
-            >Jóvenes a Programar</a
-          >
+          <a href="https://jovenesaprogramar.edu.uy/" target="_blank">Jóvenes a Programar</a>
         </p>
-        <p class="float-end"><a href="#">Volver arriba</a></p>
+        <p class="footer-back-to-top">
+          <a href="#">Volver arriba</a>
+        </p>
       </div>
     </footer>
 
-    <button
-      id="theme-toggle"
-      class="theme-toggle-btn"
-      aria-label="Toggle dark/light theme"
-    >
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
       <i class="fas fa-moon" aria-hidden="true"></i>
     </button>
 

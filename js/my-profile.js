@@ -1,141 +1,137 @@
-// === FUNCIONALIDAD ESPECÍFICA DE MY-PROFILE ===
-const PROFILE_KEY = "profileData";
-const PLACEHOLDER_IMG = "img/img_perfil.png";
-const PROFILE_PHOTO_KEY = "profilePhoto"; // nueva
+const PROFILE_KEY = 'profileData';
+const PLACEHOLDER_IMG = 'img/img_perfil.png';
+const PROFILE_PHOTO_KEY = 'profilePhoto';
+const ADDRESSES_KEY = 'userAddresses';
+const MAX_ADDRESSES = 10;
+const CARDS_KEY = 'userCards';
+const MAX_CARDS = 5;
+const ORDERS_KEY = 'orders';
+const WISHLIST_KEY = 'wishlist';
 
-// ===== Utils =====
-const readLS = (key, fb = null) => {
-  try {
-    return JSON.parse(localStorage.getItem(key)) ?? fb;
-  } catch {
-    return fb;
-  }
-};
-const writeLS = (key, value) =>
-  localStorage.setItem(key, JSON.stringify(value));
+// Reutiliza el formateador global de init.js
+const formatMoney = money;
 
-// Obtiene el email inicial desde la sesión solo si es válido.
+// === PERFIL BÁSICO (DATOS + NOMBRE) ===
+
+// Obtiene el email inicial desde la sesión solo si es válido
 function getInitialEmail() {
   try {
     const user = getCurrentUser();
-    const email = user?.username || "";
-    return email.includes("@") ? email : "";
+    const email = user?.username || '';
+    return email.includes('@') ? email : '';
   } catch {
-    return "";
+    return '';
   }
 }
 
-// Completa el nombre en la tarjeta lateral (sidebar).
+// Completa el nombre en la tarjeta lateral (sidebar)
 function fillSidebarName(data) {
-  const el = document.getElementById("profileSidebarName");
+  const el = document.getElementById('profileSidebarName');
   if (!el) return;
-  const full = [data.firstName, data.lastName].filter(Boolean).join(" ").trim();
-  el.textContent = full || "Nombre Apellido";
+  const full = [data.firstName, data.lastName].filter(Boolean).join(' ').trim();
+  el.textContent = full || 'Nombre Apellido';
 }
 
-// ===== Carga/guardado de perfil =====
+// ==== Carga/guardado de perfil ====
 function loadUserProfile() {
   const stored = readLS(PROFILE_KEY, null);
 
-  const firstName = document.getElementById("firstName");
-  const lastName = document.getElementById("lastName");
-  const email = document.getElementById("email");
-  const phone = document.getElementById("phone");
+  const firstName = document.getElementById('firstName');
+  const lastName = document.getElementById('lastName');
+  const email = document.getElementById('email');
+  const phone = document.getElementById('phone');
 
   if (stored) {
-    if (firstName) firstName.value = stored.firstName || "";
-    if (lastName) lastName.value = stored.lastName || "";
-    if (email) email.value = stored.email || "";
-    if (phone) phone.value = stored.phone || "";
+    if (firstName) firstName.value = stored.firstName || '';
+    if (lastName) lastName.value = stored.lastName || '';
+    if (email) email.value = stored.email || '';
+    if (phone) phone.value = stored.phone || '';
     fillSidebarName(stored);
   } else {
     // Primera vez: precargar email de la sesión
     if (email) email.value = getInitialEmail();
-    fillSidebarName({ firstName: "", lastName: "" });
+    fillSidebarName({ firstName: '', lastName: '' });
   }
 }
 
-// Maneja el guardado del perfil. Valida email y guarda en localStorage
-// también actualiza el nombre del sidebar.
+// Guarda el perfil (con validación de email) y actualiza el sidebar
 function saveUserProfile(e) {
   e?.preventDefault();
 
   const data = {
-    firstName: document.getElementById("firstName")?.value.trim() || "",
-    lastName: document.getElementById("lastName")?.value.trim() || "",
-    email: document.getElementById("email")?.value.trim() || "",
-    phone: document.getElementById("phone")?.value.trim() || "",
+    firstName: document.getElementById('firstName')?.value.trim() || '',
+    lastName: document.getElementById('lastName')?.value.trim() || '',
+    email: document.getElementById('email')?.value.trim() || '',
+    phone: document.getElementById('phone')?.value.trim() || '',
   };
 
   // Validación de email requerido
   if (!data.email) {
-    alert("El email es obligatorio.");
-    document.getElementById("email")?.focus();
+    alert('El email es obligatorio.');
+    document.getElementById('email')?.focus();
     return;
   }
 
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   if (!re.test(data.email)) {
-    alert("Email no válido");
+    alert('Email no válido');
     return;
   }
 
   writeLS(PROFILE_KEY, data);
   fillSidebarName(data);
-  alert("Perfil guardado.");
+  alert('Perfil guardado.');
 }
 
-// Restaura el formulario con los datos guardados.
-// NO borra lo que está en localStorage.
+// Restaura el formulario a lo último guardado (no toca localStorage)
 function resetUserProfile(e) {
   e?.preventDefault();
   const stored = readLS(PROFILE_KEY, {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
   });
 
-  const firstName = document.getElementById("firstName");
-  const lastName = document.getElementById("lastName");
-  const email = document.getElementById("email");
-  const phone = document.getElementById("phone");
+  const firstName = document.getElementById('firstName');
+  const lastName = document.getElementById('lastName');
+  const email = document.getElementById('email');
+  const phone = document.getElementById('phone');
 
-  if (firstName) firstName.value = stored.firstName || "";
-  if (lastName) lastName.value = stored.lastName || "";
-  if (email) email.value = stored.email || "";
-  if (phone) phone.value = stored.phone || "";
+  if (firstName) firstName.value = stored.firstName || '';
+  if (lastName) lastName.value = stored.lastName || '';
+  if (email) email.value = stored.email || '';
+  if (phone) phone.value = stored.phone || '';
 }
 
-// ===== Tabs perfil =====
+// === Tabs perfil ===
 function setupTabs() {
-  const buttons = document.querySelectorAll(".profile-tab-btn");
-  const panels = document.querySelectorAll(".profile-panel");
+  const buttons = document.querySelectorAll('.profile-tab-btn');
+  const panels = document.querySelectorAll('.profile-panel');
 
   const show = (id) => {
     panels.forEach((p) =>
-      p.id === id ? p.removeAttribute("hidden") : p.setAttribute("hidden", "")
+      p.id === id ? p.removeAttribute('hidden') : p.setAttribute('hidden', '')
     );
   };
 
   buttons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      buttons.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      show(btn.getAttribute("data-target"));
+    btn.addEventListener('click', () => {
+      buttons.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      show(btn.getAttribute('data-target'));
     });
   });
 
-  // Asegura que mis datos esté visible al cargar
-  show("panel-data");
+  // Panel por defecto
+  show('panel-data');
 }
 
 // Foto persistente en base64
 function loadPersistedPhoto() {
   const dataURL = readLS(PROFILE_PHOTO_KEY, null);
-  const preview = document.getElementById("profilePhotoPreview");
-  const avatar = document.getElementById("profileAvatar");
+  const preview = document.getElementById('profilePhotoPreview');
+  const avatar = document.getElementById('profileAvatar');
   if (!preview || !avatar) return;
 
   if (dataURL) {
@@ -157,21 +153,21 @@ function savePhotoToLocalStorage(file) {
   reader.readAsDataURL(file);
 }
 
-// ===== Foto de perfil - PREVIEW =====
+// === Foto de perfil - PREVIEW ===
 function setupPhotoActions() {
-  const input = document.getElementById("profilePhotoInput");
-  const preview = document.getElementById("profilePhotoPreview");
-  const avatar = document.getElementById("profileAvatar");
-  const btnEdit = document.getElementById("btnPhotoEdit");
-  const btnDel = document.getElementById("btnPhotoRemove");
+  const input = document.getElementById('profilePhotoInput');
+  const preview = document.getElementById('profilePhotoPreview');
+  const avatar = document.getElementById('profileAvatar');
+  const btnEdit = document.getElementById('btnPhotoEdit');
+  const btnDel = document.getElementById('btnPhotoRemove');
 
   if (btnEdit && input) {
-    btnEdit.addEventListener("click", () => input.click());
+    btnEdit.addEventListener('click', () => input.click());
   }
 
-  // Cuando el usuario selecciona una imagen
+  // Cambio de foto
   if (input && preview && avatar) {
-    input.addEventListener("change", (e) => {
+    input.addEventListener('change', (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
 
@@ -179,7 +175,7 @@ function setupPhotoActions() {
       const url = URL.createObjectURL(file);
       preview.src = url;
       avatar.src = url;
-      preview.addEventListener("load", () => URL.revokeObjectURL(url), {
+      preview.addEventListener('load', () => URL.revokeObjectURL(url), {
         once: true,
       });
 
@@ -188,22 +184,18 @@ function setupPhotoActions() {
     });
   }
 
-  // Eliminar imagen, volver a placeholder y borrar del LS
+  // Eliminar foto → placeholder
   if (btnDel && preview && input && avatar) {
-    btnDel.addEventListener("click", () => {
+    btnDel.addEventListener('click', () => {
       preview.src = PLACEHOLDER_IMG;
       avatar.src = PLACEHOLDER_IMG;
-      input.value = "";
+      input.value = '';
       localStorage.removeItem(PROFILE_PHOTO_KEY);
     });
   }
 }
 
-// ===== SISTEMA DE DIRECCIONES =====
-const ADDRESSES_KEY = "userAddresses";
-const MAX_ADDRESSES = 10;
-
-// Obtiene todas las direcciones del localStorage
+// === DIRECCIONES DE ENVÍO ===
 function getAddresses() {
   return readLS(ADDRESSES_KEY, []);
 }
@@ -215,7 +207,7 @@ function saveAddresses(addresses) {
 
 // Renderiza las direcciones en el DOM
 function renderAddresses() {
-  const container = document.getElementById("addressesList");
+  const container = document.getElementById('addressesList');
   if (!container) return;
 
   const addresses = getAddresses();
@@ -234,16 +226,14 @@ function renderAddresses() {
   container.innerHTML = addresses
     .map(
       (addr) => `
-    <div class="address-card ${addr.isDefault ? "default" : ""}" data-id="${
-        addr.id
-      }">
+    <div class="address-card ${addr.isDefault ? 'default' : ''}" data-id="${addr.id}">
       <div class="address-card-header">
         <div class="address-title">
           <h3>${addr.alias}</h3>
           ${
             addr.isDefault
               ? '<span class="badge-default"><i class="bi bi-star-fill"></i> Predeterminada</span>'
-              : ""
+              : ''
           }
         </div>
         <div class="address-actions">
@@ -253,11 +243,9 @@ function renderAddresses() {
                    title="Establecer como predeterminada">
                    <i class="bi bi-star"></i>
                  </button>`
-              : ""
+              : ''
           }
-          <button class="btn-address-action" onclick="editAddress('${
-            addr.id
-          }')" title="Editar">
+          <button class="btn-address-action" onclick="editAddress('${addr.id}')" title="Editar">
             <i class="bi bi-pencil"></i>
           </button>
           <button class="btn-address-action danger" onclick="deleteAddress('${
@@ -268,9 +256,9 @@ function renderAddresses() {
         </div>
       </div>
       <div class="address-details">
-        <p><strong>${addr.street}</strong>${
-        addr.corner ? ` esquina ${addr.corner}` : ""
-      }${addr.apartment ? `, ${addr.apartment}` : ""}</p>
+        <p><strong>${addr.street}</strong>${addr.corner ? ` esquina ${addr.corner}` : ''}${
+        addr.apartment ? `, ${addr.apartment}` : ''
+      }</p>
         <p>${addr.city}, ${addr.state} ${addr.zipCode}</p>
         <p>${addr.country}</p>
         ${
@@ -279,103 +267,100 @@ function renderAddresses() {
              <i class="bi bi-telephone"></i>
              <span>${addr.phone}</span>
            </div>`
-            : ""
+            : ''
         }
         ${
           addr.instructions
             ? `<div class="address-instructions">
              <i class="bi bi-info-circle"></i> ${addr.instructions}
            </div>`
-            : ""
+            : ''
         }
       </div>
     </div>
   `
     )
-    .join("");
+    .join('');
 }
 
 // Abre el modal para agregar/editar dirección
 function openAddressModal(addressId = null) {
-  const modal = document.getElementById("addressModal");
-  const overlay = document.getElementById("modalOverlay");
-  const form = document.getElementById("addressForm");
-  const title = document.getElementById("addressModalTitle");
+  const modal = document.getElementById('addressModal');
+  const overlay = document.getElementById('modalOverlay');
+  const form = document.getElementById('addressForm');
+  const title = document.getElementById('addressModalTitle');
 
   if (!modal || !overlay || !form) return;
 
   // Resetea el formulario
   form.reset();
-  document.getElementById("addressId").value = "";
+  document.getElementById('addressId').value = '';
 
   // Actualiza el título
   if (title) {
-    title.textContent = addressId ? "Editar dirección" : "Agregar dirección";
+    title.textContent = addressId ? 'Editar dirección' : 'Agregar dirección';
   }
 
   // Si es edición, carga los datos
   if (addressId) {
-    document.getElementById("addressId").value = addressId;
+    document.getElementById('addressId').value = addressId;
     const addresses = getAddresses();
     const address = addresses.find((a) => a.id === addressId);
     if (address) {
-      document.getElementById("addressAlias").value = address.alias || "";
-      document.getElementById("addressStreet").value = address.street || "";
-      document.getElementById("addressCorner").value = address.corner || "";
-      document.getElementById("addressApartment").value =
-        address.apartment || "";
-      document.getElementById("addressCity").value = address.city || "";
-      document.getElementById("addressState").value = address.state || "";
-      document.getElementById("addressZipCode").value = address.zipCode || "";
-      document.getElementById("addressCountry").value = address.country || "";
-      document.getElementById("addressPhone").value = address.phone || "";
-      document.getElementById("addressInstructions").value =
-        address.instructions || "";
-      document.getElementById("addressIsDefault").checked =
-        address.isDefault || false;
+      document.getElementById('addressAlias').value = address.alias || '';
+      document.getElementById('addressStreet').value = address.street || '';
+      document.getElementById('addressCorner').value = address.corner || '';
+      document.getElementById('addressApartment').value = address.apartment || '';
+      document.getElementById('addressCity').value = address.city || '';
+      document.getElementById('addressState').value = address.state || '';
+      document.getElementById('addressZipCode').value = address.zipCode || '';
+      document.getElementById('addressCountry').value = address.country || '';
+      document.getElementById('addressPhone').value = address.phone || '';
+      document.getElementById('addressInstructions').value = address.instructions || '';
+      document.getElementById('addressIsDefault').checked = address.isDefault || false;
     }
   }
 
-  modal.classList.add("show");
-  overlay.classList.add("show");
-  document.body.style.overflow = "hidden";
+  modal.classList.add('show');
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 
 // Cierra el modal
 function closeAddressModal() {
-  const modal = document.getElementById("addressModal");
-  const overlay = document.getElementById("modalOverlay");
+  const modal = document.getElementById('addressModal');
+  const overlay = document.getElementById('modalOverlay');
 
   if (!modal || !overlay) return;
 
-  modal.classList.remove("show");
-  overlay.classList.remove("show");
-  document.body.style.overflow = "";
+  modal.classList.remove('show');
+  overlay.classList.remove('show');
+  document.body.style.overflow = '';
 }
 
 // Guarda una dirección (nueva o editada)
 function saveAddress(e) {
   e.preventDefault();
 
-  const editingId = document.getElementById("addressId").value;
+  const editingId = document.getElementById('addressId').value;
 
   const addressData = {
-    alias: document.getElementById("addressAlias").value.trim(),
-    street: document.getElementById("addressStreet").value.trim(),
-    corner: document.getElementById("addressCorner").value.trim(),
-    apartment: document.getElementById("addressApartment").value.trim(),
-    city: document.getElementById("addressCity").value.trim(),
-    state: document.getElementById("addressState").value.trim(),
-    zipCode: document.getElementById("addressZipCode").value.trim(),
-    country: document.getElementById("addressCountry").value.trim(),
-    phone: document.getElementById("addressPhone").value.trim(),
-    instructions: document.getElementById("addressInstructions").value.trim(),
-    isDefault: document.getElementById("addressIsDefault").checked,
+    alias: document.getElementById('addressAlias').value.trim(),
+    street: document.getElementById('addressStreet').value.trim(),
+    corner: document.getElementById('addressCorner').value.trim(),
+    apartment: document.getElementById('addressApartment').value.trim(),
+    city: document.getElementById('addressCity').value.trim(),
+    state: document.getElementById('addressState').value.trim(),
+    zipCode: document.getElementById('addressZipCode').value.trim(),
+    country: document.getElementById('addressCountry').value.trim(),
+    phone: document.getElementById('addressPhone').value.trim(),
+    instructions: document.getElementById('addressInstructions').value.trim(),
+    isDefault: document.getElementById('addressIsDefault').checked,
   };
 
   // Validaciones básicas
   if (!addressData.alias || !addressData.street || !addressData.city) {
-    alert("Por favor completa todos los campos obligatorios.");
+    alert('Por favor completa todos los campos obligatorios.');
     return;
   }
 
@@ -399,7 +384,7 @@ function saveAddress(e) {
     }
 
     const newAddress = {
-      id: "addr_" + Date.now(),
+      id: 'addr_' + Date.now(),
       ...addressData,
       createdAt: new Date().toISOString(),
     };
@@ -407,7 +392,7 @@ function saveAddress(e) {
     addresses.push(newAddress);
   }
 
-  // Si se marca como predeterminada, quita la marca de las demás
+  // Si se marca como predeterminada, desmarcar el resto
   if (addressData.isDefault) {
     const targetId = editingId || addresses[addresses.length - 1].id;
     addresses = addresses.map((addr) => ({
@@ -444,49 +429,50 @@ window.editAddress = function (addressId) {
 
 // Elimina una dirección
 window.deleteAddress = function (addressId) {
-  if (!confirm("¿Estás seguro de eliminar esta dirección?")) return;
+  if (!confirm('¿Estás seguro de eliminar esta dirección?')) return;
 
   let addresses = getAddresses().filter((addr) => addr.id !== addressId);
 
-  // Si se eliminó la predeterminada y quedan direcciones, marca la primera
+  // Si no hay predeterminada, marca la primera
   if (!addresses.some((a) => a.isDefault) && addresses.length > 0) {
     addresses[0].isDefault = true;
   }
 
   saveAddresses(addresses);
   renderAddresses();
+  closeAddressModal();
 };
 
 // Configuración de eventos del modal y formulario
 function setupAddressesSystem() {
   // Botón agregar dirección
-  const btnAdd = document.getElementById("btnAddAddress");
+  const btnAdd = document.getElementById('btnAddAddress');
   if (btnAdd) {
-    btnAdd.addEventListener("click", () => openAddressModal());
+    btnAdd.addEventListener('click', () => openAddressModal());
   }
 
   // Botón cerrar modal
-  const btnClose = document.getElementById("closeAddressModalBtn");
+  const btnClose = document.getElementById('closeAddressModalBtn');
   if (btnClose) {
-    btnClose.addEventListener("click", closeAddressModal);
+    btnClose.addEventListener('click', closeAddressModal);
   }
 
   // Botón cancelar
-  const btnCancel = document.getElementById("cancelAddressModal");
+  const btnCancel = document.getElementById('cancelAddressModal');
   if (btnCancel) {
-    btnCancel.addEventListener("click", (e) => {
+    btnCancel.addEventListener('click', (e) => {
       e.preventDefault();
       closeAddressModal();
     });
   }
 
   // Cerrar modal al hacer clic en el overlay
-  const overlay = document.getElementById("modalOverlay");
+  const overlay = document.getElementById('modalOverlay');
   if (overlay) {
-    overlay.addEventListener("click", (e) => {
+    overlay.addEventListener('click', (e) => {
       if (e.target === overlay) {
-        const addressModal = document.getElementById("addressModal");
-        if (addressModal?.classList.contains("show")) {
+        const addressModal = document.getElementById('addressModal');
+        if (addressModal?.classList.contains('show')) {
           closeAddressModal();
         }
       }
@@ -494,116 +480,86 @@ function setupAddressesSystem() {
   }
 
   // Cerrar con ESC
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      const modal = document.getElementById("addressModal");
-      if (modal && modal.classList.contains("show")) {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('addressModal');
+      if (modal && modal.classList.contains('show')) {
         closeAddressModal();
       }
     }
   });
 
   // Formulario
-  const form = document.getElementById("addressForm");
+  const form = document.getElementById('addressForm');
   if (form) {
-    form.addEventListener("submit", saveAddress);
+    form.addEventListener('submit', saveAddress);
   }
 
-  // Renderiza las direcciones al cargar
+  // Render inicial
   renderAddresses();
 }
 
-// ===================================================================
-// 🔷 SISTEMA DE TARJETAS DE PAGO
-// ===================================================================
+// === SISTEMA DE TARJETAS DE PAGO ===
 
-const CARDS_KEY = "userCards";
-const MAX_CARDS = 5;
-
-/**
- * Obtiene las tarjetas guardadas del localStorage
- */
 function getCards() {
-  const cards = localStorage.getItem(CARDS_KEY);
-  return cards ? JSON.parse(cards) : [];
+  return readLS(CARDS_KEY, []);
 }
 
-/**
- * Guarda las tarjetas en el localStorage
- */
 function saveCards(cards) {
-  localStorage.setItem(CARDS_KEY, JSON.stringify(cards));
+  writeLS(CARDS_KEY, cards);
 }
 
-/**
- * Detecta la marca de tarjeta según los primeros dígitos
- */
 function detectCardBrand(number) {
-  const cleaned = number.replace(/\s/g, "");
-  
-  if (/^4/.test(cleaned)) return "visa";
-  if (/^5[1-5]/.test(cleaned)) return "mastercard";
-  if (/^3[47]/.test(cleaned)) return "amex";
-  
-  return "other";
+  const cleaned = number.replace(/\s/g, '');
+
+  if (/^4/.test(cleaned)) return 'visa';
+  if (/^5[1-5]/.test(cleaned)) return 'mastercard';
+  if (/^3[47]/.test(cleaned)) return 'amex';
+
+  return 'other';
 }
 
-/**
- * Formatea el número de tarjeta (agrega espacios cada 4 dígitos)
- */
 function formatCardNumber(value) {
-  const cleaned = value.replace(/\s/g, "");
+  const cleaned = value.replace(/\s/g, '');
   const chunks = cleaned.match(/.{1,4}/g) || [];
-  return chunks.join(" ");
+  return chunks.join(' ');
 }
 
-/**
- * Enmascara el número de tarjeta (muestra solo los últimos 4 dígitos)
- */
 function maskCardNumber(number) {
   const last4 = number.slice(-4);
   return `•••• •••• •••• ${last4}`;
 }
 
-/**
- * Formatea la fecha de vencimiento (MM/AA)
- */
 function formatCardExpiry(value) {
-  const cleaned = value.replace(/\D/g, "");
+  const cleaned = value.replace(/\D/g, '');
   if (cleaned.length >= 2) {
-    return cleaned.slice(0, 2) + "/" + cleaned.slice(2, 4);
+    return cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4);
   }
   return cleaned;
 }
 
-/**
- * Valida que la fecha de vencimiento sea futura
- */
 function validateCardExpiry(expiry) {
-  const [month, year] = expiry.split("/");
+  const [month, year] = expiry.split('/');
   if (!month || !year) return false;
-  
+
   const monthNum = parseInt(month);
-  const yearNum = parseInt("20" + year);
-  
+  const yearNum = parseInt('20' + year);
+
   if (monthNum < 1 || monthNum > 12) return false;
-  
+
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
-  
+
   if (yearNum < currentYear) return false;
   if (yearNum === currentYear && monthNum < currentMonth) return false;
-  
+
   return true;
 }
 
-/**
- * Renderiza las tarjetas en el DOM
- */
 function renderCards() {
   const cards = getCards();
-  const cardsList = document.getElementById("cardsList");
+  const cardsList = document.getElementById('cardsList');
 
   if (!cardsList) return;
 
@@ -620,28 +576,29 @@ function renderCards() {
 
   cardsList.innerHTML = cards
     .map((card) => {
-      const brandClass = card.brand || "other";
-      const defaultClass = card.isDefault ? "default" : "";
-      const brandIcon = {
-        visa: "bi-credit-card-2-front",
-        mastercard: "bi-credit-card-2-back",
-        amex: "bi-credit-card",
-        other: "bi-credit-card",
-      }[card.brand] || "bi-credit-card";
+      const brandClass = card.brand || 'other';
+      const defaultClass = card.isDefault ? 'default' : '';
+      const brandIcon =
+        {
+          visa: 'bi-credit-card-2-front',
+          mastercard: 'bi-credit-card-2-back',
+          amex: 'bi-credit-card',
+          other: 'bi-credit-card',
+        }[card.brand] || 'bi-credit-card';
 
       return `
         <div class="card-item ${brandClass} ${defaultClass}">
-          ${card.alias ? `<div class="card-alias">${card.alias}</div>` : ""}
+          ${card.alias ? `<div class="card-alias">${card.alias}</div>` : ''}
           
           <div class="card-item-header">
             <div class="card-brand">
               <i class="bi ${brandIcon}"></i>
-              ${card.brand ? card.brand.toUpperCase() : "TARJETA"}
+              ${card.brand ? card.brand.toUpperCase() : 'TARJETA'}
             </div>
             ${
               card.isDefault
                 ? '<span class="card-badge-default"><i class="bi bi-star-fill"></i> Predeterminada</span>'
-                : ""
+                : ''
             }
           </div>
 
@@ -670,7 +627,7 @@ function renderCards() {
                      aria-label="Establecer como predeterminada">
                     <i class="bi bi-star"></i>
                   </button>`
-                : ""
+                : ''
             }
             <button type="button" class="btn-card-action btn-edit" 
                     onclick="editCard('${card.id}')" 
@@ -686,98 +643,89 @@ function renderCards() {
         </div>
       `;
     })
-    .join("");
+    .join('');
 }
 
-/**
- * Abre el modal de tarjeta
- */
 function openCardModal(cardId = null) {
-  const modal = document.getElementById("cardModal");
-  const overlay = document.getElementById("modalOverlay");
-  const form = document.getElementById("cardForm");
-  const title = document.getElementById("cardModalTitle");
-  
+  const modal = document.getElementById('cardModal');
+  const overlay = document.getElementById('modalOverlay');
+  const form = document.getElementById('cardForm');
+  const title = document.getElementById('cardModalTitle');
+
   if (!modal || !overlay || !form) return;
 
   // Limpiar formulario
   form.reset();
-  document.getElementById("cardId").value = "";
+  document.getElementById('cardId').value = '';
 
   if (cardId) {
     // Modo edición
-    title.textContent = "Editar tarjeta de pago";
+    title.textContent = 'Editar tarjeta de pago';
     const cards = getCards();
     const card = cards.find((c) => c.id === cardId);
-    
+
     if (card) {
-      document.getElementById("cardId").value = card.id;
-      document.getElementById("cardNumber").value = maskCardNumber(card.lastFour);
-      document.getElementById("cardNumber").disabled = true; // No permitir editar número
-      document.getElementById("cardName").value = card.cardName;
-      document.getElementById("cardExpiry").value = card.expiry;
-      document.getElementById("cardAlias").value = card.alias || "";
-      document.getElementById("cardIsDefault").checked = card.isDefault;
+      document.getElementById('cardId').value = card.id;
+      document.getElementById('cardNumber').value = maskCardNumber(card.lastFour);
+      document.getElementById('cardNumber').disabled = true; // No permitir editar número
+      document.getElementById('cardName').value = card.cardName;
+      document.getElementById('cardExpiry').value = card.expiry;
+      document.getElementById('cardAlias').value = card.alias || '';
+      document.getElementById('cardIsDefault').checked = card.isDefault;
     }
   } else {
     // Modo agregar
-    title.textContent = "Agregar tarjeta de pago";
-    document.getElementById("cardNumber").disabled = false;
+    title.textContent = 'Agregar tarjeta de pago';
+    document.getElementById('cardNumber').disabled = false;
   }
 
-  modal.classList.add("show");
-  overlay.classList.add("show");
-  document.body.style.overflow = "hidden";
+  modal.classList.add('show');
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 
-/**
- * Cierra el modal de tarjeta
- */
 function closeCardModal() {
-  const modal = document.getElementById("cardModal");
-  const overlay = document.getElementById("modalOverlay");
-  
+  const modal = document.getElementById('cardModal');
+  const overlay = document.getElementById('modalOverlay');
+
   if (!modal || !overlay) return;
 
-  modal.classList.remove("show");
-  overlay.classList.remove("show");
-  document.body.style.overflow = "";
+  modal.classList.remove('show');
+  overlay.classList.remove('show');
+  document.body.style.overflow = '';
 }
 
-/**
- * Guarda o actualiza una tarjeta
- */
 function saveCard(e) {
   e.preventDefault();
 
-  const cardId = document.getElementById("cardId").value;
-  const cardNumber = document.getElementById("cardNumber").value.replace(/\s/g, "");
-  const cardName = document.getElementById("cardName").value.trim();
-  const cardExpiry = document.getElementById("cardExpiry").value.trim();
-  const cardCvv = document.getElementById("cardCvv").value.trim();
-  const cardAlias = document.getElementById("cardAlias").value.trim();
-  const cardIsDefault = document.getElementById("cardIsDefault").checked;
+  const cardId = document.getElementById('cardId').value;
+  const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+  const cardName = document.getElementById('cardName').value.trim();
+  const cardExpiry = document.getElementById('cardExpiry').value.trim();
+  const cardCvv = document.getElementById('cardCvv').value.trim();
+  const cardAlias = document.getElementById('cardAlias').value.trim();
+  const cardIsDefault = document.getElementById('cardIsDefault').checked;
 
   // Validaciones
   if (!cardName) {
-    alert("Por favor, ingresa el nombre del titular de la tarjeta");
+    alert('Por favor, ingresa el nombre del titular de la tarjeta');
     return;
   }
 
   if (!cardExpiry || !validateCardExpiry(cardExpiry)) {
-    alert("Por favor, ingresa una fecha de vencimiento válida (MM/AA) y futura");
+    alert('Por favor, ingresa una fecha de vencimiento válida (MM/AA) y futura');
     return;
   }
 
   if (!cardId) {
-    // Solo validar número y CVV en modo agregar
+    // Validar número y CVV solo al agregar
     if (!cardNumber || cardNumber.length < 13) {
-      alert("Por favor, ingresa un número de tarjeta válido");
+      alert('Por favor, ingresa un número de tarjeta válido');
       return;
     }
 
     if (!cardCvv || cardCvv.length < 3) {
-      alert("Por favor, ingresa un CVV válido");
+      alert('Por favor, ingresa un CVV válido');
       return;
     }
   }
@@ -797,7 +745,7 @@ function saveCard(e) {
           updatedAt: new Date().toISOString(),
         };
       }
-      // Si esta tarjeta se marca como predeterminada, quitar el flag de las demás
+      // Si la editada se marca como predeterminada, desmarcar otras
       if (cardIsDefault && card.isDefault) {
         return { ...card, isDefault: false };
       }
@@ -822,7 +770,7 @@ function saveCard(e) {
     }
 
     const newCard = {
-      id: "card_" + Date.now(),
+      id: 'card_' + Date.now(),
       lastFour: lastFour,
       cardName,
       expiry: cardExpiry,
@@ -841,9 +789,7 @@ function saveCard(e) {
   closeCardModal();
 }
 
-/**
- * Establece una tarjeta como predeterminada
- */
+// === Establece una tarjeta como predeterminada ===
 window.setDefaultCard = function (cardId) {
   const cards = getCards();
   const updatedCards = cards.map((card) => ({
@@ -851,25 +797,20 @@ window.setDefaultCard = function (cardId) {
     isDefault: card.id === cardId,
     updatedAt: card.id === cardId ? new Date().toISOString() : card.updatedAt,
   }));
-  
+
   saveCards(updatedCards);
   renderCards();
 };
 
-/**
- * Edita una tarjeta
- */
+// === Edita una tarjeta ===
 window.editCard = function (cardId) {
   openCardModal(cardId);
 };
 
-/**
- * Elimina una tarjeta
- */
+// === Elimina una tarjeta ===
 window.deleteCard = function (cardId) {
   const cards = getCards();
   const card = cards.find((c) => c.id === cardId);
-  
   if (!card) return;
 
   const confirmMsg = card.alias
@@ -879,98 +820,88 @@ window.deleteCard = function (cardId) {
   if (!confirm(confirmMsg)) return;
 
   const updatedCards = cards.filter((c) => c.id !== cardId);
-  
+
   // Si se eliminó la predeterminada y hay más tarjetas, hacer predeterminada la primera
   if (card.isDefault && updatedCards.length > 0) {
     updatedCards[0].isDefault = true;
     updatedCards[0].updatedAt = new Date().toISOString();
   }
-  
+
   saveCards(updatedCards);
   renderCards();
 };
 
-/**
- * Configura el sistema de tarjetas
- */
+// === Configura el sistema de tarjetas ===
 function setupCardsSystem() {
-  const btnAddCard = document.getElementById("btnAddCard");
-  const closeCardModalBtn = document.getElementById("closeCardModal");
-  const cancelCardModalBtn = document.getElementById("cancelCardModal");
-  const cardForm = document.getElementById("cardForm");
-  const overlay = document.getElementById("modalOverlay");
-  const cardNumberInput = document.getElementById("cardNumber");
-  const cardExpiryInput = document.getElementById("cardExpiry");
-  const cardCvvInput = document.getElementById("cardCvv");
+  const btnAddCard = document.getElementById('btnAddCard');
+  const closeCardModalBtn = document.getElementById('closeCardModal');
+  const cancelCardModalBtn = document.getElementById('cancelCardModal');
+  const cardForm = document.getElementById('cardForm');
+  const overlay = document.getElementById('modalOverlay');
+  const cardNumberInput = document.getElementById('cardNumber');
+  const cardExpiryInput = document.getElementById('cardExpiry');
+  const cardCvvInput = document.getElementById('cardCvv');
 
   // Abrir modal
-  btnAddCard?.addEventListener("click", () => openCardModal());
+  btnAddCard?.addEventListener('click', () => openCardModal());
 
   // Cerrar modal
-  closeCardModalBtn?.addEventListener("click", closeCardModal);
-  cancelCardModalBtn?.addEventListener("click", closeCardModal);
+  closeCardModalBtn?.addEventListener('click', closeCardModal);
+  cancelCardModalBtn?.addEventListener('click', closeCardModal);
 
   // Cerrar al hacer click en el overlay
-  overlay?.addEventListener("click", (e) => {
+  overlay?.addEventListener('click', (e) => {
     if (e.target === overlay) {
-      const cardModal = document.getElementById("cardModal");
-      if (cardModal?.classList.contains("show")) {
+      const cardModal = document.getElementById('cardModal');
+      if (cardModal?.classList.contains('show')) {
         closeCardModal();
       }
     }
   });
 
   // Cerrar con ESC
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      const cardModal = document.getElementById("cardModal");
-      if (cardModal?.classList.contains("show")) {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const cardModal = document.getElementById('cardModal');
+      if (cardModal?.classList.contains('show')) {
         closeCardModal();
       }
     }
   });
 
   // Formateo automático del número de tarjeta
-  cardNumberInput?.addEventListener("input", (e) => {
-    let value = e.target.value.replace(/\s/g, "");
-    value = value.replace(/\D/g, ""); // Solo números
+  cardNumberInput?.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\s/g, '');
+    value = value.replace(/\D/g, ''); // Solo números
     e.target.value = formatCardNumber(value);
   });
 
   // Formateo automático de la fecha de vencimiento
-  cardExpiryInput?.addEventListener("input", (e) => {
+  cardExpiryInput?.addEventListener('input', (e) => {
     let value = e.target.value;
     e.target.value = formatCardExpiry(value);
   });
 
   // Solo números en CVV
-  cardCvvInput?.addEventListener("input", (e) => {
-    e.target.value = e.target.value.replace(/\D/g, "");
+  cardCvvInput?.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '');
   });
 
   // Guardar tarjeta
-  cardForm?.addEventListener("submit", saveCard);
+  cardForm?.addEventListener('submit', saveCard);
 
   // Renderizar tarjetas al cargar
   renderCards();
 }
 
-// ==================================================================
-// 🔷 SISTEMA DE PEDIDOS
-// ==================================================================
+// === SISTEMA DE PEDIDOS ===
 
-const ORDERS_KEY = "orders";
-
-/**
- * Obtiene los pedidos del localStorage
- */
+// Obtiene los pedidos del localStorage
 function getOrders() {
   return readLS(ORDERS_KEY, []);
 }
 
-/**
- * Formatea una fecha ISO a formato legible
- */
+// Formatea una fecha ISO a formato legible
 function formatOrderDate(isoDate) {
   const date = new Date(isoDate);
   return date.toLocaleDateString('es-UY', {
@@ -978,44 +909,31 @@ function formatOrderDate(isoDate) {
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
-/**
- * Formatea el monto con moneda
- */
-function formatMoney(amount, currency = 'USD') {
-  return `${currency} ${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
-}
-
-/**
- * Obtiene el nombre del estado en español
- */
+// Obtiene el nombre del estado en español
 function getStatusName(status) {
   const statusMap = {
-    'pending': 'Pendiente',
-    'confirmed': 'Confirmado',
-    'completed': 'Completado'
+    pending: 'Pendiente',
+    confirmed: 'Confirmado',
+    completed: 'Completado',
   };
   return statusMap[status] || status;
 }
 
-/**
- * Obtiene el ícono del estado
- */
+// Obtiene el ícono del estado //
 function getStatusIcon(status) {
   const iconMap = {
-    'pending': 'bi-clock-history',
-    'confirmed': 'bi-check-circle',
-    'completed': 'bi-check-all'
+    pending: 'bi-clock-history',
+    confirmed: 'bi-check-circle',
+    completed: 'bi-check-all',
   };
   return iconMap[status] || 'bi-box-seam';
 }
 
-/**
- * Renderiza los pedidos
- */
+// Renderiza los pedidos
 function renderOrders(filter = 'all') {
   const container = document.getElementById('ordersList');
   if (!container) return;
@@ -1024,7 +942,7 @@ function renderOrders(filter = 'all') {
 
   // Filtrar pedidos
   if (filter !== 'all') {
-    orders = orders.filter(order => order.status === filter);
+    orders = orders.filter((order) => order.status === filter);
   }
 
   // Ordenar por fecha (más reciente primero)
@@ -1041,7 +959,9 @@ function renderOrders(filter = 'all') {
     return;
   }
 
-  container.innerHTML = orders.map(order => `
+  container.innerHTML = orders
+    .map(
+      (order) => `
     <div class="order-card" data-status="${order.status}">
       <!-- Header -->
       <div class="order-header">
@@ -1062,17 +982,31 @@ function renderOrders(filter = 'all') {
       <div class="order-content">
         <!-- Items -->
         <div class="order-items">
-          ${order.items.slice(0, 3).map(item => `
+          ${order.items
+            .slice(0, 3)
+            .map(
+              (item) => `
             <div class="order-item">
               <img src="${item.image}" alt="${item.name}" class="order-item-image" />
               <div class="order-item-details">
                 <p class="order-item-name">${item.name}</p>
                 <span class="order-item-quantity">Cantidad: ${item.count || 1}</span>
               </div>
-              <span class="order-item-price">${formatMoney(item.cost * (item.count || 1), 'USD')}</span>
+              <span class="order-item-price">${formatMoney(
+                item.cost * (item.count || 1),
+                'USD'
+              )}</span>
             </div>
-          `).join('')}
-          ${order.items.length > 3 ? `<p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Y ${order.items.length - 3} producto(s) más...</p>` : ''}
+          `
+            )
+            .join('')}
+          ${
+            order.items.length > 3
+              ? `<p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Y ${
+                  order.items.length - 3
+                } producto(s) más...</p>`
+              : ''
+          }
         </div>
 
         <!-- Summary -->
@@ -1090,33 +1024,31 @@ function renderOrders(filter = 'all') {
         </div>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
-/**
- * Ver detalles del pedido (redirige a order-confirmation)
- */
-window.viewOrderDetails = function(orderId) {
+// Ver detalles del pedido (redirige a order-confirmation)
+window.viewOrderDetails = function (orderId) {
   window.location.href = `order-confirmation.html?order=${orderId}`;
 };
 
-/**
- * Configura el sistema de pedidos
- */
+// Configura el sistema de pedidos
 function setupOrdersSystem() {
   // Renderizar pedidos inicialmente
   renderOrders();
 
   // Event listeners para filtros
   const filterBtns = document.querySelectorAll('.filter-btn');
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', function () {
       // Remover active de todos
-      filterBtns.forEach(b => b.classList.remove('active'));
-      
+      filterBtns.forEach((b) => b.classList.remove('active'));
+
       // Agregar active al clickeado
       this.classList.add('active');
-      
+
       // Filtrar pedidos
       const filter = this.dataset.filter;
       renderOrders(filter);
@@ -1124,22 +1056,14 @@ function setupOrdersSystem() {
   });
 }
 
-// ==================================================================
-// 🔷 SISTEMA DE FAVORITOS/WISHLIST
-// ==================================================================
+// === SISTEMA DE FAVORITOS/WISHLIST ===
 
-const WISHLIST_KEY = "wishlist";
-
-/**
- * Obtiene los favoritos del localStorage
- */
+// Obtiene los favoritos del localStorage
 function getFavorites() {
   return readLS(WISHLIST_KEY, []);
 }
 
-/**
- * Renderiza los productos favoritos
- */
+// Renderiza los productos favoritos
 function renderFavorites() {
   const favoritesList = document.getElementById('favoritesList');
   if (!favoritesList) return;
@@ -1160,65 +1084,89 @@ function renderFavorites() {
     return;
   }
 
-  favoritesList.innerHTML = favorites.map(item => `
+  favoritesList.innerHTML = favorites
+    .map(
+      (item) => `
     <div class="favorite-card">
-      <button class="favorite-remove-btn" onclick="removeFromFavorites('${item.productId}')" aria-label="Eliminar de favoritos">
+      <button class="favorite-remove-btn" onclick="removeFromFavorites('${
+        item.productId
+      }')" aria-label="Eliminar de favoritos">
         <i class="bi bi-x-lg"></i>
       </button>
-      <div class="favorite-image" onclick="window.location.href='product-info.html?id=${item.productId}'">
-        <img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.src='img/cars_index.jpg'">
+      <div class="favorite-image" onclick="goToProductFromFavorites('${
+        item.productId
+      }')" style="cursor: pointer;">
+        <img src="${item.image}" alt="${
+        item.name
+      }" loading="lazy" onerror="this.src='img/cars_index.jpg'">
       </div>
       <div class="favorite-details">
         <h3 class="favorite-name">${item.name}</h3>
         <p class="favorite-description">${item.description}</p>
         <div class="favorite-meta">
-          <span class="favorite-price">${item.currency} ${formatMoney(item.cost, item.currency)}</span>
+          <span class="favorite-price">${formatMoney(item.cost, item.currency)}</span>
           <span class="favorite-sold">
             <i class="bi bi-box-seam"></i>
             ${item.soldCount} vendidos
           </span>
         </div>
         <div class="favorite-actions">
-          <button class="btn-favorite-action primary" onclick="window.location.href='product-info.html?id=${item.productId}'">
+          <button class="btn-favorite-action primary" onclick="goToProductFromFavorites('${
+            item.productId
+          }')">
             <i class="bi bi-eye"></i> Ver producto
           </button>
-          <button class="btn-favorite-action secondary" onclick="addFavoriteToCart('${item.productId}')">
+          <button class="btn-favorite-action secondary" onclick="addFavoriteToCart('${
+            item.productId
+          }')">
             <i class="bi bi-cart-plus"></i> Agregar al carrito
           </button>
         </div>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
-/**
- * Elimina un producto de favoritos
- */
-window.removeFromFavorites = function(productId) {
+// Navega al detalle del producto desde favoritos
+window.goToProductFromFavorites = function (productId) {
+  localStorage.setItem('selectedProduct', productId);
+  window.location.href = 'product-info.html';
+};
+
+// Elimina un producto de favoritos
+window.removeFromFavorites = function (productId) {
   let wishlist = getFavorites();
-  wishlist = wishlist.filter(item => item.productId != productId);
+  wishlist = wishlist.filter((item) => item.productId != productId);
   writeLS(WISHLIST_KEY, wishlist);
   renderFavorites();
 };
 
-/**
- * Agrega un producto de favoritos al carrito
- */
-window.addFavoriteToCart = function(productId) {
+// Agrega un producto de favoritos al carrito
+window.addFavoriteToCart = function (productId) {
   const favorites = getFavorites();
-  const product = favorites.find(item => item.productId == productId);
-  
+  const product = favorites.find((item) => item.productId == productId);
+
   if (!product) return;
 
   // Obtener el carrito actual
   let cart = readLS('cart', []);
-  
+
   // Verificar si ya está en el carrito
-  const existingIndex = cart.findIndex(item => item.id == productId);
-  
+  const existingIndex = cart.findIndex((item) => item.id == productId);
+
   if (existingIndex !== -1) {
-    // Incrementar cantidad
-    cart[existingIndex].quantity += 1;
+    const item = cart[existingIndex];
+    const current =
+      typeof item.count === 'number'
+        ? item.count
+        : typeof item.quantity === 'number'
+        ? item.quantity
+        : 0;
+
+    item.count = current + 1;
+    delete item.quantity;
   } else {
     // Agregar nuevo producto al carrito
     cart.push({
@@ -1228,25 +1176,23 @@ window.addFavoriteToCart = function(productId) {
       cost: product.cost,
       currency: product.currency,
       image: product.image,
-      quantity: 1
+      count: 1,
     });
   }
-  
+
   // Guardar carrito actualizado
   writeLS('cart', cart);
-  
+
   // Actualizar badge si existe la función
   if (typeof updateCartBadge === 'function') {
     updateCartBadge();
   }
-  
+
   // Mostrar notificación
   showFavoriteNotification(product.name);
 };
 
-/**
- * Muestra notificación al agregar al carrito desde favoritos
- */
+// Muestra notificación al agregar al carrito desde favoritos
 function showFavoriteNotification(productName) {
   const notification = document.createElement('div');
   notification.className = 'cart-notification';
@@ -1254,51 +1200,46 @@ function showFavoriteNotification(productName) {
     <i class="bi bi-check-circle-fill"></i>
     <span>¡${productName} agregado al carrito!</span>
   `;
-  
+
   document.body.appendChild(notification);
-  
+
   setTimeout(() => {
     notification.classList.add('show');
   }, 10);
-  
+
   setTimeout(() => {
     notification.classList.remove('show');
     setTimeout(() => notification.remove(), 300);
   }, 3000);
 }
 
-/**
- * Configura el sistema de favoritos
- */
+// Configura el sistema de favoritos
 function setupFavoritesSystem() {
   renderFavorites();
 }
 
-// init
-document.addEventListener("DOMContentLoaded", () => {
+// === INICIALIZACIÓN ===
+
+document.addEventListener('DOMContentLoaded', () => {
   loadUserProfile();
-  loadPersistedPhoto(); // NUEVO carga foto guardada si existe
+  loadPersistedPhoto();
   setupPhotoActions();
   setupTabs();
-  setupAddressesSystem(); // NUEVO sistema de direcciones
-  setupCardsSystem(); // NUEVO sistema de tarjetas
-  setupOrdersSystem(); // NUEVO sistema de pedidos
-  setupFavoritesSystem(); // NUEVO sistema de favoritos
+  setupAddressesSystem();
+  setupCardsSystem();
+  setupOrdersSystem();
+  setupFavoritesSystem();
 
-  // Verificar si hay un parámetro tab en la URL
+  // Param "tab" en la URL para abrir sección específica
   const urlParams = new URLSearchParams(window.location.search);
   const tab = urlParams.get('tab');
-  
+
   if (tab === 'orders') {
     document.getElementById('tab-orders')?.click();
   } else if (tab === 'favorites') {
     document.getElementById('tab-favorites')?.click();
   }
 
-  document
-    .getElementById("profileForm")
-    ?.addEventListener("submit", saveUserProfile);
-  document
-    .getElementById("btnResetProfile")
-    ?.addEventListener("click", resetUserProfile);
+  document.getElementById('profileForm')?.addEventListener('submit', saveUserProfile);
+  document.getElementById('btnResetProfile')?.addEventListener('click', resetUserProfile);
 });
