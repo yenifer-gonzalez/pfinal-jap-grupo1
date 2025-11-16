@@ -3,13 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>eMercado - Todo lo que busques está aquí</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Iniciar Sesión - e-Mercado</title>
-    <meta
-      name="description"
-      content="Ingresa a tu cuenta de e-Mercado para acceder a tus compras, carrito y perfil. Compra seguro con nosotros."
-    />
     <meta name="author" content="Grupo 1 - JAP 2024" />
     <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -40,11 +34,18 @@
             <div class="auth-card--body">
               <!-- Logo -->
               <div class="auth-brand">
-                <img class="logo-jap" src="img/logo-jap.svg" alt="" />
+                <img class="logo-jap" src="img/logo-jap.svg" alt="Logo de JAP" />
               </div>
 
               <!-- Formulario - Usuario y Contraseña  -->
-              <form class="login-form" novalidate onsubmit="handleSubmit(event)">
+              <h1 id="login-title" class="visually-hidden">Iniciar sesión</h1>
+
+              <form
+                class="login-form"
+                novalidate
+                onsubmit="handleSubmit(event)"
+                aria-labelledby="login-title"
+              >
                 <!-- Campo Usuario -->
                 <div class="form-field">
                   <label for="username" class="form-label">Correo electrónico</label>

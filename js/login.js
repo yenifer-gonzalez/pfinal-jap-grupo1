@@ -2,140 +2,133 @@
 
 // Función para verificar si hay una sesión activa
 function checkActiveSession() {
-  const user = localStorage.getItem("currentUser");
-  const sessionExpiry = localStorage.getItem("sessionExpiry");
+  const user = localStorage.getItem('currentUser');
+  const sessionExpiry = localStorage.getItem('sessionExpiry');
 
-  if (user && sessionExpiry) {
-    const now = new Date().getTime();
-    if (now < parseInt(sessionExpiry)) {
-      // Sesión válida, redireccionar a index
-      window.location.href = "index.html";
-    } else {
-      // Sesión expirada, limpiar datos
-      clearSession();
-    }
+  if (!user || !sessionExpiry) return false;
+
+  const now = Date.now();
+
+  if (now < Number(sessionExpiry)) {
+    // Sesión válida, redireccionar a index
+    window.location.href = 'index.html';
+  } else {
+    // Sesión expirada, limpiar datos
+    clearSession();
   }
   return false;
 }
 
-// Función para crear una nueva sesión
+// Crea una nueva sesión válida por 24 horas
 function createSession(username) {
   const sessionData = {
-    username: username,
-    loginTime: new Date().getTime(),
+    username,
+    loginTime: Date.now(),
   };
 
   // Sesión expira en 24 horas
-  const expiryTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+  const expiryTime = Date.now() + 24 * 60 * 60 * 1000;
 
-  localStorage.setItem("currentUser", JSON.stringify(sessionData));
-  localStorage.setItem("sessionExpiry", expiryTime.toString());
+  localStorage.setItem('currentUser', JSON.stringify(sessionData));
+  localStorage.setItem('sessionExpiry', expiryTime.toString());
 }
 
-// Función para limpiar la sesión
+//  Limpia la sesión del localStorage
 function clearSession() {
-  localStorage.removeItem("currentUser");
-  localStorage.removeItem("sessionExpiry");
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem('sessionExpiry');
 }
 
 // === VALIDACIÓN DE FORMULARIO ===
 
+// Aplica una animación de error y muestra mensaje
+function showFieldError(input, errorContainer, message) {
+  errorContainer.innerText = message;
+  input.classList.add('error');
+
+  setTimeout(() => input.classList.remove('error'), 400);
+}
+
+// Valida el formulario de login
 function handleSubmit(event) {
   event.preventDefault();
 
-  const user = document.getElementById("username");
-  const pass = document.getElementById("password");
-  const errorUser = document.getElementById("error-user");
-  const errorPass = document.getElementById("error-pass");
+  const user = document.getElementById('username');
+  const pass = document.getElementById('password');
+  const errorUser = document.getElementById('error-user');
+  const errorPass = document.getElementById('error-pass');
   const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (!user.value) {
-    errorUser.innerText = "Por favor, ingrese un email.";
-    user.classList.add("error");
-    setTimeout(() => user.classList.remove("error"), 400);
-    return;
-  } else if (!regexEmail.test(user.value)) {
-    errorUser.innerText = "Por favor, ingrese un email válido.";
-    user.classList.add("error");
-    setTimeout(() => user.classList.remove("error"), 400);
-    return;
-  } else {
-    errorUser.innerText = "";
-    user.classList.remove("error");
+  // --- Validación de email ---
+  if (!user.value.trim()) {
+    return showFieldError(user, errorUser, 'Por favor, ingrese un email.');
   }
 
+  if (!regexEmail.test(user.value)) {
+    return showFieldError(user, errorUser, 'Por favor, ingrese un email válido.');
+  }
+
+  errorUser.innerText = '';
+
   // Validación de contraseña
+  const passValue = pass.value;
+
   if (!pass.value) {
-    errorPass.innerText = "Por favor, ingrese una contraseña.";
-    pass.classList.add("error");
-    setTimeout(() => pass.classList.remove("error"), 400);
-    return;
+    return showFieldError(pass, errorPass, 'Por favor, ingrese una contraseña.');
   }
 
   // Validar longitud mínima
   if (pass.value.length < 6) {
-    errorPass.innerText = "La contraseña debe tener al menos 6 caracteres.";
-    pass.classList.add("error");
-    setTimeout(() => pass.classList.remove("error"), 400);
-    return;
+    return showFieldError(pass, errorPass, 'Debe tener al menos 6 caracteres.');
   }
 
   // Validar que contenga al menos una letra
-  const hasLetter = /[a-zA-Z]/.test(pass.value);
-  if (!hasLetter) {
-    errorPass.innerText = "La contraseña debe contener al menos una letra.";
-    pass.classList.add("error");
-    setTimeout(() => pass.classList.remove("error"), 400);
-    return;
+  if (!/[a-zA-Z]/.test(passValue)) {
+    return showFieldError(pass, errorPass, 'Debe contener al menos una letra.');
   }
 
   // Validar que contenga al menos un número
-  const hasNumber = /[0-9]/.test(pass.value);
-  if (!hasNumber) {
-    errorPass.innerText = "La contraseña debe contener al menos un número.";
-    pass.classList.add("error");
-    setTimeout(() => pass.classList.remove("error"), 400);
-    return;
+  if (!/[0-9]/.test(passValue)) {
+    return showFieldError(pass, errorPass, 'Debe contener al menos un número.');
   }
 
   // Contraseña válida
-  errorPass.innerText = "";
-  pass.classList.remove("error");
+  errorPass.innerText = '';
 
-  let remember = document.getElementById("remember");
+  // Recordarme
+  const remember = document.getElementById('remember');
 
   if (remember.checked) {
-    localStorage.setItem("rememberMe", user.value);
+    localStorage.setItem('rememberMe', user.value);
   } else {
-    localStorage.removeItem("rememberMe");
+    localStorage.removeItem('rememberMe');
   }
 
+  // Crear sesión + redirigir
   createSession(user.value);
   checkActiveSession();
 }
 
 // === FUNCIONALIDADES DE LA INTERFAZ ===
-// Función para alternar visibilidad de contraseña
 
+// Alterna visibilidad de la contraseña
 function changeEye() {
-  const pass = document.getElementById("password");
-  const icon = document.getElementById("eyeIcon");
-  const showing = pass.type === "text";
+  const pass = document.getElementById('password');
+  const icon = document.getElementById('eyeIcon');
+  const showing = pass.type === 'text';
 
-  pass.type = showing ? "password" : "text";
-  icon.classList.toggle("fa-eye", showing);
-  icon.classList.toggle("fa-eye-slash", !showing);
+  pass.type = showing ? 'password' : 'text';
+  icon.classList.toggle('fa-eye', showing);
+  icon.classList.toggle('fa-eye-slash', !showing);
 }
 
 // === INICIALIZACIÓN ===
-
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   checkActiveSession();
 
-  let user = document.getElementById("username");
-  let email = localStorage.getItem("rememberMe");
-
-  if (email) {
-    user.value = email;
+  // Autocompletar email si “Recordarme” está activo
+  const savedEmail = localStorage.getItem('rememberMe');
+  if (savedEmail) {
+    document.getElementById('username').value = savedEmail;
   }
 });
