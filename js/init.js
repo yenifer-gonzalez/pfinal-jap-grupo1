@@ -1,20 +1,21 @@
-const CATEGORIES_URL = "https://japceibal.github.io/emercado-api/cats/cat.json";
-const PUBLISH_PRODUCT_URL =
-  "https://japceibal.github.io/emercado-api/sell/publish.json";
-const PRODUCTS_URL = "https://japceibal.github.io/emercado-api/cats_products/";
-const PRODUCT_INFO_URL = "https://japceibal.github.io/emercado-api/products/";
-const PRODUCT_INFO_COMMENTS_URL =
-  "https://japceibal.github.io/emercado-api/products_comments/";
-const CART_INFO_URL = "https://japceibal.github.io/emercado-api/user_cart/";
-const CART_BUY_URL = "https://japceibal.github.io/emercado-api/cart/buy.json";
-const EXT_TYPE = ".json";
+const CATEGORIES_URL = 'https://japceibal.github.io/emercado-api/cats/cat.json';
+const PUBLISH_PRODUCT_URL = 'https://japceibal.github.io/emercado-api/sell/publish.json';
+const PRODUCTS_URL = 'https://japceibal.github.io/emercado-api/cats_products/';
+const PRODUCT_INFO_URL = 'https://japceibal.github.io/emercado-api/products/';
+const PRODUCT_INFO_COMMENTS_URL = 'https://japceibal.github.io/emercado-api/products_comments/';
+const CART_INFO_URL = 'https://japceibal.github.io/emercado-api/user_cart/';
+const CART_BUY_URL = 'https://japceibal.github.io/emercado-api/cart/buy.json';
+const EXT_TYPE = '.json';
+const PUBLIC_PAGES = ['login.html'];
 
+// SPINNER GLOBAL (LOADER VISUAL)
+// Muestra el overlay del spinner centrado en pantalla
 let showSpinner = function () {
-  document.getElementById("spinner-wrapper").style.display = "block";
+  document.getElementById('spinner-wrapper').classList.add('active');
 };
-
+// Oculta el overlay del spinner
 let hideSpinner = function () {
-  document.getElementById("spinner-wrapper").style.display = "none";
+  document.getElementById('spinner-wrapper').classList.remove('active');
 };
 
 let getJSONData = function (url) {
@@ -29,77 +30,107 @@ let getJSONData = function (url) {
       }
     })
     .then(function (response) {
-      result.status = "ok";
+      result.status = 'ok';
       result.data = response;
       hideSpinner();
       return result;
     })
     .catch(function (error) {
-      result.status = "error";
+      result.status = 'error';
       result.data = error;
       hideSpinner();
       return result;
     });
 };
 
-// === GESTIÓN GLOBAL DE SESIÓN ===
+// === HELPERS GENERALES / UTILITARIOS ===
 
-// Función para verificar si hay una sesión activa
+// Lee un valor desde localStorage y lo parsea como JSON de forma segura
+function readLS(key, fallback = null) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+// Escribe un valor en localStorage en formato JSON
+function writeLS(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+// Formatea un monto en forma amigable, mostrando decimales solo si son necesarios
+function money(amount, currency = 'USD') {
+  const raw = Number(amount) || 0;
+  const value = Math.round((raw + Number.EPSILON) * 100) / 100;
+
+  const hasDecimals = Math.abs(value - Math.round(value)) > 1e-6;
+  const fractionDigits = hasDecimals ? 2 : 0;
+
+  return `${currency} ${value.toLocaleString('en-US', {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  })}`;
+}
+
+function isMobile() {
+  return window.matchMedia('(max-width: 767px)').matches;
+}
+
+// === GESTIÓN DE SESIÓN / AUTENTICACIÓN ===
+
+// Verifica si hay una sesión activa válida en localStorage
 function isUserLoggedIn() {
-  const user = localStorage.getItem("currentUser");
-  const sessionExpiry = localStorage.getItem("sessionExpiry");
+  const user = localStorage.getItem('currentUser');
+  const sessionExpiry = localStorage.getItem('sessionExpiry');
 
   if (!user || !sessionExpiry) {
     return false;
   }
 
-  const now = new Date().getTime();
+  const now = Date.now();
   if (now >= parseInt(sessionExpiry)) {
     // Sesión expirada, limpiar datos
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("sessionExpiry");
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('sessionExpiry');
     return false;
   }
-
   return true;
 }
 
-// Función para obtener datos del usuario actual
+// Devuelve el objeto usuario actual si la sesión es válida
 function getCurrentUser() {
-  if (isUserLoggedIn()) {
-    const userData = localStorage.getItem("currentUser");
-    try {
-      return JSON.parse(userData);
-    } catch (e) {
-      console.error("Error parsing user data:", e);
-      localStorage.removeItem("currentUser");
-      return null;
-    }
+  if (!isUserLoggedIn()) return null;
+
+  const userData = localStorage.getItem('currentUser');
+  try {
+    return JSON.parse(userData);
+  } catch (e) {
+    console.error('Error parsing user data:', e);
+    localStorage.removeItem('currentUser');
+    return null;
   }
-  return null;
 }
 
-// Función para cerrar sesión
+// Cierra la sesión actual y redirige a login
 function logout() {
-  localStorage.removeItem("currentUser");
-  localStorage.removeItem("sessionExpiry");
-  window.location.href = "login.html";
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem('sessionExpiry');
+  window.location.href = 'login.html';
 }
 
-// Función para verificar autenticación en páginas protegidas
+// Fuerza autenticación en páginas protegidas
 function requireAuthentication() {
   if (!isUserLoggedIn()) {
-    window.location.href = "login.html";
+    window.location.href = 'login.html';
     return false;
   }
   return true;
 }
 
-// === GESTIÓN GLOBAL DE INTERFAZ DE USUARIO ===
+// === UI GLOBAL: CARRITO + NOMBRE USUARIO ===
 
-// === FUNCIONES GLOBALES DE CARRITO ===
-
-// Función para actualizar el badge del carrito en todas las páginas
+// Actualiza el badge del carrito (desktop y mobile) con la cantidad total de ítems
 function updateCartBadge() {
   try {
     const cartData = localStorage.getItem('cart');
@@ -108,7 +139,7 @@ function updateCartBadge() {
 
     // Actualizar todos los badges en la página (desktop y mobile)
     const badges = document.querySelectorAll('#cartBadge, #cartBadgeMobile');
-    badges.forEach(badge => {
+    badges.forEach((badge) => {
       if (totalItems > 0) {
         badge.textContent = totalItems;
         badge.style.display = 'inline-block';
@@ -121,175 +152,136 @@ function updateCartBadge() {
   }
 }
 
-// === FUNCIONES GLOBALES DE INTERFAZ DE USUARIO ===
-
-// Función para actualizar la interfaz con el nombre del usuario
+// Actualiza la interfaz con datos del usuario (nombre, etc.)
 function updateUserInterface() {
-  const usernameDisplay = document.getElementById("usernameDisplay");
-  const sidebarUsername = document.getElementById("sidebarUsername");
+  const usernameDisplay = document.getElementById('usernameDisplay');
+  const sidebarUsername = document.getElementById('sidebarUsername');
   const user = getCurrentUser();
 
   if (usernameDisplay) {
-    usernameDisplay.textContent = user?.username || "";
+    usernameDisplay.textContent = user?.username || '';
   }
   if (sidebarUsername) {
-    sidebarUsername.textContent = user?.username || "";
+    sidebarUsername.textContent = user?.username || '';
   }
-  
+
   // Actualizar el badge del carrito
   updateCartBadge();
 }
 
-// Función para configurar los botones de logout
+// Vincula todos los botones/enlaces de logout presentes en el DOM
 function setupLogout() {
-  const logoutButtons = document.querySelectorAll("[data-logout], #logoutBtn");
-  
+  const logoutButtons = document.querySelectorAll('[data-logout], #logoutBtn');
+
   logoutButtons.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
       logout();
     });
   });
 }
 
-// ==== HELPER GLOBAL ====
-// Función para detectar si estamos en mobile (pantallas <= 767px)
-function isMobile() {
-  return window.matchMedia("(max-width: 767px)").matches;
+// === CONFIGURACIÓN DE NAVEGACIÓN DE PRODUCTOS ===
+function setupProductsNavigation() {
+  const links = document.querySelectorAll('a[href="products.html"]');
+
+  links.forEach((link) => {
+    // Ignorar los links de categorías (tienen onclick)
+    if (link.getAttribute('onclick')) return;
+
+    link.addEventListener('click', () => {
+      localStorage.setItem('showAllProducts', 'true');
+      localStorage.removeItem('catID');
+    });
+  });
 }
 
-// === INICIALIZACIÓN GLOBAL ===
-document.addEventListener("DOMContentLoaded", function () {
-  // Verificar autenticación al cargar cualquier página
-  const currentPage = window.location.pathname.split("/").pop();
+// HEME TOGGLE (LIGHT / DARK)
 
-  // Páginas que no requieren autenticación
-  const publicPages = ["login.html"];
-
-  // Aplicar verificación de autenticación solo si NO es una página pública
-  if (!publicPages.includes(currentPage)) {
-    if (!requireAuthentication()) {
-      return; // Detener ejecución si no hay sesión válida
-    }
-  }
-
-  // Si el usuario está en login.html pero ya tiene sesión, redireccionar a index
-  if (currentPage === "login.html" && isUserLoggedIn()) {
-    window.location.href = "index.html";
-    return;
-  }
-
-  // === UI GLOBAL: NAV y FILTROS ===
-  const navSidebar = document.getElementById("navSidebar");
-  const filtersSidebar = document.getElementById("filtersSidebar");
-  const overlay = document.getElementById("overlay");
-
-  // Botón hamburguesa
-  const menuBtn = document.getElementById("menuButton");
-  if (menuBtn && navSidebar && overlay) {
-    menuBtn.addEventListener("click", () => {
-      navSidebar.classList.add("show");
-      navSidebar.classList.remove("hidden");
-      overlay.classList.remove("hidden");
-    });
-  }
-
-  // Abrir filtros desde el label
-  const filtersLabel = document.querySelector(".filters-label");
-  if (filtersLabel && filtersSidebar && overlay) {
-    filtersLabel.addEventListener("click", () => {
-      if (!isMobile()) return; // Evitar que se abra en desktop
-      filtersSidebar.classList.add("show");
-      filtersSidebar.classList.remove("hidden");
-      overlay.classList.remove("hidden");
-    });
-  }
-
-  // Cerrar al tocar overlay
-  if (overlay) {
-    overlay.addEventListener("click", () => {
-      if (navSidebar) {
-        navSidebar.classList.remove("show");
-        navSidebar.classList.add("hidden");
-      }
-      if (filtersSidebar) {
-        filtersSidebar.classList.remove("show");
-        filtersSidebar.classList.add("hidden");
-      }
-      overlay.classList.add("hidden");
-    });
-  }
-
-  // REACCIONAR AL RESIZE (cerrar filtros si vuelvo a desktop)
-  window.addEventListener("resize", () => {
-    // Si dejo de estar en mobile y el sidebar de filtros está abierto, se cierra
-    if (!isMobile() && filtersSidebar?.classList.contains("show")) {
-      filtersSidebar.classList.remove("show");
-      filtersSidebar.classList.add("hidden");
-      overlay?.classList.add("hidden");
-    }
-  });
-
-  // === INICIALIZACIÓN DE INTERFAZ Y LOGOUT ===
-  // Ejecutar en todas las páginas autenticadas
-  if (!publicPages.includes(currentPage)) {
-    updateUserInterface();
-    setupLogout();
-  }
-
-  // === THEME TOGGLE INITIALIZATION ===
-  // Aplicar tema guardado y configurar el toggle
-  applySavedTheme();
-  setupThemeToggle();
-});
-
-// === GESTIÓN DEL THEME TOGGLE ===
-
-// Función para configurar el botón de cambio de tema
+// Configura los botones que alternan entre modo claro / oscuro
 function setupThemeToggle() {
   const themeToggle = document.getElementById('theme-toggle');
-  if (!themeToggle) return;
-  
-  themeToggle.addEventListener('click', () => {
+  const themeToggleSidebar = document.getElementById('theme-toggle-sidebar');
+
+  const toggleTheme = () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     updateThemeIcon(newTheme);
-  });
+  };
+
+  // Botón flotante (desktop)
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+
+  // Botón del sidebar (mobile)
+  if (themeToggleSidebar) {
+    themeToggleSidebar.addEventListener('click', toggleTheme);
+  }
 }
 
-// Función para aplicar el tema guardado al cargar la página
+// Aplica el tema guardado en localStorage al iniciar
 function applySavedTheme() {
   const savedTheme = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   updateThemeIcon(savedTheme);
 }
 
-// Función para actualizar el icono según el tema activo
+// Actualiza los íconos del toggle de tema (sol / luna)
 function updateThemeIcon(theme) {
   const themeToggle = document.getElementById('theme-toggle');
-  if (!themeToggle) return;
-  
-  const icon = themeToggle.querySelector('i');
-  
-  if (theme === 'dark') {
-    icon.className = 'fas fa-sun';  // Mostrar sol en modo oscuro
-  } else {
-    icon.className = 'fas fa-moon'; // Mostrar luna en modo claro
+  const themeToggleSidebar = document.getElementById('theme-toggle-sidebar');
+
+  // Actualizar botón flotante
+  if (themeToggle) {
+    const icon = themeToggle.querySelector('i');
+    if (icon) {
+      icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+  }
+
+  // Actualizar botón del sidebar
+  if (themeToggleSidebar) {
+    const icon = themeToggleSidebar.querySelector('i');
+    const span = themeToggleSidebar.querySelector('span');
+
+    if (icon) {
+      icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    if (span) {
+      span.textContent = theme === 'dark' ? 'Modo claro' : 'Modo oscuro';
+    }
   }
 }
 
+// === BOTÓN "VOLVER ARRIBA" ===
+function setupBackToTop() {
+  const backToTopBtn = document.getElementById('goTop');
+  if (!backToTopBtn) return;
+
+  backToTopBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.body.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+  });
+}
+
 // === REGISTRO DE SERVICE WORKER ===
-// Registrar Service Worker para caché y funcionalidad offline
+
+// Registra el Service Worker (sw.js) para soporte offline y mejora de performance
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('./sw.js')
       .then((registration) => {
         console.log('[SW] Service Worker registrado exitosamente:', registration.scope);
-        
+
         // Verificar actualizaciones periódicamente
         setInterval(() => {
           registration.update();
@@ -300,3 +292,88 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+
+// === INICIALIZACIÓN GLOBAL ===
+document.addEventListener('DOMContentLoaded', () => {
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+  // Control de autenticación para páginas protegidas
+  if (!PUBLIC_PAGES.includes(currentPage)) {
+    if (!requireAuthentication()) {
+      // Si no hay sesión válida, requireAuthentication ya redirigió
+      return;
+    }
+  }
+
+  // Si ya hay sesión y estoy en login, mando a index
+  if (currentPage === 'login.html' && isUserLoggedIn()) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // === UI GLOBAL: NAV y FILTROS ===
+  const navSidebar = document.getElementById('navSidebar');
+  const filtersSidebar = document.getElementById('filtersSidebar');
+  const overlay = document.getElementById('overlay');
+
+  // Menú hamburguesa
+  const menuBtn = document.getElementById('menuButton');
+  if (menuBtn && navSidebar && overlay) {
+    menuBtn.addEventListener('click', () => {
+      navSidebar.classList.add('show');
+      navSidebar.classList.remove('hidden');
+      overlay.classList.remove('hidden');
+    });
+  }
+
+  // Abrir filtros desde el label
+  const filtersLabel = document.querySelector('.filters-label');
+  if (filtersLabel && filtersSidebar && overlay) {
+    filtersLabel.addEventListener('click', () => {
+      if (!isMobile()) return; // Evitar que se abra en desktop
+      filtersSidebar.classList.add('show');
+      filtersSidebar.classList.remove('hidden');
+      overlay.classList.remove('hidden');
+    });
+  }
+
+  // Cerrar al tocar overlay
+  if (overlay) {
+    overlay.addEventListener('click', () => {
+      if (navSidebar) {
+        navSidebar.classList.remove('show');
+        navSidebar.classList.add('hidden');
+      }
+      if (filtersSidebar) {
+        filtersSidebar.classList.remove('show');
+        filtersSidebar.classList.add('hidden');
+      }
+      overlay.classList.add('hidden');
+    });
+  }
+
+  //  Cerrar filtros si vuelvo a escritorio desde mobile
+  window.addEventListener('resize', () => {
+    if (!isMobile() && filtersSidebar?.classList.contains('show')) {
+      filtersSidebar.classList.remove('show');
+      filtersSidebar.classList.add('hidden');
+      overlay?.classList.add('hidden');
+    }
+  });
+
+  // UI de usuario + logout (solo en páginas autenticadas)
+  if (!PUBLIC_PAGES.includes(currentPage)) {
+    updateUserInterface();
+    setupLogout();
+  }
+
+  // Navegación de productos (enlace "Productos" = mostrar todos)
+  setupProductsNavigation();
+
+  // Aplicar tema guardado + configurar toggles de tema
+  applySavedTheme();
+  setupThemeToggle();
+
+  // Botón "Volver arriba" del footer
+  setupBackToTop();
+});
