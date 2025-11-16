@@ -1,17 +1,5 @@
 // ===== ORDER CONFIRMATION PAGE =====
 
-const readLS = (k, fb = null) => {
-  try {
-    const data = localStorage.getItem(k);
-    return data ? JSON.parse(data) : fb;
-  } catch {
-    return fb;
-  }
-};
-
-const money = (n, cur = 'USD') =>
-  `${cur} ${Number(n).toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
-
 // Obtener el ID del pedido de la URL
 function getOrderIdFromURL() {
   const params = new URLSearchParams(window.location.search);
@@ -26,14 +14,14 @@ function formatDate(isoString) {
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
 // Cargar datos del pedido
 function loadOrderData() {
   const orderId = getOrderIdFromURL();
-  
+
   if (!orderId) {
     showEmptyState();
     return;
@@ -41,7 +29,7 @@ function loadOrderData() {
 
   // Buscar el pedido en localStorage
   const orders = readLS('orders', []);
-  const order = orders.find(o => o.id === orderId);
+  const order = orders.find((o) => o.id === orderId);
 
   if (!order) {
     showEmptyState();
@@ -65,11 +53,13 @@ function displayOrderDetails(order) {
 // Mostrar dirección de envío
 function displayShippingAddress(address) {
   const container = document.getElementById('shippingAddress');
-  
+
   container.innerHTML = `
     <div class="address-info">
       <p><strong>${address.alias || 'Dirección de envío'}</strong></p>
-      <p>${address.street}${address.corner ? ` esquina ${address.corner}` : ''}${address.apartment ? `, ${address.apartment}` : ''}</p>
+      <p>${address.street}${address.corner ? ` esquina ${address.corner}` : ''}${
+    address.apartment ? `, ${address.apartment}` : ''
+  }</p>
       <p>${address.city}, ${address.state} ${address.zipCode}</p>
       ${address.country ? `<p>${address.country}</p>` : ''}
       ${address.phone ? `<p><i class="bi bi-telephone"></i> ${address.phone}</p>` : ''}
@@ -80,12 +70,12 @@ function displayShippingAddress(address) {
 // Mostrar método de pago
 function displayPaymentMethod(order) {
   const container = document.getElementById('paymentMethod');
-  
+
   let icon = 'bi-credit-card';
   let title = 'Tarjeta de crédito/débito';
   let description = 'Pago procesado correctamente';
 
-  switch(order.paymentMethod) {
+  switch (order.paymentMethod) {
     case 'transfer':
       icon = 'bi-bank';
       title = 'Transferencia bancaria';
@@ -103,12 +93,14 @@ function displayPaymentMethod(order) {
       } else if (order.cryptoCurrency === 'Ethereum') {
         icon = 'fab fa-ethereum';
       } else if (order.cryptoCurrency === 'USDT') {
-        icon = 'tether-icon-fab';
+        icon = 'fa-brands fa-usdt';
       } else {
         icon = 'fab fa-bitcoin'; // Fallback genérico
       }
       title = 'Criptomoneda';
-      description = order.cryptoCurrency ? `Pago en ${order.cryptoCurrency}` : 'Pago en criptomoneda';
+      description = order.cryptoCurrency
+        ? `Pago en ${order.cryptoCurrency}`
+        : 'Pago en criptomoneda';
       break;
   }
 
@@ -126,8 +118,10 @@ function displayPaymentMethod(order) {
 // Mostrar productos
 function displayOrderItems(items) {
   const container = document.getElementById('orderItems');
-  
-  container.innerHTML = items.map(item => `
+
+  container.innerHTML = items
+    .map(
+      (item) => `
     <div class="order-item">
       <img src="${item.image}" alt="${item.name}" loading="lazy" />
       <div class="order-item-info">
@@ -138,14 +132,18 @@ function displayOrderItems(items) {
         ${money(item.cost * (item.count || 1), 'USD')}
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 }
 
 // Mostrar resumen
 function displayOrderSummary(order) {
   document.getElementById('summarySubtotal').textContent = money(order.subtotal, 'USD');
   document.getElementById('summaryShipping').textContent = money(order.shipping, 'USD');
-  document.getElementById('summaryShippingLabel').textContent = `Envío (${order.shippingType.split(' ')[0]})`;
+  document.getElementById('summaryShippingLabel').textContent = `Envío (${
+    order.shippingType.split(' ')[0]
+  })`;
   document.getElementById('summaryTotal').textContent = money(order.total, 'USD');
 }
 
