@@ -6,6 +6,8 @@ let carouselPosition = 0;
 function goToCategory(catId) {
   try {
     localStorage.setItem('catID', catId);
+    // Asegurar de que no haya flag de "mostrar todos"
+    localStorage.removeItem('showAllProducts');
   } catch (e) {
     console.error('No se pudo guardar catID en localStorage:', e);
   }
@@ -20,20 +22,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Asignar listeners solo si el elemento existe
   if (autosCard) {
-    autosCard.addEventListener('click', function () {
+    autosCard.addEventListener('click', function (e) {
+      e.preventDefault();
       goToCategory(101);
+      window.location.href = 'products.html';
     });
   }
 
   if (juguetesCard) {
-    juguetesCard.addEventListener('click', function () {
+    juguetesCard.addEventListener('click', function (e) {
+      e.preventDefault();
       goToCategory(102);
+      window.location.href = 'products.html';
     });
   }
 
   if (mueblesCard) {
-    mueblesCard.addEventListener('click', function () {
+    mueblesCard.addEventListener('click', function (e) {
+      e.preventDefault();
       goToCategory(103);
+      window.location.href = 'products.html';
     });
   }
 

@@ -125,17 +125,23 @@ nav a {
   height: 70px;
   max-width: 70px;
   max-height: 70px;
+  min-width: 70px;
+  min-height: 70px;
   margin-right: 160px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .header-logo .logo-img {
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
+  width: 70px;
+  height: 70px;
+  max-width: 70px;
+  max-height: 70px;
   object-fit: contain;
+  display: block;
 }
 
 .main-nav {
@@ -780,6 +786,15 @@ footer a:hover {
     height: 56px;
     max-width: 56px;
     max-height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+  }
+
+  .header-logo .logo-img {
+    width: 56px;
+    height: 56px;
+    max-width: 56px;
+    max-height: 56px;
   }
 
   .user-avatar {
@@ -904,6 +919,15 @@ footer a:hover {
 
   .header-logo .logo-icon {
     margin-right: 0;
+    width: 48px;
+    height: 48px;
+    max-width: 48px;
+    max-height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .header-logo .logo-img {
     width: 48px;
     height: 48px;
     max-width: 48px;
@@ -1071,4 +1095,24 @@ footer a:hover {
 :root[data-theme='dark'] .sidebar-nav a small,
 :root[data-theme='dark'] .user-info p {
   color: var(--text-tertiary);
+}
+
+/* ========= FIX ESPECÍFICO PARA iOS ========= */
+
+@supports (-webkit-touch-callout: none) {
+  .header-logo .logo-icon {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .header-logo .logo-img {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
 }
