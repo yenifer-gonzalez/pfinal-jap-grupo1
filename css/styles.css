@@ -237,6 +237,7 @@ select:focus:not(:focus-visible) {
 
 /* Title */
 .page-title {
+  font-family: var(--font-family-secondary);
   margin: 0.25rem 0 0.5rem;
   font-size: clamp(2rem, 5vw, 3.25rem);
   line-height: 1.1;
@@ -1095,6 +1096,10 @@ footer a:hover {
 :root[data-theme='dark'] .sidebar-nav a small,
 :root[data-theme='dark'] .user-info p {
   color: var(--text-tertiary);
+}
+
+:root[data-theme='dark'] .cart-icon:hover {
+  background-color: var(--color-primary-dark);
 }
 
 /* ========= FIX ESPECÍFICO PARA iOS ========= */

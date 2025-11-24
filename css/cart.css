@@ -4,6 +4,12 @@
   padding: var(--space-2xl) var(--space-lg);
 }
 
+.page-container {
+  margin-bottom: var(--space-2xl);
+  padding: var(--space-lg) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
 .cart-layout {
   margin-top: var(--space-2xl);
   display: grid;

@@ -394,3 +394,15 @@
     max-width: 100%;
   }
 }
+
+:root[data-theme='dark'] .filter-input {
+  background: var(--card-background);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+:root[data-theme='dark'] .filter-select {
+  background: var(--card-background);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}

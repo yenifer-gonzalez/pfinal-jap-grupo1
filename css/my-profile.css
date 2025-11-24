@@ -131,7 +131,6 @@ body {
   display: grid;
   grid-template-columns: 180px 1fr;
   gap: var(--space-lg);
-  align-items: center;
   margin-bottom: var(--space-xl);
 }
 
