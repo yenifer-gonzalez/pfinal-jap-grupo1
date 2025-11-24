@@ -904,6 +904,13 @@ footer a:hover {
     border: none;
   }
 
+  /* Fix: Limitar el ancho de los sidebars en móvil */
+  .sidebar {
+    width: 85vw;
+    max-width: 320px;
+    min-width: 280px;
+  }
+
   .filter-select,
   .filter-input {
     width: 100%;
@@ -986,7 +993,9 @@ footer a:hover {
   }
 
   .sidebar {
-    width: 260px;
+    width: 90vw;
+    max-width: 280px;
+    min-width: 260px;
   }
 
   .sidebar-content {

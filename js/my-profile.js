@@ -1064,7 +1064,7 @@ function renderFavorites() {
         <i class="bi bi-heart"></i>
         <h3>No tienes productos favoritos</h3>
         <p>Explora nuestro catálogo y guarda tus productos preferidos aquí</p>
-        <a href="products.html" class="btn-primary">
+        <a href="products.html" class="btn-view-products">
           <i class="bi bi-shop"></i> Ver productos
         </a>
       </div>

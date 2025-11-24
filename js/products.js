@@ -666,10 +666,12 @@ function toggleFavorite(event, productId) {
   event.stopPropagation(); // Evitar que se active el click del card
 
   const favoriteBtn = event.target;
-  const isFavorite = favoriteBtn.textContent === '♥';
 
   // Obtener favoritos actuales del localStorage
   let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+  // Verificar si el producto YA está en favoritos usando el estado real del localStorage
+  const isFavorite = wishlist.some((item) => item.productId === productId);
 
   if (isFavorite) {
     // Remover de favoritos
