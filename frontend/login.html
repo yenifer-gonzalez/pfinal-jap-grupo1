@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>Iniciar Sesión - e-Mercado</title>
+    <meta name="author" content="Grupo 1 - JAP 2024" />
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-3LK/..."
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/login.css" />
+  </head>
+
+  <body>
+    <!-- Contenedor principal -->
+    <main>
+      <div class="auth-shell">
+        <div class="auth-wrap">
+          <div class="auth-card">
+            <div class="auth-card--body">
+              <!-- Logo -->
+              <div class="auth-brand">
+                <img class="logo-jap" src="img/logo-jap.svg" alt="Logo de JAP" />
+              </div>
+
+              <!-- Formulario - Usuario y Contraseña  -->
+              <h1 id="login-title" class="visually-hidden">Iniciar sesión</h1>
+
+              <form
+                class="login-form"
+                novalidate
+                onsubmit="handleSubmit(event)"
+                aria-labelledby="login-title"
+              >
+                <!-- Campo Usuario -->
+                <div class="form-field">
+                  <label for="username" class="form-label">Correo electrónico</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    placeholder="usuario@correo.com"
+                    autocomplete="email"
+                    required
+                  />
+                  <!-- Mensaje de error para el usuario -->
+                  <p id="error-user"></p>
+                </div>
+
+                <!-- Campo Contraseña -->
+                <div class="form-field">
+                  <label for="password" class="form-label">Contraseña</label>
+
+                  <div class="input-w-toggle">
+                    <input
+                      type="password"
+                      class="form-control pr-eye"
+                      id="password"
+                      name="password"
+                      placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
+                      autocomplete="current-password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="eye-abs"
+                      onclick="changeEye(this)"
+                      aria-label="Mostrar/ocultar contraseña"
+                      aria-controls="password"
+                    >
+                      <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                    </button>
+                  </div>
+
+                  <p id="error-pass"></p>
+                </div>
+
+                <!-- Checkbox y link de recuperar contraseña -->
+                <div class="form-aux">
+                  <label class="checkbox-fa">
+                    <input type="checkbox" id="remember" name="remember" />
+                    <span class="box"><i class="fa-solid fa-check"></i></span>
+                    <span class="link-secondary">Recordarme</span>
+                  </label>
+
+                  <a href="#" class="forgot-link forgot-link--desktop">
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+
+                <!-- Botón de login -->
+                <div class="actions">
+                  <button type="submit" class="button button--primary">Ingresar</button>
+                  <!-- Versión mobile -->
+                  <a href="#" class="forgot-link fl-mobile">¿Olvidaste tu contraseña?</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating Theme Toggle Button -->
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
+      <i class="fas fa-moon" aria-hidden="true"></i>
+    </button>
+
+    <script src="js/login.js" defer></script>
+    <script src="js/init.js" defer></script>
+  </body>
+</html>

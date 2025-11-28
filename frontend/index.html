@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>e-Mercado - Tienda Online | Todo lo que buscas en un solo lugar</title>
+    <meta
+      name="description"
+      content="Descubre miles de productos en e-Mercado. Autos, tecnología, muebles y más. Compra seguro con las mejores ofertas y envíos a todo Uruguay."
+    />
+    <meta name="author" content="Grupo 1 - JAP 2024" />
+
+    <!-- Open Graph para redes sociales -->
+    <meta property="og:title" content="e-Mercado - Tienda Online" />
+    <meta
+      property="og:description"
+      content="Todo lo que buscas en un solo lugar. Miles de productos con las mejores ofertas."
+    />
+    <meta property="og:image" content="img/logo-jap.svg" />
+    <meta property="og:type" content="website" />
+
+    <!-- Preconnect para CDNs externos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- Preload CSS crítico para render más rápido -->
+    <link rel="preload" href="css/bootstrap.min.css" as="style" />
+    <link rel="preload" href="css/styles.css" as="style" />
+
+    <!-- CSS Crítico primero -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <!-- CSS específico de página - async load -->
+    <link
+      rel="preload"
+      href="css/home.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="css/home.css" />
+    </noscript>
+
+    <!-- Fonts con display=swap para evitar FOIT -->
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
+        rel="stylesheet"
+      />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <!-- Icons no críticos - async load con display=swap -->
+    <link
+      rel="preload"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css?display=swap"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css?display=swap"
+      />
+    </noscript>
+    <link
+      rel="preload"
+      href="css/font-awesome.min.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="css/font-awesome.min.css" />
+    </noscript>
+  </head>
+
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="header-logo">
+          <a href="index.html" class="logo-icon">
+            <img
+              src="img/logo-jap.svg"
+              alt="e-Mercado - Tienda online de productos"
+              class="logo-img"
+              loading="lazy"
+            />
+          </a>
+        </div>
+        <nav class="main-nav">
+          <a href="index.html" class="nav-link active">Inicio</a>
+          <a href="categories.html" class="nav-link">Categorías</a>
+          <a href="products.html" class="nav-link">Productos</a>
+          <a href="sell.html" class="nav-link">Vender</a>
+        </nav>
+
+        <!-- Usuario / Login -->
+        <div class="user-section">
+          <div id="userSection" class="dropdown">
+            <button
+              class="btn user-avatar dropdown-toggle"
+              type="button"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-person me-2"></i>
+              <span id="usernameDisplay"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <a class="dropdown-item" href="my-profile.html"
+                  ><i class="bi bi-person-circle me-2"></i>Mi perfil</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=orders"
+                  ><i class="bi bi-box-seam me-2"></i>Mis pedidos</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=favorites"
+                  ><i class="bi bi-heart me-2"></i>Mis favoritos</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item" id="logoutBtn" data-logout href="#"
+                  ><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a
+                >
+              </li>
+            </ul>
+          </div>
+          <a href="cart.html" class="cart-icon" aria-label="Ir al carrito">
+            <i class="bi bi-cart3"></i>
+            <span
+              id="cartBadge"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
+          </a>
+        </div>
+        <div class="mobile-actions">
+          <a href="cart.html" class="cart-icon-mobile" aria-label="Ir al carrito">
+            <i class="bi bi-cart3"></i>
+            <span
+              id="cartBadgeMobile"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
+          </a>
+          <button id="menuButton" class="btn menu-toggle" aria-label="Abrir menú">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar Navegación (derecha) RESPONSIVE -->
+    <aside id="navSidebar" class="sidebar right hidden">
+      <div class="sidebar-content">
+        <div class="user-info">
+          <i class="bi bi-person-circle"></i>
+          <p id="sidebarUsername">example@gmail.com</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="index.html" class="active">Inicio</a>
+          <a href="categories.html">Categorías</a>
+          <a href="products.html">Productos</a>
+          <a href="sell.html">Vender</a>
+          <a href="my-profile.html">Mi perfil</a>
+          <a href="cart.html">Mi carrito</a>
+        </nav>
+        <hr />
+        <button
+          class="sidebar-theme-toggle"
+          id="theme-toggle-sidebar"
+          aria-label="Toggle dark/light theme"
+        >
+          <span>Modo oscuro</span>
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </button>
+        <a href="#" class="sidebar-logout" data-logout>
+          <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- Overlay (fondo oscuro al abrir sidebar) -->
+    <div id="overlay" class="overlay hidden"></div>
+
+    <!-- ======= HOME ======= -->
+    <main>
+      <section class="home-hero">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <span class="overline">Jóvenes a Programar</span>
+            <h1>eMercado <span class="wink">todo lo que busques está aquí</span></h1>
+
+            <p class="lead">
+              Este sitio es el proyecto final del <strong>Grupo 1</strong> de Jóvenes a Programar.
+              Creamos una versión funcional de <em>eMercado</em> aplicando HTML, CSS y JavaScript
+              con un diseño moderno, almacenamiento local y modo oscuro. Un trabajo colaborativo
+              hecho con mucha dedicación.
+            </p>
+
+            <div class="hero-cta">
+              <a href="categories.html" class="btn-cta">Explorar categorías</a>
+              <a href="products.html" class="btn-ghost">Ver productos</a>
+            </div>
+
+            <section class="team-block" aria-labelledby="team-title">
+              <div class="team-header" id="team-title">
+                <i class="bi bi-people-fill"></i>
+                <span>Proyecto Final — <strong>Grupo 1</strong></span>
+              </div>
+
+              <ul class="team-list" aria-label="Integrantes del Grupo 1">
+                <li>
+                  <a
+                    href="https://github.com/agusdelosantos"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="team-link"
+                    title="GitHub de Agustina"
+                  >
+                    <i class="bi bi-github"></i>
+                  </a>
+                  Agustina De Los Santos
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/yenifer-gonzalez"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="team-link"
+                    title="GitHub de Yenifer"
+                  >
+                    <i class="bi bi-github"></i>
+                  </a>
+                  Yenifer González
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/hernanbaldi2003"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="team-link"
+                    title="GitHub de Hernán"
+                  >
+                    <i class="bi bi-github"></i>
+                  </a>
+                  Hernán Baldi
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/marcosbeta23"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="team-link"
+                    title="GitHub de Marcos"
+                  >
+                    <i class="bi bi-github"></i>
+                  </a>
+                  Marcos Betancor
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/nrdev1771"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="team-link"
+                    title="GitHub de Nahuel"
+                  >
+                    <i class="bi bi-github"></i>
+                  </a>
+                  Nahuel Regueira
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <div class="hero-art" aria-hidden="true">
+            <div class="float-card card-1">
+              <i class="bi bi-grid"></i>
+              <span>Catálogo por categorías</span>
+            </div>
+            <div class="float-card card-2">
+              <i class="bi bi-cart-check"></i>
+              <span>Carrito y compra simulada</span>
+            </div>
+            <div class="float-card card-3">
+              <i class="bi bi-stars"></i>
+              <span>Opiniones y puntuaciones</span>
+            </div>
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="dots"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======= CATEGORÍAS DESTACADAS ======= -->
+      <section class="home-cats">
+        <header class="cats-head">
+          <h2>Categorías destacadas</h2>
+          <a class="link-all" href="categories.html">Ver todas</a>
+        </header>
+
+        <div class="cats-grid">
+          <a class="cat-card cat-autos" id="autos" href="products.html">
+            <div class="cat-icon">
+              <i class="bi bi-car-front-fill"></i>
+            </div>
+            <div class="cat-content">
+              <div class="cat-header">
+                <h3>Autos</h3>
+                <span class="cat-badge cat-badge-popular">Popular</span>
+              </div>
+              <p>Autos seleccionados, desde 0km hasta usados</p>
+            </div>
+            <div class="cat-arrow">
+              <i class="bi bi-arrow-right"></i>
+            </div>
+          </a>
+
+          <a class="cat-card cat-juguetes" id="juguetes" href="products.html">
+            <div class="cat-icon">
+              <i class="bi bi-puzzle-fill"></i>
+            </div>
+            <div class="cat-content">
+              <div class="cat-header">
+                <h3>Juguetes</h3>
+              </div>
+              <p>Juguetes para todas las edades</p>
+            </div>
+            <div class="cat-arrow">
+              <i class="bi bi-arrow-right"></i>
+            </div>
+          </a>
+
+          <a class="cat-card cat-muebles" id="muebles" href="products.html">
+            <div class="cat-icon">
+              <i class="bi bi-lamp-fill"></i>
+            </div>
+            <div class="cat-content">
+              <div class="cat-header">
+                <h3>Muebles</h3>
+                <span class="cat-badge cat-badge-new">Nuevo</span>
+              </div>
+              <p>Renueva tu hogar con estilo único</p>
+            </div>
+            <div class="cat-arrow">
+              <i class="bi bi-arrow-right"></i>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ======= VISTOS RECIENTEMENTE ======= -->
+      <section class="recently-viewed" id="recentlyViewedSection">
+        <header class="recently-viewed-head">
+          <h2>Vistos recientemente</h2>
+          <p class="recently-viewed-subtitle">Continúa explorando productos que te interesaron</p>
+        </header>
+
+        <div class="recently-viewed-carousel">
+          <button class="carousel-btn carousel-btn-prev" id="recentPrevBtn" aria-label="Anterior">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+
+          <div class="recently-viewed-track" id="recentlyViewedTrack">
+            <!-- Los productos se cargarán dinámicamente aquí -->
+          </div>
+
+          <button class="carousel-btn carousel-btn-next" id="recentNextBtn" aria-label="Siguiente">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-container">
+        <p class="footer-text">
+          Este sitio forma parte de
+          <a href="https://jovenesaprogramar.edu.uy/" target="_blank" rel="noopener noreferrer">
+            Jóvenes a Programar
+          </a>
+        </p>
+
+        <p class="footer-back-to-top">
+          <a href="#" id="goTop">Volver arriba</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Floating Theme Toggle Button -->
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
+      <i class="fas fa-moon" aria-hidden="true"></i>
+    </button>
+
+    <script src="js/bootstrap.bundle.min.js" defer></script>
+    <script src="js/init.js" defer></script>
+    <script src="js/index.js" defer></script>
+  </body>
+</html>

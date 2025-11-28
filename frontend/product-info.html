@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>Detalle de Producto - e-Mercado</title>
+    <meta
+      name="description"
+      content="Información detallada del producto, características, precio, calificaciones y comentarios de usuarios. Compra seguro en e-Mercado."
+    />
+    <meta name="author" content="Grupo 1 - JAP 2024" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="product" />
+    <meta property="og:url" content="https://emercado.com/product-info.html" />
+    <meta property="og:title" content="Producto - e-Mercado" />
+    <meta
+      property="og:description"
+      content="Descubre las características y opiniones de este producto en e-Mercado."
+    />
+    <meta property="og:image" content="https://emercado.com/img/prod_placeholder.png" />
+    <meta property="og:site_name" content="e-Mercado" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://emercado.com/product-info.html" />
+    <meta name="twitter:title" content="Producto - e-Mercado" />
+    <meta
+      name="twitter:description"
+      content="Descubre las características y opiniones de este producto en e-Mercado."
+    />
+    <meta name="twitter:image" content="https://emercado.com/img/prod_placeholder.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+      integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Icons de Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <link href="css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/product-info.css" />
+
+    <!-- Preload de recursos -->
+    <link rel="preconnect" href="https://japceibal.github.io" />
+    <link rel="dns-prefetch" href="https://japceibal.github.io" />
+  </head>
+
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="header-logo">
+          <a href="index.html" class="logo-icon">
+            <img
+              src="img/logo-jap.svg"
+              alt="e-Mercado - Tienda online de productos"
+              class="logo-img"
+            />
+          </a>
+        </div>
+        <nav class="main-nav">
+          <a href="index.html" class="nav-link">Inicio</a>
+          <a href="categories.html" class="nav-link">Categorías</a>
+          <a href="products.html" class="nav-link active" aria-current="page">Productos</a>
+          <a href="sell.html" class="nav-link">Vender</a>
+        </nav>
+
+        <!-- Usuario / Login -->
+        <div class="user-section">
+          <div id="userSection" class="dropdown">
+            <button
+              class="btn user-avatar dropdown-toggle"
+              type="button"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-person me-2"></i>
+              <span id="usernameDisplay"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <a class="dropdown-item" href="my-profile.html"
+                  ><i class="bi bi-person-circle me-2"></i>Mi perfil</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=orders"
+                  ><i class="bi bi-box-seam me-2"></i>Mis pedidos</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=favorites"
+                  ><i class="bi bi-heart me-2"></i>Mis favoritos</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item" id="logoutBtn" data-logout href="#"
+                  ><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a
+                >
+              </li>
+            </ul>
+          </div>
+          <a href="cart.html" class="cart-icon" aria-label="Ir al carrito">
+            <i class="bi bi-cart3"></i>
+            <span
+              id="cartBadge"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
+          </a>
+        </div>
+        <div class="mobile-actions">
+          <a href="cart.html" class="cart-icon-mobile" aria-label="Ir al carrito">
+            <i class="bi bi-cart3"></i>
+            <span
+              id="cartBadgeMobile"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
+          </a>
+          <button id="menuButton" class="btn menu-toggle" aria-label="Abrir menú">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar Navegación (derecha) RESPONSIVE -->
+    <aside id="navSidebar" class="sidebar right hidden">
+      <div class="sidebar-content">
+        <div class="user-info">
+          <i class="bi bi-person-circle"></i>
+          <p id="sidebarUsername">example@gmail.com</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="index.html">Inicio</a>
+          <a href="categories.html">Categorías</a>
+          <a href="products.html" class="active">Productos</a>
+          <a href="sell.html">Vender</a>
+          <a href="my-profile.html">Mi perfil</a>
+          <a href="cart.html">Mi carrito</a>
+        </nav>
+        <hr />
+        <button
+          class="sidebar-theme-toggle"
+          id="theme-toggle-sidebar"
+          aria-label="Toggle dark/light theme"
+        >
+          <span>Modo oscuro</span>
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </button>
+        <a href="#" class="sidebar-logout" data-logout>
+          <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- Overlay (fondo oscuro al abrir sidebar) -->
+    <div id="overlay" class="overlay hidden"></div>
+
+    <!-- ======= Main ======= -->
+    <main class="pi-container">
+      <!-- Navegación breadcrumb -->
+      <nav class="breadcrumb-nav" aria-label="Navegación">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="index.html"><i class="bi bi-house-door"></i> Inicio</a>
+          </li>
+
+          <li class="breadcrumb-item">
+            <a href="products.html"><i class="bi bi-grid"></i> Productos</a>
+          </li>
+
+          <li class="breadcrumb-item active" aria-current="page" id="breadcrumb-product">
+            <i class="bi bi-box-seam"></i> Detalle
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Tarjeta principal -->
+      <section class="pi-card">
+        <div class="pi-grid">
+          <!-- Galería izquierda -->
+          <div class="pi-gallery">
+            <div class="pi-carousel">
+              <button class="pi-carousel-btn left" type="button" aria-label="Anterior">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+
+              <img
+                id="pi-main-image"
+                class="pi-main-img"
+                src="img/prod50921_1.jpg"
+                alt="Imagen principal del producto"
+                loading="eager"
+              />
+
+              <button class="pi-carousel-btn right" type="button" aria-label="Siguiente">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+
+            <div id="pi-thumbs" class="pi-thumbs"></div>
+          </div>
+
+          <!-- Panel derecho -->
+          <div class="pi-info">
+            <!-- Metadatos -->
+            <div class="pi-meta-bar">
+              <div class="pi-meta-left">
+                <i class="bi bi-tag"></i>
+                <span class="pi-meta-label">Categoría:</span>
+                <span id="pi-category" class="pi-meta-value"></span>
+              </div>
+              <div class="pi-meta-right">
+                <span class="pi-meta-label">Vendidos:</span>
+                <span id="pi-sold" class="pi-meta-value"></span>
+              </div>
+            </div>
+
+            <!-- Título -->
+            <h1 id="pi-title" class="pi-title page-title"></h1>
+
+            <!-- Descripción -->
+            <p id="pi-description" class="pi-description"></p>
+
+            <!-- Precio -->
+            <div id="pi-price" class="pi-price"></div>
+
+            <!-- Acciones -->
+            <div class="pi-actions">
+              <div class="pi-actions-row">
+                <div class="pi-qty-inline" aria-labelledby="pi-qty-label">
+                  <span id="pi-qty-label" class="pi-qty-label">Cantidad</span>
+                  <div class="pi-qty">
+                    <button type="button" aria-label="Disminuir">–</button>
+                    <input id="pi-qty" type="number" min="1" max="10" step="1" value="1" readonly />
+                    <button type="button" aria-label="Aumentar">+</button>
+                  </div>
+                </div>
+
+                <button id="pi-add" class="pi-btn-cart">
+                  <i class="bi bi-cart-plus"></i>
+                  <span class="btn-cart-text">Agregar al carrito</span>
+                </button>
+                <button id="pi-fav" class="pi-btn-fav" aria-label="Agregar a favoritos">
+                  <i class="bi bi-heart"></i>
+                </button>
+              </div>
+
+              <button id="pi-buy" class="pi-btn-buy">Comprar ahora</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======= Productos relacionados ======= -->
+      <section id="related" class="section-divider" aria-labelledby="related-title">
+        <h2 id="related-title">Productos relacionados</h2>
+
+        <div id="related-grid" class="related-grid"></div>
+      </section>
+
+      <!-- ======= Reseñas ======= -->
+      <section id="reviews" class="section-divider" aria-labelledby="reviews-title">
+        <h2 id="reviews-title">Opiniones</h2>
+
+        <div class="reviews-layout">
+          <div class="reviews-cta">
+            <p><strong>¿Qué te pareció este producto?</strong></p>
+            <a href="#write-review" id="open-review" class="btn-write-review"
+              >Escribir una reseña</a
+            >
+          </div>
+
+          <!-- Columna derecha: listado de opiniones -->
+          <div class="reviews-container">
+            <!-- Lista de reseñas -->
+            <div class="reviews-list" id="reviews-list" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======= Escribir reseña (formulario) ======= -->
+      <section id="write-review" class="section-divider" aria-labelledby="write-review-title">
+        <h2 id="write-review-title">Escribir una reseña</h2>
+
+        <div class="review-product-header">
+          <img src="img/prod60804_1.jpg" alt="Imagen del producto" class="review-product-thumb" />
+          <div class="review-product-info">
+            <p class="review-product-question">¿Qué te pareció este producto?</p>
+            <p class="review-product-name" id="review-product-name">Nombre del producto</p>
+          </div>
+        </div>
+
+        <!-- Formulario y Calificación  -->
+        <form id="review-form" action="#" method="post">
+          <div class="rating-field">
+            <label for="rating">Calificación (1 a 5)</label>
+            <div class="valoracion">
+              <!-- Estrella 1 -->
+              <button class="star-btn" type="button">
+                <i class="fas fa-star"></i>
+              </button>
+
+              <!-- Estrella 2 -->
+              <button class="star-btn" type="button">
+                <i class="fas fa-star"></i>
+              </button>
+
+              <!-- Estrella 3 -->
+              <button class="star-btn" type="button">
+                <i class="fas fa-star"></i>
+              </button>
+
+              <!-- Estrella 4 -->
+              <button class="star-btn" type="button">
+                <i class="fas fa-star"></i>
+              </button>
+
+              <!-- Estrella 5 -->
+              <button class="star-btn" type="button">
+                <i class="fas fa-star"></i>
+              </button>
+            </div>
+            <input id="rating" type="hidden" value="0" />
+          </div>
+
+          <!-- Comentario -->
+          <label for="comment">Cuéntanos más sobre este producto</label>
+          <textarea
+            id="comment"
+            name="comment"
+            rows="5"
+            required
+            placeholder="Escribe tu experiencia..."
+          ></textarea>
+
+          <!-- Enviar -->
+          <button type="submit">Enviar</button>
+        </form>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-container">
+        <p class="footer-text">
+          Este sitio forma parte de
+          <a href="https://jovenesaprogramar.edu.uy/" target="_blank" rel="noopener noreferrer">
+            Jóvenes a Programar
+          </a>
+        </p>
+
+        <p class="footer-back-to-top">
+          <a href="#" id="goTop">Volver arriba</a>
+        </p>
+      </div>
+    </footer>
+
+    <div id="spinner-wrapper">
+      <div class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <!-- Floating Theme Toggle Button -->
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
+      <i class="fas fa-moon" aria-hidden="true"></i>
+    </button>
+
+    <script src="js/bootstrap.bundle.min.js" defer></script>
+    <script src="js/init.js" defer></script>
+    <script src="js/product-info.js" defer></script>
+  </body>
+</html>
