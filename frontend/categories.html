@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    />
+    <title>Categorías - e-Mercado | Navega por secciones</title>
+    <meta
+      name="description"
+      content="Descubre todas las categorías de e-Mercado: Autos, Juguetes, Muebles, Tecnología y más. Encuentra lo que necesitas fácilmente."
+    />
+    <meta name="author" content="Grupo 1 - JAP 2024" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Categorías - e-Mercado" />
+    <meta
+      property="og:description"
+      content="Explora todas nuestras categorías de productos organizadas para ti."
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Icons de Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <link href="css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/categories.css" />
+
+    <!-- Preload de recursos -->
+    <link rel="preconnect" href="https://japceibal.github.io" />
+    <link rel="dns-prefetch" href="https://japceibal.github.io" />
+  </head>
+
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="header-logo">
+          <a href="index.html" class="logo-icon">
+            <img
+              src="img/logo-jap.svg"
+              alt="e-Mercado - Tienda online de productos"
+              class="logo-img"
+            />
+          </a>
+        </div>
+        <nav class="main-nav">
+          <a href="index.html" class="nav-link">Inicio</a>
+          <a href="categories.html" class="nav-link active">Categorías</a>
+          <a href="products.html" class="nav-link">Productos</a>
+          <a href="sell.html" class="nav-link">Vender</a>
+        </nav>
+
+        <!-- Usuario / Login -->
+        <div class="user-section">
+          <div id="userSection" class="dropdown">
+            <button
+              class="btn user-avatar dropdown-toggle"
+              type="button"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-person me-2"></i>
+              <span id="usernameDisplay"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <a class="dropdown-item" href="my-profile.html"
+                  ><i class="bi bi-person-circle me-2"></i>Mi perfil</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=orders"
+                  ><i class="bi bi-box-seam me-2"></i>Mis pedidos</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=favorites"
+                  ><i class="bi bi-heart me-2"></i>Mis favoritos</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item" id="logoutBtn" data-logout href="#"
+                  ><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a
+                >
+              </li>
+            </ul>
+          </div>
+          <a href="cart.html" class="cart-icon" aria-label="Ir al carrito">
+            <i class="bi bi-cart3"></i>
+            <span
+              id="cartBadge"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
+          </a>
+        </div>
+        <div class="mobile-actions">
+          <a href="cart.html" class="cart-icon-mobile" aria-label="Ir al carrito">
+            <i class="bi bi-cart3"></i>
+            <span
+              id="cartBadgeMobile"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
+          </a>
+          <button id="menuButton" class="btn menu-toggle" aria-label="Abrir menú">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar Filtros (izquierda) RESPONSIVE -->
+    <aside id="filtersSidebar" class="sidebar left hidden">
+      <div class="sidebar-content">
+        <div class="filters-controls vertical">
+          <div class="controls-row">
+            <span class="filters-label">Ordenar</span>
+            <label class="radio">
+              <input type="radio" name="options-mobile" id="sortAscMobile" />
+              <span>A–Z</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="options-mobile" id="sortDescMobile" />
+              <span>Z–A</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="options-mobile" id="sortByCountMobile" checked />
+              <i class="bi bi-sort-down"></i>
+            </label>
+          </div>
+
+          <div class="controls-row">
+            <span class="filters-label">Cantidad</span>
+            <input
+              class="filter-input"
+              type="number"
+              placeholder="Mín."
+              id="rangeFilterCountMinMobile"
+            />
+            <input
+              class="filter-input"
+              type="number"
+              placeholder="Máx."
+              id="rangeFilterCountMaxMobile"
+            />
+            <button class="filters-apply" id="rangeFilterCountMobile">Filtrar</button>
+            <button class="filters-reset" id="clearRangeFilterMobile">Limpiar</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Sidebar Navegación (derecha) RESPONSIVE -->
+    <aside id="navSidebar" class="sidebar right hidden">
+      <div class="sidebar-content">
+        <div class="user-info">
+          <i class="bi bi-person-circle"></i>
+          <p id="sidebarUsername">example@gmail.com</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="index.html">Inicio</a>
+          <a href="categories.html" class="active">Categorías</a>
+          <a href="products.html">Productos</a>
+          <a href="sell.html">Vender</a>
+          <a href="my-profile.html">Mi perfil</a>
+          <a href="cart.html">Mi carrito</a>
+        </nav>
+        <hr />
+        <button
+          class="sidebar-theme-toggle"
+          id="theme-toggle-sidebar"
+          aria-label="Toggle dark/light theme"
+        >
+          <span>Modo oscuro</span>
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </button>
+        <a href="#" class="sidebar-logout" data-logout>
+          <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- Overlay (fondo oscuro al abrir sidebar) -->
+    <div id="overlay" class="overlay hidden"></div>
+
+    <!-- MAIN -->
+    <main class="categories-container">
+      <!-- Navegación breadcrumb -->
+      <nav class="breadcrumb-nav site-breadcrumb" aria-label="Navegación">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="index.html">
+              <i class="bi bi-house-door" aria-hidden="true"></i>
+              <span>Inicio</span>
+            </a>
+          </li>
+
+          <li class="breadcrumb-item active" aria-current="page">
+            <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i>
+            <span>Categorías</span>
+          </li>
+        </ol>
+      </nav>
+      <section class="filters-container">
+        <div class="filters-left">
+          <h1 class="page-title">Cate<span class="wink">gorías</span></h1>
+        </div>
+
+        <div class="filters-right">
+          <span class="filters-label">Filtros</span>
+          <div class="controls-row">
+            <span class="filters-label">Ordenar</span>
+            <label class="radio">
+              <input type="radio" name="options" id="sortAsc" />
+              <span>A–Z</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="options" id="sortDesc" />
+              <span>Z–A</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="options" id="sortByCount" checked />
+              <i class="bi bi-sort-down"></i>
+            </label>
+          </div>
+
+          <div class="controls-row">
+            <span class="filters-label">Cantidad</span>
+            <input class="filter-input" type="number" placeholder="Mín." id="rangeFilterCountMin" />
+            <input class="filter-input" type="number" placeholder="Máx." id="rangeFilterCountMax" />
+            <button class="filters-apply" id="rangeFilterCount">Filtrar</button>
+            <button class="filters-reset" id="clearRangeFilter">Limpiar</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="list-wrap">
+        <div class="list-group" id="cat-list-container"></div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-container">
+        <p class="footer-text">
+          Este sitio forma parte de
+          <a href="https://jovenesaprogramar.edu.uy/" target="_blank" rel="noopener noreferrer">
+            Jóvenes a Programar
+          </a>
+        </p>
+
+        <p class="footer-back-to-top">
+          <a href="#" id="goTop">Volver arriba</a>
+        </p>
+      </div>
+    </footer>
+
+    <div id="spinner-wrapper">
+      <div class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <!-- Floating Theme Toggle Button -->
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
+      <i class="fas fa-moon" aria-hidden="true"></i>
+    </button>
+
+    <script src="js/bootstrap.bundle.min.js" defer></script>
+    <script src="js/init.js" defer></script>
+    <script src="js/categories.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,475 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Solo visible para lectores de pantalla */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+body {
+  background: radial-gradient(
+    circle at 50% 45%,
+    var(--color-primary-orange) 0%,
+    var(--bg-warm-1) 38%,
+    var(--bg-warm-2) 76%,
+    var(--bg-gradient-start) 100%
+  );
+  min-height: 100vh;
+  font-family: var(--font-family-primary);
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+input,
+textarea,
+select,
+button,
+.form-control {
+  font-family: var(--font-family-primary);
+}
+
+input::placeholder,
+textarea::placeholder,
+.form-control::placeholder {
+  font-family: var(--font-family-primary);
+  color: var(--text-muted);
+  opacity: var(--opacity-placeholder);
+}
+
+/* Contenedor principal */
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Animación fade-in del formulario */
+.auth-card {
+  animation: fadeIn var(--transition-slow) ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación shake para errores */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+.form-control.error {
+  animation: shake var(--transition-slow);
+  border-color: var(--color-error);
+  will-change: transform;
+}
+
+/* Logo */
+.logo-jap {
+  width: 150px;
+  height: auto;
+  margin: 1.5rem auto;
+}
+
+/* Contenedor general del login */
+.auth-wrap {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Tarjeta */
+.auth-card {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg) var(--space-xl);
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 4px 20px var(--shadow-medium);
+  backdrop-filter: var(--backdrop-blur);
+}
+
+/* Campos del formulario */
+.form-field .form-control {
+  margin-top: 0.25rem;
+}
+
+.form-field {
+  position: relative;
+  width: 100%;
+}
+
+.form-field .form-label {
+  display: block;
+  width: 100%;
+  padding-right: 2.75rem;
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-h3);
+  line-height: 1.5;
+}
+
+.auth-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--space-md) 0 var(--space-lg);
+}
+
+/* Inputs  */
+.form-control {
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  border: none;
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+  opacity: var(--opacity-placeholder);
+}
+
+.form-control:focus {
+  box-shadow: inset 0 0 0 2px rgba(255, 140, 0, 0.45), 0 0 0 0.15rem rgba(255, 140, 0, 0.15);
+  outline: none;
+}
+
+.form-control:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(255, 140, 0, 0.6), 0 0 0 0.2rem rgba(255, 140, 0, 0.25);
+}
+
+/* Input con botón de ojo */
+.input-w-toggle {
+  position: relative;
+}
+
+.pr-eye {
+  padding-right: calc(1.125rem + 0.75rem + 0.5rem);
+}
+
+/* Botón ojo */
+.eye-abs {
+  position: absolute;
+  right: 1rem;
+  inset-block: 0;
+  display: flex;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-secondary);
+  transition: color var(--transition-normal);
+}
+
+.eye-abs i {
+  font-size: 1rem;
+  line-height: 1;
+  display: block;
+  pointer-events: none;
+}
+
+/* Mensajes de error */
+#error-user,
+#error-pass {
+  font-size: var(--font-size-xs);
+  padding-left: 5px;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-error);
+  min-height: 1.2rem;
+  line-height: 1.2;
+  display: block;
+}
+
+/* Fila auxiliar */
+.form-aux {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: var(--font-size-small);
+}
+
+/* Links */
+.link-secondary {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.forgot-link {
+  color: var(--color-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.forgot-link:hover {
+  color: var(--color-primary-orange);
+  text-decoration: underline;
+}
+
+/* Acciones */
+.actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
+  gap: 0.5rem;
+}
+
+/* Botón primario */
+.button.button--primary {
+  background-color: var(--color-primary-orange);
+  border: none;
+  border-radius: var(--border-radius-md);
+  color: white;
+  font-weight: var(--font-weight-semibold);
+  padding: 0.7rem 3rem;
+  font-size: var(--font-size-h3);
+  cursor: pointer;
+  margin-top: var(--space-lg);
+  margin-bottom: calc(var(--space-lg) + var(--space-md));
+  transition: all var(--transition-normal);
+}
+
+.button.button--primary:hover {
+  box-shadow: inset 0 0 0 2px rgba(255, 140, 0, 0.45), 0 0 0 0.15rem rgba(255, 140, 0, 0.15);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.button.button--primary:active {
+  transform: translateY(0);
+  box-shadow: inset 0 0 0 2px rgba(255, 140, 0, 0.6);
+}
+
+/* Versión mobile del link */
+.forgot-link.fl-mobile {
+  display: none;
+}
+
+/* Checkbox personalizado */
+.checkbox-fa {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* Ocultar el checkbox original */
+.checkbox-fa input {
+  display: none;
+}
+
+/* Cajita */
+.checkbox-fa .box {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-primary-orange);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast), background-color var(--transition-fast),
+    border-color var(--transition-fast);
+  user-select: none;
+}
+
+.checkbox-fa:hover .box {
+  border-color: var(--color-primary-dark);
+  transform: scale(1.05);
+}
+
+/* Icono font awesome */
+.checkbox-fa .box i {
+  font-size: 10px;
+  color: white;
+  display: none;
+}
+
+/* Estado checked */
+.checkbox-fa input:checked + .box {
+  background-color: var(--color-primary-orange);
+  border-color: var(--color-primary-orange);
+  transform: scale(1.12);
+  will-change: transform;
+}
+
+.checkbox-fa input:checked + .box i {
+  display: block;
+}
+
+/* ========= RESPONSIVE  ========= */
+
+/* === Tablet === */
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 1.5rem;
+  }
+
+  .logo-jap {
+    width: 120px;
+  }
+
+  .form-control {
+    min-height: 40px;
+    font-size: 0.95rem;
+  }
+
+  .form-field .form-label {
+    font-size: 0.95rem;
+  }
+
+  .button.button--primary {
+    padding: 0.65rem 2.2rem;
+    font-size: 1rem;
+  }
+
+  .form-aux {
+    font-size: 0.85rem;
+  }
+}
+
+/* === Smartphone === */
+@media (max-width: 465px) {
+  .auth-shell {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .auth-brand {
+    margin: var(--space-sm) 0 var(--space-md);
+  }
+
+  .logo-jap {
+    width: 100px;
+  }
+
+  /* Ocultar la versión desktop del link en mobile */
+  .forgot-link--desktop {
+    display: none;
+  }
+
+  .form-aux {
+    margin-bottom: var(--space-md);
+    justify-content: flex-start;
+  }
+
+  .actions {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: stretch;
+  }
+
+  .forgot-link.fl-mobile {
+    display: block;
+    color: var(--text-secondary);
+    text-align: center;
+    font-size: var(--font-size-xs);
+    margin: 0;
+    order: 2;
+  }
+
+  .button--primary {
+    order: 1;
+  }
+
+  .button.button--primary {
+    margin-top: var(--space-md);
+    margin-bottom: calc(var(--space-md) + var(--space-sm));
+  }
+
+  .auth-card--body {
+    padding: 0;
+  }
+}
+
+/* === Smartphone XS === */
+@media (max-width: 320px) {
+  .form-field .form-label {
+    font-size: var(--font-size-base);
+  }
+
+  .form-control {
+    font-size: var(--font-size-small);
+    min-height: 38px;
+  }
+
+  .checkbox-fa,
+  .forgot-link.fl-mobile {
+    font-size: 0.75rem;
+  }
+}
+
+/* ========= DARK MODE ========= */
+:root[data-theme='dark'] body {
+  background: #0f1417;
+}
+
+/* Card */
+:root[data-theme='dark'] .auth-card {
+  background: rgba(39, 70, 83, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+  backdrop-filter: var(--backdrop-blur-light);
+}
+
+/* Links */
+:root[data-theme='dark'] .forgot-link,
+:root[data-theme='dark'] .forgot-link.fl-mobile {
+  color: var(--text-secondary);
+}
+
+:root[data-theme='dark'] .forgot-link:hover,
+:root[data-theme='dark'] .forgot-link.fl-mobile:hover {
+  color: var(--color-primary-orange);
+}
+
+/* Ojo */
+:root[data-theme='dark'] .eye-abs {
+  color: var(--color-primary-orange);
+}

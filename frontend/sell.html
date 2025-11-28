@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    />
+    <title>Vender Producto - e-Mercado | Publica gratis</title>
+    <meta
+      name="description"
+      content="Publica tus productos gratis. Completa el formulario con fotos, descripción y precio. Vende fácil en e-Mercado."
+    />
+    <meta name="author" content="Grupo 1 - JAP 2024" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Icons de Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <link href="css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/sell.css" />
+  </head>
+
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="header-logo">
+          <a href="index.html" class="logo-icon">
+            <img
+              src="img/logo-jap.svg"
+              alt="e-Mercado - Tienda online de productos"
+              class="logo-img"
+            />
+          </a>
+        </div>
+        <nav class="main-nav">
+          <a href="index.html" class="nav-link">Inicio</a>
+          <a href="categories.html" class="nav-link">Categorías</a>
+          <a href="products.html" class="nav-link">Productos</a>
+          <a href="sell.html" class="nav-link active">Vender</a>
+        </nav>
+
+        <!-- Usuario / Login -->
+        <div class="user-section">
+          <div id="userSection" class="dropdown">
+            <button
+              class="btn user-avatar dropdown-toggle"
+              type="button"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-person me-2"></i>
+              <span id="usernameDisplay"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <a class="dropdown-item" href="my-profile.html"
+                  ><i class="bi bi-person-circle me-2"></i>Mi perfil</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=orders"
+                  ><i class="bi bi-box-seam me-2"></i>Mis pedidos</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="my-profile.html?tab=favorites"
+                  ><i class="bi bi-heart me-2"></i>Mis favoritos</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item" id="logoutBtn" data-logout href="#"
+                  ><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a
+                >
+              </li>
+            </ul>
+          </div>
+          <a href="cart.html" class="cart-icon" aria-label="Ir al carrito">
+            <i class="bi bi-cart3"></i>
+            <span
+              id="cartBadge"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
+          </a>
+        </div>
+        <div class="mobile-actions">
+          <a href="cart.html" class="cart-icon-mobile" aria-label="Ir al carrito">
+            <i class="bi bi-cart3"></i>
+            <span
+              id="cartBadgeMobile"
+              class="cart-badge"
+              aria-live="polite"
+              aria-label="Productos en carrito"
+              >0</span
+            >
+          </a>
+          <button id="menuButton" class="btn menu-toggle" aria-label="Abrir menú">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar Navegación (derecha) RESPONSIVE -->
+    <aside id="navSidebar" class="sidebar right hidden">
+      <div class="sidebar-content">
+        <div class="user-info">
+          <i class="bi bi-person-circle"></i>
+          <p id="sidebarUsername">example@gmail.com</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="index.html">Inicio</a>
+          <a href="categories.html">Categorías</a>
+          <a href="products.html">Productos</a>
+          <a href="sell.html" class="active">Vender</a>
+          <a href="my-profile.html">Mi perfil</a>
+          <a href="cart.html">Mi carrito</a>
+        </nav>
+        <hr />
+        <button
+          class="sidebar-theme-toggle"
+          id="theme-toggle-sidebar"
+          aria-label="Toggle dark/light theme"
+        >
+          <span>Modo oscuro</span>
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </button>
+        <a href="#" class="sidebar-logout" data-logout>
+          <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+        </a>
+      </div>
+    </aside>
+
+    <!-- Overlay (fondo oscuro al abrir sidebar) -->
+    <div id="overlay" class="overlay hidden"></div>
+
+    <main>
+      <!-- Navegación breadcrumb -->
+      <nav class="breadcrumb-nav site-breadcrumb" aria-label="Navegación">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="index.html">
+              <i class="bi bi-house-door" aria-hidden="true"></i>
+              <span>Inicio</span>
+            </a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            <i class="bi bi-tag" aria-hidden="true"></i>
+            <span>Vender</span>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Header de la página -->
+      <div class="sell-header">
+        <h1 class="page-title">Vender <span class="wink">producto</span></h1>
+      </div>
+
+      <!-- Contenedor del formulario -->
+      <div class="sell-form-container">
+        <h4>Información del producto</h4>
+        <form class="needs-validation" id="sell-info">
+          <div class="form-group">
+            <label for="productName">Nombre</label>
+            <input type="text" class="form-input" id="productName" value="" name="productName" />
+            <div class="invalid-feedback">Ingresa un nombre</div>
+          </div>
+          <div class="form-group">
+            <label>Imágenes</label>
+            <div class="needsclick dz-clickable" id="file-upload">
+              <div class="dz-message needsclick">Arrastra tus fotos aquí<br /></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="productDescription">Descripción</label>
+            <textarea
+              name="productDescription"
+              class="form-input"
+              id="productDescription"
+            ></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group form-group-small">
+              <label for="productCostInput">Costo</label>
+              <input
+                type="number"
+                name="productCostInput"
+                class="form-input"
+                id="productCostInput"
+                placeholder=""
+                required=""
+                value="0"
+                min="0"
+              />
+              <div class="invalid-feedback">El costo debe ser mayor que 0.</div>
+            </div>
+            <div class="form-group form-group-medium">
+              <label for="productCurrency">Moneda</label>
+              <select name="productCurrency" class="form-input" id="productCurrency" required>
+                <option value="" hidden selected>Seleccionar moneda</option>
+                <option>Pesos Uruguayos (UYU)</option>
+                <option>Dólares (USD)</option>
+              </select>
+              <div class="invalid-feedback">Ingresa una categoría válida.</div>
+            </div>
+          </div>
+          <div class="form-group form-group-large">
+            <label for="productCategory">Categoría</label>
+            <select name="productCategory" class="form-input" id="productCategory">
+              <option value="">Elija la categoría...</option>
+              <option>Autos</option>
+              <option>Juguetes</option>
+              <option>Muebles</option>
+              <option>Herramientas</option>
+              <option>Computadoras</option>
+              <option>Vestimenta</option>
+            </select>
+            <div class="invalid-feedback">Por favor ingresa una categoría válida.</div>
+          </div>
+          <div class="form-group form-group-small">
+            <label for="productCountInput">Cantidad en stock</label>
+            <input
+              type="number"
+              name="productCountInput"
+              class="form-input"
+              id="productCountInput"
+              required
+              value="1"
+              min="0"
+            />
+            <div class="invalid-feedback">La cantidad es requerida.</div>
+          </div>
+          <hr />
+          <h5>Tipo de publicación</h5>
+          <div class="radio-group">
+            <div class="custom-control custom-radio">
+              <input
+                id="goldradio"
+                name="publicationType"
+                type="radio"
+                class="custom-control-input"
+                checked=""
+                required=""
+              />
+              <label class="custom-control-label" for="goldradio">Gold (13%)</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input
+                id="premiumradio"
+                name="publicationType"
+                type="radio"
+                class="custom-control-input"
+                required=""
+              />
+              <label class="custom-control-label" for="premiumradio">Premium (7%)</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input
+                id="standardradio"
+                name="publicationType"
+                type="radio"
+                class="custom-control-input"
+                required=""
+              />
+              <label class="custom-control-label" for="standardradio">Estándar (3%)</label>
+            </div>
+            <button
+              type="button"
+              class="btn btn-link"
+              data-bs-toggle="modal"
+              data-bs-target="#contidionsModal"
+            >
+              Ver condiciones
+            </button>
+          </div>
+          <hr />
+          <h4>Costos</h4>
+          <ul class="list-group">
+            <li class="list-group-item">
+              <div>
+                <h6>Precio</h6>
+                <small class="text-muted">Unitario del producto</small>
+              </div>
+              <span class="text-muted" id="productCostText">-</span>
+            </li>
+            <li class="list-group-item">
+              <div>
+                <h6>Porcentaje</h6>
+                <small class="text-muted">Según el tipo de publicación</small>
+              </div>
+              <span class="text-muted" id="comissionText">-</span>
+            </li>
+            <li class="list-group-item">
+              <span>Total ($)</span>
+              <strong id="totalCostText">-</strong>
+            </li>
+          </ul>
+          <hr />
+          <button class="btn btn-primary" type="submit">Vender</button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-container">
+        <p class="footer-text">
+          Este sitio forma parte de
+          <a href="https://jovenesaprogramar.edu.uy/" target="_blank" rel="noopener noreferrer">
+            Jóvenes a Programar
+          </a>
+        </p>
+
+        <p class="footer-back-to-top">
+          <a href="#" id="goTop">Volver arriba</a>
+        </p>
+      </div>
+    </footer>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="contidionsModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Condiciones de publicación</h5>
+          </div>
+          <div class="modal-body">
+            <div class="modal-section">
+              <h5 class="text-warning">Gold (13%)</h5>
+              <p class="muted text-justify">
+                Tu producto se verá de forma promocionada en portada, además de las condiciones de
+                Premium y Estándar.
+              </p>
+            </div>
+            <hr />
+            <div class="modal-section">
+              <h5 class="text-primary">Premium (7%)</h5>
+              <p class="muted text-justify">
+                Se mostrará el producto en los primeros lugares de resultados de búsqueda, así cómo
+                cuando se ingrese a la categoría que pertenezca.
+              </p>
+            </div>
+            <hr />
+            <div class="modal-section">
+              <h5 class="text-secondary">Estándar (3%)</h5>
+              <p class="muted text-justify">
+                El producto se listará en la categoría correspondiente, así como en los resultados
+                de búsquedas que coincidan con las palabras claves en el nombre.
+              </p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="spinner-wrapper">
+      <div class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <!-- Floating Theme Toggle Button -->
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme">
+      <i class="fas fa-moon" aria-hidden="true"></i>
+    </button>
+
+    <script src="js/bootstrap.bundle.min.js" defer></script>
+    <script src="js/dropzone.js" defer></script>
+    <script src="js/init.js" defer></script>
+    <script src="js/sell.js" defer></script>
+  </body>
+</html>
