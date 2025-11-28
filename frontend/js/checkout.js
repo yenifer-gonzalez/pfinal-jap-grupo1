@@ -610,12 +610,12 @@ function confirmPurchase() {
     status: 'pending',
   };
 
-  // TODO: Tu compañero implementará esto cuando tenga la DB lista
-  // Por ahora, solo hacemos el guardado local
+  // Guardar orden localmente
   saveOrderLocally(order);
 
-  // Función para guardar en DB (cuando esté lista)
-  // saveOrderToDatabase(order);
+  // TODO: Yenifer 
+  // Cuando la base de datos esté lista, usar:
+  // await saveOrderToDatabase(order);
 
   // Limpiar carrito
   writeLS('cart', []);
@@ -781,7 +781,7 @@ function showSuccessModal(order) {
   // Los estilos del modal ahora están en checkout.css
 }
 
-// Helper: guardar solo localmente (comportamiento actual)
+// guardar solo localmente 
 function saveOrderLocally(order) {
   const orders = readLS('orders', []);
   orders.push(order);
@@ -814,11 +814,11 @@ async function saveOrderToDatabase(order) {
     });
     const data = await response.json();
     if (data.success) {
-      console.log('✅ Orden guardada en la base de datos');
+      console.log('Orden guardada en la base de datos');
     } else {
-      console.error('❌ Error al guardar orden:', data.message);
+      console.error('Error al guardar orden:', data.message);
     }
   } catch (error) {
-    console.error('❌ Error de conexión:', error);
+    console.error('Error de conexión:', error);
   }
 }

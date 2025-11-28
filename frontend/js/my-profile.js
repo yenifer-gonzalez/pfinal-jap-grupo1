@@ -1,3 +1,4 @@
+const USE_BACKEND = true;
 const PROFILE_KEY = 'profileData';
 const PLACEHOLDER_IMG = 'img/img_perfil.png';
 const PROFILE_PHOTO_KEY = 'profilePhoto';
@@ -196,91 +197,136 @@ function setupPhotoActions() {
 }
 
 // === DIRECCIONES DE ENVÍO ===
-function getAddresses() {
+async function getAddressesData() {
+  if (USE_BACKEND) {
+    try {
+      return await getAddresses(); // del api.js
+    } catch (error) {
+      console.error('Error obteniendo direcciones del backend:', error);
+      // Fallback a localStorage
+      return readLS(ADDRESSES_KEY, []);
+    }
+  }
   return readLS(ADDRESSES_KEY, []);
 }
 
 // Guarda todas las direcciones en localStorage
+async function saveAddressToBackend(addressData) {
+  if (USE_BACKEND) {
+    try {
+      const saved = await createAddress(addressData);
+      // También guardar en localStorage como backup
+      const local = readLS(ADDRESSES_KEY, []);
+      local.push(saved);
+      writeLS(ADDRESSES_KEY, local);
+      return saved;
+    } catch (error) {
+      console.error('Error guardando dirección en backend:', error);
+      throw error;
+    }
+  }
+  
+  // Fallback localStorage
+  const addresses = readLS(ADDRESSES_KEY, []);
+  const newAddress = {
+    id: 'addr_' + Date.now(),
+    ...addressData,
+    createdAt: new Date().toISOString()
+  };
+  addresses.push(newAddress);
+  writeLS(ADDRESSES_KEY, addresses);
+  return newAddress;
+}
+
 function saveAddresses(addresses) {
   writeLS(ADDRESSES_KEY, addresses);
 }
 
 // Renderiza las direcciones en el DOM
-function renderAddresses() {
+async function renderAddresses() {
   const container = document.getElementById('addressesList');
   if (!container) return;
 
-  const addresses = getAddresses();
+  try {
+    const addresses = await getAddressesData();
 
-  if (addresses.length === 0) {
+    if (addresses.length === 0) {
+      container.innerHTML = `
+        <div class="no-addresses">
+          <i class="bi bi-geo-alt"></i>
+          <h3>No tienes direcciones guardadas</h3>
+          <p>Agrega una dirección para facilitar tus compras futuras</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = addresses
+      .map(
+        (addr) => `
+      <div class="address-card ${addr.isDefault ? 'default' : ''}" data-id="${addr.id}">
+        <div class="address-card-header">
+          <div class="address-title">
+            <h3>${addr.alias}</h3>
+            ${
+              addr.isDefault
+                ? '<span class="badge-default"><i class="bi bi-star-fill"></i> Predeterminada</span>'
+                : ''
+            }
+          </div>
+          <div class="address-actions">
+            ${
+              !addr.isDefault
+                ? `<button class="btn-address-action" onclick="setDefaultAddress('${addr.id}')" 
+                    title="Establecer como predeterminada">
+                    <i class="bi bi-star"></i>
+                  </button>`
+                : ''
+            }
+            <button class="btn-address-action" onclick="editAddress('${addr.id}')" title="Editar">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn-address-action danger" onclick="deleteAddress('${
+              addr.id
+            }')" title="Eliminar">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="address-details">
+          <p><strong>${addr.street}</strong>${addr.corner ? ` esquina ${addr.corner}` : ''}${
+          addr.apartment ? `, ${addr.apartment}` : ''
+        }</p>
+          <p>${addr.city}, ${addr.state} ${addr.zipCode}</p>
+          <p>${addr.country}</p>
+          ${
+            addr.phone
+              ? `<div class="address-phone">
+              <i class="bi bi-telephone"></i>
+              <span>${addr.phone}</span>
+            </div>`
+              : ''
+          }
+          ${
+            addr.instructions
+              ? `<div class="address-instructions">
+              <i class="bi bi-info-circle"></i> ${addr.instructions}
+            </div>`
+              : ''
+          }
+        </div>
+      </div>
+    `
+      )
+      .join('');
+  } catch (error) {
+    console.error('Error renderizando direcciones:', error);
     container.innerHTML = `
-      <div class="no-addresses">
-        <i class="bi bi-geo-alt"></i>
-        <h3>No tienes direcciones guardadas</h3>
-        <p>Agrega una dirección para facilitar tus compras futuras</p>
+      <div class="error-state">
+        <p>Error cargando direcciones. Por favor intenta de nuevo.</p>
       </div>
     `;
-    return;
   }
-
-  container.innerHTML = addresses
-    .map(
-      (addr) => `
-    <div class="address-card ${addr.isDefault ? 'default' : ''}" data-id="${addr.id}">
-      <div class="address-card-header">
-        <div class="address-title">
-          <h3>${addr.alias}</h3>
-          ${
-            addr.isDefault
-              ? '<span class="badge-default"><i class="bi bi-star-fill"></i> Predeterminada</span>'
-              : ''
-          }
-        </div>
-        <div class="address-actions">
-          ${
-            !addr.isDefault
-              ? `<button class="btn-address-action" onclick="setDefaultAddress('${addr.id}')" 
-                   title="Establecer como predeterminada">
-                   <i class="bi bi-star"></i>
-                 </button>`
-              : ''
-          }
-          <button class="btn-address-action" onclick="editAddress('${addr.id}')" title="Editar">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn-address-action danger" onclick="deleteAddress('${
-            addr.id
-          }')" title="Eliminar">
-            <i class="bi bi-trash"></i>
-          </button>
-        </div>
-      </div>
-      <div class="address-details">
-        <p><strong>${addr.street}</strong>${addr.corner ? ` esquina ${addr.corner}` : ''}${
-        addr.apartment ? `, ${addr.apartment}` : ''
-      }</p>
-        <p>${addr.city}, ${addr.state} ${addr.zipCode}</p>
-        <p>${addr.country}</p>
-        ${
-          addr.phone
-            ? `<div class="address-phone">
-             <i class="bi bi-telephone"></i>
-             <span>${addr.phone}</span>
-           </div>`
-            : ''
-        }
-        ${
-          addr.instructions
-            ? `<div class="address-instructions">
-             <i class="bi bi-info-circle"></i> ${addr.instructions}
-           </div>`
-            : ''
-        }
-      </div>
-    </div>
-  `
-    )
-    .join('');
 }
 
 // Abre el modal para agregar/editar dirección
@@ -339,7 +385,7 @@ function closeAddressModal() {
 }
 
 // Guarda una dirección (nueva o editada)
-function saveAddress(e) {
+async function saveAddress(e) {
   e.preventDefault();
 
   const editingId = document.getElementById('addressId').value;
@@ -364,51 +410,35 @@ function saveAddress(e) {
     return;
   }
 
-  let addresses = getAddresses();
-
-  if (editingId) {
-    // Edición
-    const index = addresses.findIndex((a) => a.id === editingId);
-    if (index !== -1) {
-      addresses[index] = {
-        ...addresses[index],
-        ...addressData,
-        updatedAt: new Date().toISOString(),
-      };
+  try {
+    if (editingId) {
+      // Editar existente
+      if (USE_BACKEND) {
+        await updateAddress(editingId, addressData);
+      }
+      // Actualizar localStorage también
+      let addresses = getAddresses();
+      const index = addresses.findIndex((a) => a.id === editingId);
+      if (index !== -1) {
+        addresses[index] = {
+          ...addresses[index],
+          ...addressData,
+          updatedAt: new Date().toISOString(),
+        };
+        saveAddresses(addresses);
+      }
+    } else {
+      // Nueva dirección
+      await saveAddressToBackend(addressData);
     }
-  } else {
-    // Nueva dirección
-    if (addresses.length >= MAX_ADDRESSES) {
-      alert(`No puedes agregar más de ${MAX_ADDRESSES} direcciones.`);
-      return;
-    }
 
-    const newAddress = {
-      id: 'addr_' + Date.now(),
-      ...addressData,
-      createdAt: new Date().toISOString(),
-    };
-
-    addresses.push(newAddress);
+    await renderAddresses();
+    closeAddressModal();
+    alert('Dirección guardada exitosamente');
+  } catch (error) {
+    console.error('Error guardando dirección:', error);
+    alert('Error al guardar la dirección. Intenta de nuevo.');
   }
-
-  // Si se marca como predeterminada, desmarcar el resto
-  if (addressData.isDefault) {
-    const targetId = editingId || addresses[addresses.length - 1].id;
-    addresses = addresses.map((addr) => ({
-      ...addr,
-      isDefault: addr.id === targetId,
-    }));
-  }
-
-  // Si no hay ninguna predeterminada, marca la primera
-  if (!addresses.some((a) => a.isDefault) && addresses.length > 0) {
-    addresses[0].isDefault = true;
-  }
-
-  saveAddresses(addresses);
-  renderAddresses();
-  closeAddressModal();
 }
 
 // Establece una dirección como predeterminada

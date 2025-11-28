@@ -1,12 +1,14 @@
-const CATEGORIES_URL = 'http://localhost:3000/api/categories'
-const PUBLISH_PRODUCT_URL = 'http://localhost:3000/api/sell/publish';
-const PRODUCTS_URL = 'http://localhost:3000/api/products/';
-const PRODUCT_INFO_URL = 'http://localhost:3000/api/products/';
-const PRODUCT_INFO_COMMENTS_URL = 'http://localhost:3000/api/products_comments/';
-const CART_INFO_URL = 'http://localhost:3000/api/user_cart/';
-const CART_BUY_URL = 'http://localhost:3000/api/cart/buy';
+const API_BASE_URL = 'http://localhost:3000/api';
+const CATEGORIES_URL = `${API_BASE_URL}/categories`;
+const PUBLISH_PRODUCT_URL = `${API_BASE_URL}/sell/publish`;
+const PRODUCTS_URL = `${API_BASE_URL}/products/`;
+const PRODUCT_INFO_URL = `${API_BASE_URL}/products/detail/`;
+const PRODUCT_INFO_COMMENTS_URL = `${API_BASE_URL}/products/comments/`;
+const CART_INFO_URL = `${API_BASE_URL}/user_cart/`;
+const CART_BUY_URL = `${API_BASE_URL}/cart`;
 const EXT_TYPE = '.json';
-const PUBLIC_PAGES = ['login.html'];
+const PUBLIC_PAGES = ['login.html', 'index.html'];
+
 
 // SPINNER GLOBAL (LOADER VISUAL)
 // Muestra el overlay del spinner centrado en pantalla
