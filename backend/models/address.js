@@ -38,7 +38,7 @@ class Address {
   static async create(userId, addressData) {
     try {
       const {
-        alias = 'Mi direcci�n',
+        alias = 'Mi dirección',
         street,
         corner,
         apartment,
@@ -50,7 +50,7 @@ class Address {
         isDefault = false,
       } = addressData;
 
-      // Si esta dirección es por defecto, quitar la bandera de las demás
+      // Si esta dirección es por defecto, quitar las demás
       if (isDefault) {
         await pool.query(
           'UPDATE addresses SET is_default = 0 WHERE user_id = ?',
@@ -124,7 +124,7 @@ class Address {
       const fields = [];
       const values = [];
 
-      // Si se marca como default, quitar la bandera de las demás
+      // Si se marca como default, quitar las demás
       if (updates.isDefault) {
         await pool.query(
           'UPDATE addresses SET is_default = 0 WHERE user_id = ?',

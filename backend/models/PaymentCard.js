@@ -31,14 +31,9 @@ class PaymentCard {
    */
   static async create(userId, cardData) {
     try {
-      const {
-        lastFour,
-        cardName,
-        expiry,
-        isDefault = false
-      } = cardData;
+      const { lastFour, cardName, expiry, isDefault = false } = cardData;
 
-      // Si esta tarjeta es por defecto, quitar la bandera de las demás
+      // Si esta tarjeta es por defecto, quitar las demás
       if (isDefault) {
         await pool.query(
           'UPDATE payment_cards SET is_default = 0 WHERE user_id = ?',
@@ -83,7 +78,7 @@ class PaymentCard {
       const fields = [];
       const values = [];
 
-      // Si se marca como default, quitar la bandera de las demás
+      // Si se marca como default, quitar las demás
       if (updates.isDefault) {
         await pool.query(
           'UPDATE payment_cards SET is_default = 0 WHERE user_id = ?',
@@ -108,7 +103,9 @@ class PaymentCard {
       values.push(cardId, userId);
 
       const [result] = await pool.query(
-        `UPDATE payment_cards SET ${fields.join(', ')} WHERE id = ? AND user_id = ?`,
+        `UPDATE payment_cards SET ${fields.join(
+          ', '
+        )} WHERE id = ? AND user_id = ?`,
         values
       );
 
