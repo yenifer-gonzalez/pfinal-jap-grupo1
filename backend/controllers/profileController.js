@@ -1,17 +1,24 @@
-const storage = require('../data/storage');
-const { sendSuccess, sendError, generateId } = require('../utils/helpers');
+const { sendSuccess, sendError } = require('../utils/helpers');
 
 // ===== PERFIL BÁSICO =====
+// NOTA: Los datos de perfil se gestionan en localStorage del frontend
+// Estos endpoints NO persisten en MySQL, solo devuelven respuestas compatibles
 
 /**
  * GET /api/profile
- * Obtiene el perfil del usuario
+ * Obtiene el perfil del usuario (datos desde JWT, NO desde BD)
  */
 const getProfile = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const profile = storage.getProfile(userId);
-    
+    // Los datos vienen del JWT en req.user
+    const profile = {
+      firstName: req.user.first_name || '',
+      lastName: req.user.last_name || '',
+      email: req.user.email || '',
+      phone: req.user.phone || '',
+      profilePhoto: req.user.profile_photo || ''
+    };
+
     sendSuccess(res, profile, 'Perfil obtenido exitosamente');
   } catch (error) {
     next(error);
@@ -20,33 +27,41 @@ const getProfile = async (req, res, next) => {
 
 /**
  * PUT /api/profile
- * Actualiza el perfil del usuario
+ * Actualiza el perfil del usuario (NO persiste en BD, solo confirma)
  */
 const updateProfile = async (req, res, next) => {
   try {
-    const userId = req.user.id;
     const updates = req.body;
 
-    const updated = storage.updateProfile(userId, updates);
+    // NO guardamos en BD, solo devolvemos los datos recibidos como confirmación
+    // El frontend guarda esto en localStorage
+    const profile = {
+      firstName: updates.firstName || '',
+      lastName: updates.lastName || '',
+      email: req.user.email, // Email no se puede cambiar
+      phone: updates.phone || '',
+      profilePhoto: updates.profilePhoto || ''
+    };
 
-    sendSuccess(res, updated, 'Perfil actualizado exitosamente');
+    sendSuccess(res, profile, 'Perfil actualizado exitosamente');
   } catch (error) {
     next(error);
   }
 };
 
 // ===== DIRECCIONES =====
+// NOTA: Las direcciones se gestionan en localStorage del frontend
+// Estos endpoints NO persisten en MySQL, solo devuelven arrays vacíos o confirmaciones
 
 /**
  * GET /api/profile/addresses
- * Obtiene todas las direcciones del usuario
+ * Obtiene todas las direcciones del usuario (siempre array vacío)
  */
 const getAddresses = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const addresses = storage.getAddresses(userId);
-    
-    sendSuccess(res, addresses, 'Direcciones obtenidas exitosamente');
+    // NO leemos de BD, devolvemos array vacío
+    // El frontend maneja direcciones en localStorage
+    sendSuccess(res, [], 'Direcciones obtenidas exitosamente');
   } catch (error) {
     next(error);
   }
@@ -54,11 +69,10 @@ const getAddresses = async (req, res, next) => {
 
 /**
  * POST /api/profile/addresses
- * Crea una nueva dirección
+ * Crea una nueva dirección (NO persiste en BD, solo confirma)
  */
 const createAddress = async (req, res, next) => {
   try {
-    const userId = req.user.id;
     const addressData = req.body;
 
     // Validar campos obligatorios
@@ -66,15 +80,12 @@ const createAddress = async (req, res, next) => {
       return sendError(res, 'Faltan campos obligatorios', 400);
     }
 
-    // Crear dirección con ID
+    // NO guardamos en BD, solo devolvemos los datos como confirmación
+    // El frontend guarda esto en localStorage
     const newAddress = {
-      id: generateId('addr_'),
-      ...addressData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      id: Date.now(), // ID temporal
+      ...addressData
     };
-
-    storage.addAddress(userId, newAddress);
 
     sendSuccess(res, newAddress, 'Dirección creada exitosamente', 201);
   } catch (error) {
@@ -84,19 +95,18 @@ const createAddress = async (req, res, next) => {
 
 /**
  * PUT /api/profile/addresses/:addressId
- * Actualiza una dirección
+ * Actualiza una dirección (NO persiste en BD, solo confirma)
  */
 const updateAddress = async (req, res, next) => {
   try {
-    const userId = req.user.id;
     const { addressId } = req.params;
     const updates = req.body;
 
-    const updated = storage.updateAddress(userId, addressId, updates);
-
-    if (!updated) {
-      return sendError(res, 'Dirección no encontrada', 404);
-    }
+    // NO guardamos en BD, solo devolvemos confirmación
+    const updated = {
+      id: addressId,
+      ...updates
+    };
 
     sendSuccess(res, updated, 'Dirección actualizada exitosamente');
   } catch (error) {
@@ -106,15 +116,11 @@ const updateAddress = async (req, res, next) => {
 
 /**
  * DELETE /api/profile/addresses/:addressId
- * Elimina una dirección
+ * Elimina una dirección (NO persiste en BD, solo confirma)
  */
 const deleteAddress = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const { addressId } = req.params;
-
-    storage.deleteAddress(userId, addressId);
-
+    // NO borramos de BD, solo confirmamos
     sendSuccess(res, null, 'Dirección eliminada exitosamente');
   } catch (error) {
     next(error);
@@ -122,17 +128,18 @@ const deleteAddress = async (req, res, next) => {
 };
 
 // ===== TARJETAS =====
+// NOTA: Las tarjetas se gestionan en localStorage del frontend
+// Estos endpoints NO persisten en MySQL, solo devuelven arrays vacíos o confirmaciones
 
 /**
  * GET /api/profile/cards
- * Obtiene todas las tarjetas del usuario
+ * Obtiene todas las tarjetas del usuario (siempre array vacío)
  */
 const getCards = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const cards = storage.getCards(userId);
-    
-    sendSuccess(res, cards, 'Tarjetas obtenidas exitosamente');
+    // NO leemos de BD, devolvemos array vacío
+    // El frontend maneja tarjetas en localStorage
+    sendSuccess(res, [], 'Tarjetas obtenidas exitosamente');
   } catch (error) {
     next(error);
   }
@@ -140,11 +147,10 @@ const getCards = async (req, res, next) => {
 
 /**
  * POST /api/profile/cards
- * Crea una nueva tarjeta
+ * Crea una nueva tarjeta (NO persiste en BD, solo confirma)
  */
 const createCard = async (req, res, next) => {
   try {
-    const userId = req.user.id;
     const cardData = req.body;
 
     // Validar campos obligatorios
@@ -152,14 +158,12 @@ const createCard = async (req, res, next) => {
       return sendError(res, 'Faltan campos obligatorios', 400);
     }
 
+    // NO guardamos en BD, solo devolvemos los datos como confirmación
+    // El frontend guarda esto en localStorage
     const newCard = {
-      id: generateId('card_'),
-      ...cardData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      id: Date.now(), // ID temporal
+      ...cardData
     };
-
-    storage.addCard(userId, newCard);
 
     sendSuccess(res, newCard, 'Tarjeta creada exitosamente', 201);
   } catch (error) {
@@ -169,19 +173,18 @@ const createCard = async (req, res, next) => {
 
 /**
  * PUT /api/profile/cards/:cardId
- * Actualiza una tarjeta
+ * Actualiza una tarjeta (NO persiste en BD, solo confirma)
  */
 const updateCard = async (req, res, next) => {
   try {
-    const userId = req.user.id;
     const { cardId } = req.params;
     const updates = req.body;
 
-    const updated = storage.updateCard(userId, cardId, updates);
-
-    if (!updated) {
-      return sendError(res, 'Tarjeta no encontrada', 404);
-    }
+    // NO guardamos en BD, solo devolvemos confirmación
+    const updated = {
+      id: cardId,
+      ...updates
+    };
 
     sendSuccess(res, updated, 'Tarjeta actualizada exitosamente');
   } catch (error) {
@@ -191,15 +194,11 @@ const updateCard = async (req, res, next) => {
 
 /**
  * DELETE /api/profile/cards/:cardId
- * Elimina una tarjeta
+ * Elimina una tarjeta (NO persiste en BD, solo confirma)
  */
 const deleteCard = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const { cardId } = req.params;
-
-    storage.deleteCard(userId, cardId);
-
+    // NO borramos de BD, solo confirmamos
     sendSuccess(res, null, 'Tarjeta eliminada exitosamente');
   } catch (error) {
     next(error);

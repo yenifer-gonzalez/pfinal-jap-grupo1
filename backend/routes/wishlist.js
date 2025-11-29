@@ -1,15 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate } = require('../middleware/auth');
 const {
   getWishlist,
   addToWishlist,
   removeFromWishlist
 } = require('../controllers/wishlistController');
 
-// Todas las rutas requieren autenticación
-router.use(authenticate);
-
+// Nota: autenticación ya se aplica en routes/index.js
 router.get('/', getWishlist);
 router.post('/', addToWishlist);
 router.delete('/:productId', removeFromWishlist);

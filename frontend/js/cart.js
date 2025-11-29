@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('applyCoupon')?.addEventListener('click', handleApplyCoupon);
 
   // Botón para ir al checkout
-  document.getElementById('checkoutBtn')?.addEventListener('click', () => {
+  document.getElementById('checkoutBtn')?.addEventListener('click', async () => {
     if (!cart.length) {
       showModal({
         icon: 'exclamation-triangle-fill',
@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const shippingCost = sub * shipPct;
     const total = sub - disc + shippingCost;
 
-    writeLS('checkoutData', {
+    const checkoutData = {
       subtotal: sub,
       discount: disc,
       couponCode: appliedCoupon,
@@ -357,7 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
       shippingType: shipType,
       total,
       items: cart,
-    });
+    };
+
+    writeLS('checkoutData', checkoutData);
+
+    // El carrito se guarda solo en localStorage
+    // La orden final se guardará en la BD cuando se confirme la compra en checkout
 
     // Redirigir a checkout
     window.location.href = 'checkout.html';

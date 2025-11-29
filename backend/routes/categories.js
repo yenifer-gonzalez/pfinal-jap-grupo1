@@ -1,25 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
-const fs = require('fs').promises;
+const { getCategories, getCategoryById } = require('../controllers/categoriesController');
 
-/*
- GET /api/categories
- Devuelve todas las categorías
-*/
-router.get('/', async (req, res, next) => {
-  try {
-    const filePath = path.join(__dirname, '../data/cats/cat.json');
-    const data = await fs.readFile(filePath, 'utf-8');
-    const categories = JSON.parse(data);
+/**
+ * GET /api/categories
+ * Devuelve todas las categorías
+ */
+router.get('/', getCategories);
 
-    res.json({
-      success: true,
-      data: categories
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+/**
+ * GET /api/categories/:id
+ * Devuelve una categoría por ID
+ */
+router.get('/:id', getCategoryById);
 
 module.exports = router;

@@ -121,8 +121,19 @@ function handleSubmit(event) {
       // Guardar token en localStorage
       localStorage.setItem('authToken', data.data.token);
 
-      // Crear sesión como antes
-      createSession(user.value);
+      // Guardar información del usuario
+      const userData = {
+        username: data.data.user.email || data.data.user.username,
+        email: data.data.user.email,
+        id: data.data.user.id,
+        first_name: data.data.user.first_name,
+        last_name: data.data.user.last_name,
+        role: data.data.user.role,
+        loginTime: Date.now(),
+      };
+
+      localStorage.setItem('currentUser', JSON.stringify(userData));
+      localStorage.setItem('sessionExpiry', (Date.now() + 24 * 60 * 60 * 1000).toString());
 
       // Redirigir
       window.location.href = 'index.html';

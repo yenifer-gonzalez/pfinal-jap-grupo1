@@ -495,7 +495,7 @@ function loadOrderSummary() {
 }
 
 // ===== CONFIRMAR COMPRA =====
-function confirmPurchase() {
+async function confirmPurchase() {
   // Validar dirección
   if (!selectedAddress && !validateNewAddressForm()) {
     alert('Por favor selecciona o ingresa una dirección de envío');
@@ -520,8 +520,6 @@ function confirmPurchase() {
   if (selectedPaymentMethod === 'card') {
     // Si hay tarjeta seleccionada, usarla
     if (selectedCard) {
-      // Ya está validada y guardada, no necesita más validación
-      console.log('Usando tarjeta guardada:', selectedCard.alias);
     } else {
       // Validar formulario de nueva tarjeta
       const cardNumber = document.getElementById('newCardNumber').value.trim();
@@ -558,7 +556,7 @@ function confirmPurchase() {
 
     // Mostrar advertencia de simulación
     const confirmed = confirm(
-      `⚠️ SIMULACIÓN DE PAGO\n\n` +
+      `SIMULACIÓN DE PAGO\n\n` +
         `Has seleccionado pagar con ${cryptoName}.\n\n` +
         `En un entorno real:\n` +
         `• Se generaría una dirección de pago única\n` +
@@ -575,7 +573,7 @@ function confirmPurchase() {
   } else if (selectedPaymentMethod === 'mercadopago') {
     // Validación especial para Mercado Pago
     const confirmed = confirm(
-      `ℹ️ SIMULACIÓN DE PAGO\n\n` +
+      `SIMULACIÓN DE PAGO\n\n` +
         `En un entorno real, serías redirigido a Mercado Pago para completar el pago de forma segura.\n\n` +
         `Como esto es una simulación educativa, el pedido se confirmará inmediatamente.\n\n` +
         `¿Deseas continuar?`
@@ -613,9 +611,8 @@ function confirmPurchase() {
   // Guardar orden localmente
   saveOrderLocally(order);
 
-  // TODO: Yenifer 
-  // Cuando la base de datos esté lista, usar:
-  // await saveOrderToDatabase(order);
+  // Guardar orden en la base de datos
+  await saveOrderToDatabase(order);
 
   // Limpiar carrito
   writeLS('cart', []);
@@ -781,44 +778,38 @@ function showSuccessModal(order) {
   // Los estilos del modal ahora están en checkout.css
 }
 
-// guardar solo localmente 
+// guardar solo localmente
 function saveOrderLocally(order) {
   const orders = readLS('orders', []);
   orders.push(order);
   writeLS('orders', orders);
 }
 
-// Nueva función para guardar en la base de datos
+// Función para guardar en la base de datos
 async function saveOrderToDatabase(order) {
   try {
     const token = localStorage.getItem('authToken');
     if (!token) {
-      console.error('No hay token de autenticación');
-      return;
+      throw new Error('No autenticado');
     }
-    const response = await fetch('http://localhost:3000/api/cart', {
+
+    const response = await fetch(`${API_BASE_URL}/cart`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        items: order.items,
-        subtotal: order.subtotal,
-        discount: order.discount,
-        shipping: order.shipping,
-        total: order.total,
-        address: order.address,
-        paymentMethod: order.paymentMethod
-      })
+      body: JSON.stringify(order),
     });
+
     const data = await response.json();
-    if (data.success) {
-      console.log('Orden guardada en la base de datos');
-    } else {
-      console.error('Error al guardar orden:', data.message);
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Error al guardar orden');
     }
   } catch (error) {
-    console.error('Error de conexión:', error);
+    console.error('Error al guardar orden en la base de datos:', error);
+    // La orden ya se guardó localmente, así que el usuario puede continuar
+    throw error;
   }
 }

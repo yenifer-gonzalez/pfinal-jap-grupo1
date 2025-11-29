@@ -143,8 +143,12 @@ async function fetchAllProducts() {
 
     let allProducts = [];
     results.forEach((resultObj) => {
-      if (resultObj.status === 'ok' && resultObj.data.products) {
-        allProducts = allProducts.concat(resultObj.data.products);
+      // Soporte para ambos formatos: antiguo (data.products) y nuevo (data directamente)
+      if (resultObj.status === 'ok') {
+        const products = resultObj.data.products || resultObj.data;
+        if (Array.isArray(products)) {
+          allProducts = allProducts.concat(products);
+        }
       }
     });
 
@@ -171,7 +175,9 @@ async function fetchProducts(categoryId = 101) {
     const cached = productsCache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      currentProducts = cached.data.products || [];
+      // Soporte para ambos formatos de cache
+      const productos = cached.data.products || cached.data || [];
+      currentProducts = productos;
       filteredProducts = [...currentProducts];
       populateFilters();
       renderPage();
@@ -184,7 +190,9 @@ async function fetchProducts(categoryId = 101) {
     const resultObj = await getJSONData(url);
 
     if (resultObj.status === 'ok') {
-      const productos = resultObj.data.products;
+      // Soporte para ambos formatos: antiguo (data.products) y nuevo (data directamente)
+      const productos = resultObj.data.products || resultObj.data;
+
       currentProducts = productos;
       filteredProducts = [...productos];
 

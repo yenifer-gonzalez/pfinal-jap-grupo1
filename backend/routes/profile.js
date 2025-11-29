@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate } = require('../middleware/auth');
 const {
   getProfile,
   updateProfile,
@@ -14,8 +13,7 @@ const {
   deleteCard
 } = require('../controllers/profileController');
 
-// Todas las rutas requieren autenticación
-router.use(authenticate);
+// Nota: autenticación ya se aplica en routes/index.js
 
 // Perfil básico
 router.get('/', getProfile);

@@ -1,5 +1,5 @@
-const storage = require('../data/storage');
-const { sendSuccess, sendError, generateId } = require('../utils/helpers');
+const Order = require('../models/Order');
+const { sendSuccess, sendError } = require('../utils/helpers');
 const { validateOrder } = require('../utils/validators');
 
 /**
@@ -9,8 +9,8 @@ const { validateOrder } = require('../utils/validators');
 const getOrders = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const orders = storage.getOrders(userId);
-    
+    const orders = await Order.findByUser(userId);
+
     sendSuccess(res, orders, 'Órdenes obtenidas exitosamente');
   } catch (error) {
     next(error);
@@ -25,12 +25,16 @@ const getOrderById = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const { orderId } = req.params;
-    
-    const orders = storage.getOrders(userId);
-    const order = orders.find(o => o.id === orderId);
+
+    const order = await Order.findById(orderId);
 
     if (!order) {
       return sendError(res, 'Orden no encontrada', 404);
+    }
+
+    // Verificar que la orden pertenece al usuario
+    if (order.user_id !== userId) {
+      return sendError(res, 'No tienes permiso para ver esta orden', 403);
     }
 
     sendSuccess(res, order, 'Orden obtenida exitosamente');
@@ -54,16 +58,27 @@ const createOrder = async (req, res, next) => {
       return sendError(res, 'Datos de la orden inválidos', 400, validation.errors);
     }
 
-    const newOrder = {
-      id: generateId('ORD-'),
-      ...orderData,
-      userId,
-      status: orderData.status || 'pending',
-      date: new Date().toISOString(),
-      createdAt: new Date().toISOString()
+    // Preparar datos para el modelo
+    const orderToCreate = {
+      user_id: userId,
+      subtotal: orderData.subtotal,
+      discount: orderData.discount || 0,
+      coupon_code: orderData.couponCode || null,
+      shipping_cost: orderData.shipping || orderData.shippingCost,
+      shipping_type: orderData.shippingType,
+      total: orderData.total,
+      payment_method: orderData.paymentMethod,
+      crypto_currency: orderData.cryptoCurrency || null,
+      shipping_address: JSON.stringify(orderData.address),
+      items: orderData.items.map(item => ({
+        product_id: item.id,
+        quantity: item.count || 1,
+        unit_price: item.cost,
+        currency: item.currency || 'USD'
+      }))
     };
 
-    storage.addOrder(userId, newOrder);
+    const newOrder = await Order.create(orderToCreate);
 
     sendSuccess(res, newOrder, 'Orden creada exitosamente', 201);
   } catch (error) {

@@ -173,7 +173,7 @@ async function loadProductInfo() {
   // Cargar comentarios en paralelo
   loadProductComments(productId);
 
-  const url = `https://japceibal.github.io/emercado-api/products/${productId}.json`;
+  const url = PRODUCT_INFO_URL + productId + EXT_TYPE;
   const resultObj = await getJSONData(url);
 
   if (resultObj.status !== 'ok') {
@@ -380,12 +380,13 @@ async function loadProductComments(productId) {
     <div class="loading-state">Cargando opiniones…</div>
   `;
 
-  const url = `https://japceibal.github.io/emercado-api/products_comments/${productId}.json`;
+  const url = PRODUCT_INFO_COMMENTS_URL + productId + EXT_TYPE;
 
   try {
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const comments = await resp.json();
+    const resultObj = await getJSONData(url);
+
+    // Manejar respuesta del backend { success: true, data: [...] }
+    const comments = resultObj.data || [];
 
     if (!Array.isArray(comments) || comments.length === 0) {
       list.innerHTML = `

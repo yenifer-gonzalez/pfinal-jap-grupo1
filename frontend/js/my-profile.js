@@ -9,8 +9,10 @@ const MAX_CARDS = 5;
 const ORDERS_KEY = 'orders';
 const WISHLIST_KEY = 'wishlist';
 
-// Reutiliza el formateador global de init.js
-const formatMoney = money;
+// Función para formatear dinero (money se define en init.js que se carga antes)
+const formatMoney = (amount, currency = 'USD', withSymbol = false) => {
+  return typeof money !== 'undefined' ? money(amount, currency, withSymbol) : `${currency} ${amount}`;
+};
 
 // === PERFIL BÁSICO (DATOS + NOMBRE) ===
 

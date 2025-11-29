@@ -1,4 +1,7 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+// Definir API_BASE_URL solo si no existe (api.js también lo define)
+if (typeof API_BASE_URL === 'undefined') {
+  var API_BASE_URL = 'http://localhost:3000/api';
+}
 const CATEGORIES_URL = `${API_BASE_URL}/categories`;
 const PUBLISH_PRODUCT_URL = `${API_BASE_URL}/sell/publish`;
 const PRODUCTS_URL = `${API_BASE_URL}/products/`;
@@ -6,7 +9,7 @@ const PRODUCT_INFO_URL = `${API_BASE_URL}/products/detail/`;
 const PRODUCT_INFO_COMMENTS_URL = `${API_BASE_URL}/products/comments/`;
 const CART_INFO_URL = `${API_BASE_URL}/user_cart/`;
 const CART_BUY_URL = `${API_BASE_URL}/cart`;
-const EXT_TYPE = '.json';
+const EXT_TYPE = ''; // Vacío para usar backend en lugar de archivos .json
 const PUBLIC_PAGES = ['login.html', 'index.html'];
 
 
@@ -436,8 +439,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // UI de usuario + logout (solo en páginas autenticadas)
-  if (!PUBLIC_PAGES.includes(currentPage)) {
+  // UI de usuario + logout
+  // Actualizar UI si el usuario está logueado (incluso en páginas públicas como index)
+  if (isUserLoggedIn()) {
     updateUserInterface();
     setupLogout();
   }

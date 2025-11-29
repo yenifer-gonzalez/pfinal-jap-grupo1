@@ -1,24 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate } = require('../middleware/auth');
-const { saveCart, getCart, getCartHistory } = require('../controllers/cartController');
+const { createOrder } = require('../controllers/ordersController');
 
 /**
  * POST /api/cart
- * Guarda el carrito en la base de datos
+ * Guarda el carrito como una orden en la base de datos
+ * Nota: autenticación ya se aplica en routes/index.js
  */
-router.post('/', authenticate, saveCart);
-
-/**
- * GET /api/cart
- * Obtiene el carrito actual del usuario
- */
-router.get('/', authenticate, getCart);
-
-/**
- * GET /api/cart/history
- * Obtiene el historial de compras
- */
-router.get('/history', authenticate, getCartHistory);
+router.post('/', createOrder);
 
 module.exports = router;

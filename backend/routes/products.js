@@ -1,87 +1,46 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
-const fs = require('fs').promises;
+const {
+  getProductsByCategory,
+  getProductDetail,
+  getProductComments,
+  getRelatedProducts,
+  searchProducts
+} = require('../controllers/productsController');
 
-/*
- GET /api/products/:categoryId
- Devuelve productos de una categoría
-*/
-router.get('/:categoryId', async (req, res, next) => {
-  try {
-    const { categoryId } = req.params;
-    const filePath = path.join(__dirname, '../data/cats_products', `${categoryId}.json`);
+/**
+ * GET /api/products/search?q=term
+ * Busca productos por término
+ * IMPORTANTE: Esta ruta debe ir ANTES de /:categoryId
+ */
+router.get('/search', searchProducts);
 
-    const data = await fs.readFile(filePath, 'utf-8');
-    const products = JSON.parse(data);
+/**
+ * GET /api/products/detail/:productId
+ * Devuelve detalles de un producto específico
+ * IMPORTANTE: Esta ruta debe ir ANTES de /:categoryId
+ */
+router.get('/detail/:productId', getProductDetail);
 
-    res.json({
-      success: true,
-      data: products
-    });
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return res.status(404).json({
-        success: false,
-        message: 'Categoría no encontrada'
-      });
-    }
-    next(error);
-  }
-});
+/**
+ * GET /api/products/comments/:productId
+ * Devuelve comentarios de un producto
+ * IMPORTANTE: Esta ruta debe ir ANTES de /:categoryId
+ */
+router.get('/comments/:productId', getProductComments);
 
-/*
- GET /api/products/detail/:productId
- Devuelve detalles de un producto específico
-*/
-router.get('/detail/:productId', async (req, res, next) => {
-  try {
-    const { productId } = req.params;
-    const filePath = path.join(__dirname, '../data/products', `${productId}.json`);
+/**
+ * GET /api/products/related/:productId
+ * Devuelve productos relacionados
+ * IMPORTANTE: Esta ruta debe ir ANTES de /:categoryId
+ */
+router.get('/related/:productId', getRelatedProducts);
 
-    const data = await fs.readFile(filePath, 'utf-8');
-    const product = JSON.parse(data);
-
-    res.json({
-      success: true,
-      data: product
-    });
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return res.status(404).json({
-        success: false,
-        message: 'Producto no encontrado'
-      });
-    }
-    next(error);
-  }
-});
-
-/*
- GET /api/products/comments/:productId
- Devuelve comentarios de un producto
-*/
-router.get('/comments/:productId', async (req, res, next) => {
-  try {
-    const { productId } = req.params;
-    const filePath = path.join(__dirname, '../data/products_comments', `${productId}.json`);
-
-    const data = await fs.readFile(filePath, 'utf-8');
-    const comments = JSON.parse(data);
-
-    res.json({
-      success: true,
-      data: comments
-    });
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return res.status(404).json({
-        success: false,
-        message: 'No se encontraron comentarios'
-      });
-    }
-    next(error);
-  }
-});
+/**
+ * GET /api/products/:categoryId
+ * Devuelve productos de una categoría
+ * IMPORTANTE: Esta ruta debe ir AL FINAL
+ */
+router.get('/:categoryId', getProductsByCategory);
 
 module.exports = router;

@@ -1,10 +1,4 @@
 /**
- * Helper para hacer llamadas al backend
- */
-
-const API_BASE_URL = 'http://localhost:3000/api';
-
-/**
  * Obtiene el token de autenticación
  */
 function getAuthToken() {
@@ -16,14 +10,14 @@ function getAuthToken() {
  */
 async function apiRequest(endpoint, options = {}) {
   const token = getAuthToken();
-  
+
   const config = {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-      ...options.headers
-    }
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
+    },
   };
 
   try {
@@ -42,7 +36,6 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 // ===== PROFILE =====
-
 async function getProfile() {
   const response = await apiRequest('/profile');
   return response.data;
@@ -51,7 +44,7 @@ async function getProfile() {
 async function updateProfile(profileData) {
   const response = await apiRequest('/profile', {
     method: 'PUT',
-    body: JSON.stringify(profileData)
+    body: JSON.stringify(profileData),
   });
   return response.data;
 }
@@ -64,7 +57,7 @@ async function getAddresses() {
 async function createAddress(addressData) {
   const response = await apiRequest('/profile/addresses', {
     method: 'POST',
-    body: JSON.stringify(addressData)
+    body: JSON.stringify(addressData),
   });
   return response.data;
 }
@@ -72,14 +65,14 @@ async function createAddress(addressData) {
 async function updateAddress(addressId, updates) {
   const response = await apiRequest(`/profile/addresses/${addressId}`, {
     method: 'PUT',
-    body: JSON.stringify(updates)
+    body: JSON.stringify(updates),
   });
   return response.data;
 }
 
 async function deleteAddressAPI(addressId) {
   await apiRequest(`/profile/addresses/${addressId}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   });
 }
 
@@ -91,7 +84,7 @@ async function getCards() {
 async function createCard(cardData) {
   const response = await apiRequest('/profile/cards', {
     method: 'POST',
-    body: JSON.stringify(cardData)
+    body: JSON.stringify(cardData),
   });
   return response.data;
 }
@@ -99,19 +92,18 @@ async function createCard(cardData) {
 async function updateCard(cardId, updates) {
   const response = await apiRequest(`/profile/cards/${cardId}`, {
     method: 'PUT',
-    body: JSON.stringify(updates)
+    body: JSON.stringify(updates),
   });
   return response.data;
 }
 
 async function deleteCardAPI(cardId) {
   await apiRequest(`/profile/cards/${cardId}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   });
 }
 
 // ===== WISHLIST =====
-
 async function getWishlist() {
   const response = await apiRequest('/wishlist');
   return response.data;
@@ -120,19 +112,18 @@ async function getWishlist() {
 async function addToWishlistAPI(item) {
   const response = await apiRequest('/wishlist', {
     method: 'POST',
-    body: JSON.stringify(item)
+    body: JSON.stringify(item),
   });
   return response.data;
 }
 
 async function removeFromWishlistAPI(productId) {
   await apiRequest(`/wishlist/${productId}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   });
 }
 
 // ===== ORDERS =====
-
 async function getOrders() {
   const response = await apiRequest('/orders');
   return response.data;
@@ -146,17 +137,10 @@ async function getOrderById(orderId) {
 async function createOrder(orderData) {
   const response = await apiRequest('/orders', {
     method: 'POST',
-    body: JSON.stringify(orderData)
+    body: JSON.stringify(orderData),
   });
   return response.data;
 }
 
 // ===== CART =====
-
-async function saveCart(cartData) {
-  const response = await apiRequest('/cart', {
-    method: 'POST',
-    body: JSON.stringify(cartData)
-  });
-  return response.data;
-}
+// Nota: POST /cart guarda órdenes finalizadas (no carritos temporales)

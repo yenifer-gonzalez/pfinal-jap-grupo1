@@ -26,9 +26,9 @@ router.use('/auth', authRoutes);
 // Rutas protegidas (requieren autenticación)
 router.use('/categories', authenticate, categoriesRoutes);
 router.use('/products', authenticate, productsRoutes);
-router.use('/cart', cartRoutes);
-router.use('/profile', profileRoutes);           
-router.use('/wishlist', wishlistRoutes);         
-router.use('/orders', ordersRoutes);             
+router.use('/cart', authenticate, cartRoutes);
+router.use('/profile', authenticate, profileRoutes);
+router.use('/wishlist', authenticate, wishlistRoutes);
+router.use('/orders', authenticate, ordersRoutes);             
 
 module.exports = router;

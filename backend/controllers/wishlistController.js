@@ -1,16 +1,17 @@
-const storage = require('../data/storage');
 const { sendSuccess, sendError } = require('../utils/helpers');
+
+// NOTA: La wishlist se gestiona en localStorage del frontend
+// Estos endpoints NO persisten en MySQL, solo devuelven respuestas compatibles
 
 /**
  * GET /api/wishlist
- * Obtiene la lista de favoritos del usuario
+ * Obtiene la lista de favoritos del usuario (siempre array vacío)
  */
 const getWishlist = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const wishlist = storage.getWishlist(userId);
-    
-    sendSuccess(res, wishlist, 'Lista de favoritos obtenida exitosamente');
+    // NO leemos de BD, devolvemos array vacío
+    // El frontend maneja wishlist en localStorage
+    sendSuccess(res, [], 'Lista de favoritos obtenida exitosamente');
   } catch (error) {
     next(error);
   }
@@ -18,32 +19,25 @@ const getWishlist = async (req, res, next) => {
 
 /**
  * POST /api/wishlist
- * Agrega un producto a favoritos
+ * Agrega un producto a favoritos (NO persiste en BD, solo confirma)
  */
 const addToWishlist = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const item = req.body;
+    const { productId } = req.body;
 
-    // Validar que tenga los datos necesarios
-    if (!item.productId || !item.name || !item.cost) {
-      return sendError(res, 'Faltan datos del producto', 400);
+    // Validar que tenga el productId
+    if (!productId) {
+      return sendError(res, 'Falta el ID del producto', 400);
     }
 
-    // Verificar si ya está en favoritos
-    const wishlist = storage.getWishlist(userId);
-    const exists = wishlist.find(w => w.productId === item.productId);
-
-    if (exists) {
-      return sendError(res, 'El producto ya está en favoritos', 409);
-    }
-
+    // NO guardamos en BD, solo devolvemos confirmación
+    // El frontend guarda esto en localStorage
     const newItem = {
-      ...item,
-      addedAt: new Date().toISOString()
+      id: Date.now(),
+      productId,
+      userId: req.user.id,
+      createdAt: new Date().toISOString()
     };
-
-    storage.addToWishlist(userId, newItem);
 
     sendSuccess(res, newItem, 'Producto agregado a favoritos', 201);
   } catch (error) {
@@ -53,15 +47,11 @@ const addToWishlist = async (req, res, next) => {
 
 /**
  * DELETE /api/wishlist/:productId
- * Elimina un producto de favoritos
+ * Elimina un producto de favoritos (NO persiste en BD, solo confirma)
  */
 const removeFromWishlist = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const { productId } = req.params;
-
-    storage.removeFromWishlist(userId, productId);
-
+    // NO borramos de BD, solo confirmamos
     sendSuccess(res, null, 'Producto eliminado de favoritos');
   } catch (error) {
     next(error);

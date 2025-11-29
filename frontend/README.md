@@ -21,6 +21,8 @@
 
 eMercado es una plataforma completa de comercio electrónico que ofrece una experiencia de compra **moderna, intuitiva, simple y efectiva**. El proyecto implementa todas las funcionalidades esenciales de un e-commerce profesional, incluyendo catálogo de productos, sistema de carrito, checkout con múltiples métodos de pago, gestión de perfil de usuario y sistema de favoritos.
 
+La aplicación cuenta con una **arquitectura full-stack** que separa frontend (HTML/CSS/JavaScript) y backend (Node.js + Express + MySQL), comunicándose mediante una **API REST segura con autenticación JWT**.
+
 ### Objetivo del proyecto
 
 El desafío principal fue lograr que estas características se integraran en un único producto coherente. En el e-commerce, la **experiencia de usuario** es un aspecto clave: la solución debe funcionar de la forma más fluida posible, de lo contrario los clientes se marcharán.
@@ -29,11 +31,15 @@ Si bien la plataforma trata sobre compra y venta de bienes de cualquier tipo, no
 
 ### Destacados
 
+- **Arquitectura full-stack** con separación clara frontend/backend
+- **API REST segura** con autenticación JWT y middleware de protección
+- **Base de datos relacional** MySQL con 11 tablas normalizadas
 - **Experiencia de usuario optimizada** con diseño responsive mobile-first
 - **Sistema de temas** claro/oscuro con persistencia
 - **PWA ready** con Service Worker para modo offline
 - **Optimizado para SEO y accesibilidad** (WCAG AA)
 - **Performance optimizada** con lazy loading, caching y debouncing
+- **Seguridad robusta** con bcrypt, JWT, validaciones y sanitización
 
 ---
 
@@ -41,11 +47,14 @@ Si bien la plataforma trata sobre compra y venta de bienes de cualquier tipo, no
 
 ### Autenticación y gestión de sesión
 
-- Sistema de login con validación de email (regex) y contraseña robusta
-- Gestión de sesión con expiración automática (24 horas)
-- Función "Recordarme" con almacenamiento local
-- Protección de rutas y logout con limpieza de datos
-- Toggle de mostrar/ocultar contraseña
+- **Sistema de login JWT** con validación de credenciales en MySQL
+- **Encriptación de contraseñas** con bcrypt (10 rounds)
+- **Token JWT** con expiración automática (24 horas)
+- **Middleware de autenticación** que protege rutas del backend
+- **Almacenamiento seguro** del token en localStorage
+- **Protección de rutas** frontend con redirección automática a login
+- **Logout** con limpieza completa de datos y token
+- **Toggle** de mostrar/ocultar contraseña en formularios
 
 ### Catálogo y navegación de productos
 
@@ -94,22 +103,27 @@ Si bien la plataforma trata sobre compra y venta de bienes de cualquier tipo, no
 - **Perfil de usuario**:
 
   - Formulario con datos personales (nombre, apellido, email, teléfono)
-  - Foto de perfil con preview, conversión a base64 y persistencia
+  - Foto de perfil con preview, conversión a base64 y **persistencia en localStorage**
   - Avatar sincronizado en header y sidebar
   - Sistema de tabs para organizar secciones
+  - **Direcciones de envío**: CRUD completo con dirección predeterminada (localStorage)
+  - **Tarjetas de pago**: Guardado seguro solo últimos 4 dígitos (localStorage)
 
 - **Historial de pedidos**:
 
-  - Listado completo de pedidos realizados
+  - Listado completo de pedidos realizados **guardados en MySQL**
   - Estados visuales: Pendiente, Confirmado, Enviado, Entregado
-  - Detalles: fecha, total, método de pago, estado
+  - Detalles: fecha, total, método de pago, estado, productos
+  - Relación con order_items para detalle completo
   - Filtrado y ordenamiento
+  - **Única funcionalidad que persiste en base de datos**
 
 - **Lista de favoritos/wishlist**:
   - Toggle de favoritos en tarjetas de productos con animación
   - Página dedicada con diseño horizontal compacto
-  - Persistencia sincronizada globalmente
+  - **Persistencia en localStorage** para acceso rápido
   - Eliminación rápida y navegación directa a productos
+  - Sincronización en tiempo real entre todas las vistas
 
 ### Interfaz y diseño
 
@@ -154,15 +168,24 @@ Si bien la plataforma trata sobre compra y venta de bienes de cualquier tipo, no
 - **JavaScript (ES6+)** - Lógica de aplicación vanilla
 - **Bootstrap 5** - Framework CSS y componentes UI
 
-### APIs y servicios
+### Backend
 
-- **eMercado API** - API REST para catálogo, productos y comentarios
-- **LocalStorage** - Persistencia de datos del lado del cliente
-- **Service Worker** - Caching y funcionalidad offline
+- **Node.js** - Runtime de JavaScript del lado del servidor
+- **Express.js** - Framework web minimalista y rápido
+- **MySQL** - Base de datos relacional
+- **JWT** - Autenticación basada en tokens
+- **bcrypt.js** - Encriptación de contraseñas
+
+### Almacenamiento y servicios
+
+- **MySQL Database** - Persistencia solo de órdenes finalizadas (orders + order_items)
+- **LocalStorage** - Almacenamiento principal: perfil, direcciones, tarjetas, wishlist, carrito
+- **Service Worker** - Caching de assets y funcionalidad offline
 
 ### Herramientas de desarrollo
 
 - **Git & GitHub** - Control de versiones
+- **nodemon** - Auto-restart del servidor en desarrollo
 - **Prettier** - Formateo de código
 - **Trello** - Gestión de proyecto
 - **Font Awesome** - Iconografía
@@ -173,8 +196,9 @@ Si bien la plataforma trata sobre compra y venta de bienes de cualquier tipo, no
 
 ### Requisitos previos
 
+- **Node.js** v16 o superior
+- **MySQL** o **MariaDB** instalado y corriendo
 - Navegador web moderno (Chrome, Firefox, Safari, Edge)
-- Conexión a internet (para cargar datos de la API)
 
 ### Instalación
 
@@ -185,24 +209,66 @@ Si bien la plataforma trata sobre compra y venta de bienes de cualquier tipo, no
    cd pfinal-grupo1
    ```
 
-2. **Abrir la aplicación**:
+2. **Configurar base de datos**:
 
-   - Opción 1: Abrir `login.html` directamente en el navegador
-   - Opción 2: Usar un servidor local (recomendado):
+   ```bash
+   # Crear la base de datos en MySQL
+   mysql -u root -p < backend/db/ecommerce.sql
+   ```
+
+3. **Configurar variables de entorno**:
+
+   ```bash
+   cd backend
+   cp .env.example .env
+   # Editar .env con tus credenciales de MySQL
+   ```
+
+   Variables requeridas en `.env`:
+   ```env
+   DB_HOST=127.0.0.1
+   DB_USER=root
+   DB_PASSWORD=tu_password
+   DB_NAME=ecommerce
+   JWT_SECRET=tu_clave_secreta
+   FRONTEND_URL=http://127.0.0.1:5500
+   ```
+
+4. **Instalar dependencias del backend**:
+
+   ```bash
+   npm install
+   ```
+
+5. **Iniciar el servidor backend**:
+
+   ```bash
+   # Modo desarrollo (con nodemon)
+   npm run dev
+
+   # Modo producción
+   npm start
+   ```
+
+   El servidor estará disponible en `http://localhost:3000`
+
+6. **Abrir el frontend**:
+
+   - Opción 1: Usar Live Server en VS Code (recomendado)
+   - Opción 2: Usar servidor local:
 
      ```bash
-     # Con Python 3
-     python -m http.server 8000
-
-     # Con Node.js (npx)
-     npx http-server -p 8000
+     # Desde la carpeta frontend
+     cd ../frontend
+     npx http-server -p 5500
      ```
 
-   - Navegar a `http://localhost:8000/login.html`
+   - Navegar a `http://127.0.0.1:5500/login.html`
 
-3. **Credenciales de prueba**:
-   - Email: `usuario@example.com` (cualquier email válido)
-   - Contraseña: `test123` (mínimo 6 caracteres, 1 letra y 1 número)
+7. **Credenciales de prueba**:
+   - Primero debes crear un usuario en la base de datos o registrarte desde la aplicación
+   - Email: cualquier email válido
+   - Contraseña: mínimo 6 caracteres
 
 ### Navegación básica
 
@@ -223,45 +289,97 @@ Si bien la plataforma trata sobre compra y venta de bienes de cualquier tipo, no
 
 ```
 pfinal-grupo1/
-├── css/
-│   ├── bootstrap.min.css        # Framework CSS
-│   ├── cart.css                 # Carrito de compras
-│   ├── categories.css           # Categorías
-│   ├── checkout.css             # Checkout y métodos de pago
-│   ├── home.css                 # Página principal
-│   ├── login.css                # Login
-│   ├── my-profile.css           # Perfil, pedidos y favoritos
-│   ├── order-confirmation.css   # Confirmación de compra
-│   ├── styles.css               # Estilos globales y componentes
-│   └── variables.css            # Variables del sistema de diseño
+├── backend/
+│   ├── config/
+│   │   ├── database.js          # Configuración MySQL con pool
+│   │   └── jwt.js               # Configuración JWT
+│   │
+│   ├── controllers/
+│   │   ├── authController.js    # Login y autenticación
+│   │   ├── categoriesController.js
+│   │   ├── productsController.js
+│   │   ├── profileController.js
+│   │   ├── ordersController.js
+│   │   └── wishlistController.js
+│   │
+│   ├── data/                    # Archivos JSON (datos estáticos)
+│   │   ├── cats/                # Categorías
+│   │   ├── cats_products/       # Productos por categoría
+│   │   ├── products/            # Detalles de productos
+│   │   └── products_comments/   # Comentarios
+│   │
+│   ├── db/
+│   │   └── ecommerce.sql        # Script de creación de BD
+│   │
+│   ├── middleware/
+│   │   ├── auth.js              # Middleware de autenticación JWT
+│   │   └── errorHandler.js     # Manejo global de errores
+│   │
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Product.js
+│   │   ├── Category.js
+│   │   ├── Order.js
+│   │   ├── Address.js
+│   │   ├── PaymentCard.js
+│   │   └── Wishlist.js
+│   │
+│   ├── routes/
+│   │   ├── index.js             # Router principal
+│   │   ├── auth.js
+│   │   ├── categories.js
+│   │   ├── products.js
+│   │   ├── cart.js
+│   │   ├── profile.js
+│   │   ├── wishlist.js
+│   │   └── orders.js
+│   │
+│   ├── .env.example             # Variables de entorno de ejemplo
+│   ├── package.json
+│   └── server.js                # Punto de entrada del servidor
 │
-├── js/
-│   ├── cart.js                  # Lógica del carrito
-│   ├── categories.js            # Navegación de categorías
-│   ├── checkout.js              # Sistema de checkout y validación
-│   ├── index.js                 # Página principal
-│   ├── init.js                  # Configuración global y sesiones
-│   ├── login.js                 # Autenticación
-│   ├── my-profile.js            # Perfil, pedidos y favoritos
-│   ├── order-confirmation.js    # Confirmación de orden
-│   ├── product-info.js          # Detalle de producto
-│   └── products.js              # Listado, filtros y paginación
+├── frontend/
+│   ├── css/
+│   │   ├── bootstrap.min.css    # Framework CSS
+│   │   ├── cart.css             # Carrito de compras
+│   │   ├── categories.css       # Categorías
+│   │   ├── checkout.css         # Checkout y métodos de pago
+│   │   ├── home.css             # Página principal
+│   │   ├── login.css            # Login
+│   │   ├── my-profile.css       # Perfil, pedidos y favoritos
+│   │   ├── order-confirmation.css
+│   │   ├── styles.css           # Estilos globales
+│   │   └── variables.css        # Variables del sistema de diseño
+│   │
+│   ├── js/
+│   │   ├── api.js               # Funciones de API con JWT
+│   │   ├── cart.js              # Lógica del carrito
+│   │   ├── categories.js        # Navegación de categorías
+│   │   ├── checkout.js          # Sistema de checkout
+│   │   ├── index.js             # Página principal
+│   │   ├── init.js              # Configuración global y sesiones
+│   │   ├── login.js             # Autenticación
+│   │   ├── my-profile.js        # Perfil, pedidos y favoritos
+│   │   ├── order-confirmation.js
+│   │   ├── product-info.js      # Detalle de producto
+│   │   └── products.js          # Listado, filtros y paginación
+│   │
+│   ├── img/                     # Imágenes del proyecto
+│   ├── webfonts/                # Fuentes web
+│   │
+│   ├── cart.html
+│   ├── categories.html
+│   ├── checkout.html
+│   ├── index.html
+│   ├── login.html
+│   ├── my-profile.html
+│   ├── order-confirmation.html
+│   ├── product-info.html
+│   ├── products.html
+│   ├── sw.js                    # Service Worker
+│   └── README.md
 │
-├── img/                         # Imágenes del proyecto
-├── webfonts/                    # Fuentes web
-│
-├── cart.html
-├── categories.html
-├── checkout.html
-├── index.html
-├── login.html
-├── my-profile.html
-├── order-confirmation.html
-├── product-info.html
-├── products.html
-├── sw.js                        # Service Worker
-│
-└── README.md
+└── README.md                    # Este archivo
 ```
 
 </details>
@@ -320,42 +438,152 @@ Ver detalles completos en [variables.css](css/variables.css)
 
 ### API endpoints
 
-La aplicación consume la API oficial de eMercado:
+La aplicación usa una API REST propia desarrollada con Node.js + Express:
 
-**Base URL**: `https://japceibal.github.io/emercado-api/`
+**Base URL**: `http://localhost:3000/api`
 
 <details>
 <summary>Ver endpoints disponibles</summary>
 
-#### Categorías
+#### Autenticación (Públicos)
 
-- `GET /cats/cat.json` - Listado de categorías
+- `POST /auth/login` - Iniciar sesión
+  - Body: `{ username, password }`
+  - Response: `{ token, user }`
 
-#### Productos
+#### Health Check (Público)
 
-- `GET /cats_products/{categoryId}.json` - Productos por categoría
-- `GET /products/{productId}.json` - Detalle de producto
+- `GET /health` - Verificar estado del servidor
 
-#### Comentarios
+#### Categorías (Protegido - Requiere JWT)
 
-- `GET /products_comments/{productId}.json` - Comentarios de producto
+- `GET /categories` - Listado de todas las categorías
 
-#### Carrito
+#### Productos (Protegido - Requiere JWT)
 
-- `GET /user_cart/{userId}.json` - Carrito del usuario
+- `GET /products/:categoryId` - Productos por categoría
+- `GET /products/detail/:productId` - Detalle de un producto
+- `GET /products/comments/:productId` - Comentarios de un producto
+- `GET /products/related/:productId` - Productos relacionados
+- `GET /products/search?q=term` - Búsqueda de productos
 
-#### Otros
+#### Perfil (Protegido - Requiere JWT)
 
-- `POST /sell/publish.json` - Publicar producto
-- `POST /cart/buy.json` - Procesar compra
+- `GET /profile` - Obtener datos del usuario
+- `PUT /profile` - Actualizar datos del usuario
+- `GET /profile/addresses` - Listar direcciones de envío
+- `POST /profile/addresses` - Crear dirección de envío
+- `PUT /profile/addresses/:id` - Actualizar dirección
+- `DELETE /profile/addresses/:id` - Eliminar dirección
+- `GET /profile/cards` - Listar tarjetas guardadas
+- `POST /profile/cards` - Crear tarjeta de pago
+- `PUT /profile/cards/:id` - Actualizar tarjeta
+- `DELETE /profile/cards/:id` - Eliminar tarjeta
+
+
+#### Órdenes (Protegido - Requiere JWT)
+
+- `GET /orders` - Listar órdenes del usuario
+- `POST /orders` - Crear nueva orden
+  - Body: `{ items, subtotal, shipping, total, paymentMethod, address }`
+- `GET /orders/:orderId` - Detalle de una orden
+
+#### Carrito (Alias de órdenes - Protegido)
+
+- `POST /cart` - Crear orden (redirige a POST /orders)
 
 </details>
 
+**Autenticación**:
+
+- Todas las rutas protegidas requieren header: `Authorization: Bearer <token>`
+- Token JWT válido por 24 horas
+- Si el token expira o es inválido, responde con `401 Unauthorized`
+
 **Optimizaciones**:
 
-- Cache de 5 minutos en productos por categoría
+- Pool de conexiones MySQL (máximo 10 conexiones)
+- Cache de 5 minutos en productos por categoría (frontend)
 - Error handling con try-catch en todas las llamadas
 - Loading states con skeleton screens
+- Middleware global de manejo de errores
+
+### Arquitectura de base de datos
+
+La aplicación utiliza MySQL con un esquema relacional normalizado de **11 tablas**:
+
+<details>
+<summary>Ver estructura de la base de datos</summary>
+
+#### Tablas principales
+
+1. **users** - Usuarios del sistema (tabla disponible pero no utilizada)
+   - Campos: id, username, email, password (hash bcrypt), role, first_name, last_name, phone, profile_photo
+   - **Nota:** Los datos de usuario se validan desde archivos JSON. La tabla existe para futura implementación.
+
+2. **categories** - Categorías de productos
+   - Campos: id, name, description, img_src
+   - 9 categorías: Autos, Juguetes, Muebles, Herramientas, Computadoras, Vestimenta, Electrodomésticos, Deporte, Celulares
+
+3. **products** - Catálogo de productos
+   - Campos: id, category_id (FK), name, description, cost, currency, sold_count
+   - Relaciones: Pertenece a categoría, tiene imágenes, comentarios, relacionados
+
+4. **product_images** - Imágenes de productos
+   - Campos: id, product_id (FK), image_url, is_primary, display_order
+   - Permite múltiples imágenes por producto con orden
+
+5. **product_comments** - Comentarios y calificaciones
+   - Campos: id, product_id (FK), user_id (FK), score (1-5), description, created_at
+   - Constraint: UNIQUE (product_id, user_id) - un comentario por usuario
+
+6. **related_products** - Productos relacionados
+   - Campos: id, product_id (FK), related_product_id (FK)
+   - Relación many-to-many entre productos
+
+7. **orders** - Órdenes de compra ✅ **ÚNICA TABLA UTILIZADA**
+   - Campos: id, user_id (FK), subtotal, discount, coupon_code, shipping_cost, shipping_type, total, payment_method, crypto_currency, shipping_address, status, created_at
+   - Estados: pending, confirmed, shipped, delivered
+   - **Persistencia:** Se guarda cada orden finalizada en checkout
+
+8. **order_items** - Items de cada orden ✅ **ÚNICA TABLA UTILIZADA**
+   - Campos: id, order_id (FK), product_id (FK), quantity, unit_price, currency
+   - Relación many-to-many entre orders y products
+   - **Persistencia:** Se guardan los productos de cada orden
+
+9. **addresses** - Direcciones de envío (tabla disponible pero no utilizada)
+   - Campos: id, user_id (FK), alias, street, corner, apartment, city, state, zip_code, country, phone, is_default
+   - **Nota:** Las direcciones se gestionan en localStorage. La tabla existe para futura implementación.
+
+10. **payment_cards** - Tarjetas de pago guardadas (tabla disponible pero no utilizada)
+    - Campos: id, user_id (FK), last_four, card_name, expiry, is_default
+    - **Nota:** Las tarjetas se gestionan en localStorage. La tabla existe para futura implementación.
+
+11. **wishlists** - Lista de deseos (tabla disponible pero no utilizada)
+    - Campos: id, user_id (FK), product_id (FK), created_at
+    - **Nota:** La wishlist se gestiona en localStorage. La tabla existe para futura implementación.
+
+#### Decisión de arquitectura: LocalStorage vs MySQL
+
+**Implementación actual:**
+- ✅ **MySQL:** Solo `orders` y `order_items` (historial de compras finalizadas)
+- 💾 **localStorage:** Perfil, direcciones, tarjetas, wishlist, carrito (datos de sesión del usuario)
+
+**Justificación:**
+- **Performance:** Acceso instantáneo sin latencia de red
+- **Simplicidad:** No requiere autenticación compleja para datos de perfil
+- **Escalabilidad futura:** Las tablas MySQL están listas para migración cuando sea necesario
+
+#### Características del esquema
+
+- **Foreign Keys** con CASCADE en todas las relaciones
+- **Índices** en columnas frecuentemente consultadas
+- **Constraints UNIQUE** para evitar duplicados
+- **Timestamps** automáticos (created_at, updated_at)
+- **Defaults** apropiados (is_default = 0, country = 'Uruguay')
+- **Normalización** hasta 3NF para evitar redundancia
+
+</details>
 
 ### Componentes principales
 
@@ -425,7 +653,10 @@ Gestión del proyecto con metodología ágil:
 
 ### Documentación
 
-- [API de eMercado](https://japceibal.github.io/emercado-api/)
+- [Node.js Documentation](https://nodejs.org/docs/)
+- [Express.js Guide](https://expressjs.com/es/guide/routing.html)
+- [MySQL Documentation](https://dev.mysql.com/doc/)
+- [JWT.io](https://jwt.io/)
 - [Bootstrap 5 Docs](https://getbootstrap.com/docs/)
 - [MDN Web Docs](https://developer.mozilla.org/)
 
@@ -439,6 +670,7 @@ Gestión del proyecto con metodología ágil:
 - [Git & GitHub](https://github.com/)
 - [Trello](https://trello.com/)
 - [Prettier](https://prettier.io/)
+- [nodemon](https://nodemon.io/)
 
 ---
 

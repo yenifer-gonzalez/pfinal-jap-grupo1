@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_change_in_production';
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'default_secret_change_in_production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
-/*
- Genera un token JWT
+/* Genera un token JWT
  @param {Object} payload - Datos a incluir en el token
  @returns {string} Token generado
 */

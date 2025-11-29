@@ -4,24 +4,27 @@ const cors = require('cors');
 const path = require('path');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const routes = require('./routes');
+const { testConnection } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ===== MIDDLEWARE GLOBAL =====
 // CORS: permitir requests desde el frontend
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://127.0.0.1:5500',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://127.0.0.1:5500',
+    credentials: true,
+  })
+);
 
 // Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Logging simple 
+// Logging simple
 app.use((req, res, next) => {
-  console.log(`📨 ${req.method} ${req.path}`);
+  console.log(`${req.method} ${req.path}`);
   next();
 });
 
@@ -39,8 +42,8 @@ app.get('/', (req, res) => {
       products: 'GET /api/products/:categoryId',
       productDetail: 'GET /api/products/detail/:productId',
       comments: 'GET /api/products/comments/:productId',
-      cart: 'POST /api/cart'
-    }
+      cart: 'POST /api/cart',
+    },
   });
 });
 
@@ -54,20 +57,26 @@ app.use(notFound);
 app.use(errorHandler);
 
 // ===== INICIAR SERVIDOR =====
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`
 
-  Servidor iniciado exitosamente    
+  Servidor iniciado exitosamente
 
-  URL: http://localhost:${PORT}      
+  URL: http://localhost:${PORT}
   Entorno: ${process.env.NODE_ENV || 'development'}           ║
-  ${new Date().toLocaleString()}    
-
+  ${new Date().toLocaleString()}
   `);
+
+  // Probar conexión a la base de datos
+  try {
+    await testConnection();
+  } catch (error) {
+    console.error('No se pudo conectar a la base de datos.');
+  }
 });
 
 // Manejo de errores no capturados
 process.on('unhandledRejection', (err) => {
-  console.error('❌ Unhandled Rejection:', err);
+  console.error('Unhandled Rejection:', err);
   process.exit(1);
 });
