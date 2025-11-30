@@ -321,11 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('applyCoupon')?.addEventListener('click', handleApplyCoupon);
 
   // Botón para ir al checkout
-<<<<<<< HEAD:js/cart.js
-  document.getElementById('checkoutBtn')?.addEventListener('click', () => {
-=======
   document.getElementById('checkoutBtn')?.addEventListener('click', async () => {
->>>>>>> yenifer-gonzalez:frontend/js/cart.js
     if (!cart.length) {
       showModal({
         icon: 'exclamation-triangle-fill',
@@ -353,11 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const shippingCost = sub * shipPct;
     const total = sub - disc + shippingCost;
 
-<<<<<<< HEAD:js/cart.js
-    writeLS('checkoutData', {
-=======
     const checkoutData = {
->>>>>>> yenifer-gonzalez:frontend/js/cart.js
       subtotal: sub,
       discount: disc,
       couponCode: appliedCoupon,
@@ -365,16 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
       shippingType: shipType,
       total,
       items: cart,
-<<<<<<< HEAD:js/cart.js
-    });
-=======
     };
 
     writeLS('checkoutData', checkoutData);
 
     // El carrito se guarda solo en localStorage
     // La orden final se guardará en la BD cuando se confirme la compra en checkout
->>>>>>> yenifer-gonzalez:frontend/js/cart.js
 
     // Redirigir a checkout
     window.location.href = 'checkout.html';

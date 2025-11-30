@@ -495,11 +495,7 @@ function loadOrderSummary() {
 }
 
 // ===== CONFIRMAR COMPRA =====
-<<<<<<< HEAD:js/checkout.js
-function confirmPurchase() {
-=======
 async function confirmPurchase() {
->>>>>>> yenifer-gonzalez:frontend/js/checkout.js
   // Validar dirección
   if (!selectedAddress && !validateNewAddressForm()) {
     alert('Por favor selecciona o ingresa una dirección de envío');
@@ -524,11 +520,6 @@ async function confirmPurchase() {
   if (selectedPaymentMethod === 'card') {
     // Si hay tarjeta seleccionada, usarla
     if (selectedCard) {
-<<<<<<< HEAD:js/checkout.js
-      // Ya está validada y guardada, no necesita más validación
-      console.log('Usando tarjeta guardada:', selectedCard.alias);
-=======
->>>>>>> yenifer-gonzalez:frontend/js/checkout.js
     } else {
       // Validar formulario de nueva tarjeta
       const cardNumber = document.getElementById('newCardNumber').value.trim();
@@ -565,11 +556,7 @@ async function confirmPurchase() {
 
     // Mostrar advertencia de simulación
     const confirmed = confirm(
-<<<<<<< HEAD:js/checkout.js
-      `⚠️ SIMULACIÓN DE PAGO\n\n` +
-=======
       `SIMULACIÓN DE PAGO\n\n` +
->>>>>>> yenifer-gonzalez:frontend/js/checkout.js
         `Has seleccionado pagar con ${cryptoName}.\n\n` +
         `En un entorno real:\n` +
         `• Se generaría una dirección de pago única\n` +
@@ -586,11 +573,7 @@ async function confirmPurchase() {
   } else if (selectedPaymentMethod === 'mercadopago') {
     // Validación especial para Mercado Pago
     const confirmed = confirm(
-<<<<<<< HEAD:js/checkout.js
-      `ℹ️ SIMULACIÓN DE PAGO\n\n` +
-=======
       `SIMULACIÓN DE PAGO\n\n` +
->>>>>>> yenifer-gonzalez:frontend/js/checkout.js
         `En un entorno real, serías redirigido a Mercado Pago para completar el pago de forma segura.\n\n` +
         `Como esto es una simulación educativa, el pedido se confirmará inmediatamente.\n\n` +
         `¿Deseas continuar?`
@@ -625,18 +608,11 @@ async function confirmPurchase() {
     status: 'pending',
   };
 
-<<<<<<< HEAD:js/checkout.js
-  // Guardar orden
-  const orders = readLS('orders', []);
-  orders.push(order);
-  writeLS('orders', orders);
-=======
   // Guardar orden localmente
   saveOrderLocally(order);
 
   // Guardar orden en la base de datos
   await saveOrderToDatabase(order);
->>>>>>> yenifer-gonzalez:frontend/js/checkout.js
 
   // Limpiar carrito
   writeLS('cart', []);
@@ -801,8 +777,6 @@ function showSuccessModal(order) {
 
   // Los estilos del modal ahora están en checkout.css
 }
-<<<<<<< HEAD:js/checkout.js
-=======
 
 // guardar solo localmente
 function saveOrderLocally(order) {
@@ -839,4 +813,3 @@ async function saveOrderToDatabase(order) {
     throw error;
   }
 }
->>>>>>> yenifer-gonzalez:frontend/js/checkout.js
