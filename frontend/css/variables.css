@@ -1,0 +1,143 @@
+:root {
+  /* ========= COLORES DE MARCA ========= */
+  --color-primary-orange: #ff8c00; /* Naranja principal - Botones CTA, enlaces activos */
+  --color-primary-dark: #e67e00; /* Naranja hover/focus */
+  --color-secondary-orange: #ffa500; /* Naranja secundario - Iconos, badges */
+  --color-secondary: #274653; /* Azul - Headers, títulos */
+  --color-secondary-dark: #1a272d; /* Azul oscuro - Hover en elementos secundarios */
+
+  /* ========= COLORES DEL HEADER ========= */
+  --header-bg: rgba(255, 255, 255, 0.8);
+  --header-text: var(--color-primary-orange);
+  --nav-bg: rgba(255, 255, 255, 0.7);
+
+  /* ========= COLORES DE FONDO ========= */
+  --bg-gradient-start: #fffaf5;
+  --bg-gradient-middle: #e8f1f5;
+  --bg-gradient-end: #d8e3e9;
+  --card-background: #ffffff; /* Fondo de tarjetas principales */
+  --card-background-alt: #f8f8f8; /* Fondo alternativo para cards secundarias */
+
+  /* ========= PALETA DE TEXTO ========= */
+  --text-primary: #333333; /* Títulos principales, contenido importante */
+  --text-secondary: #666666; /* Descripciones, subtítulos */
+  --text-tertiary: #999999; /* Metadatos, fechas, información auxiliar */
+  --text-muted: #cccccc; /* Placeholders, texto deshabilitado */
+
+  /* ========= COLORES DE INTERFAZ ========= */
+  --border-light: #e0e0e0; /* Bordes para separadores */
+  --border-medium: #cccccc; /* Bordes de inputs y cards */
+  --shadow-light: rgba(0, 0, 0, 0.1); /* Sombra para elevación */
+  --shadow-medium: rgba(0, 0, 0, 0.15); /* Sombra media para modales y dropdowns */
+
+  /* ========= ESTADOS DE INTERFAZ  ========= */
+  --color-error: #dc3545; /* Mensajes de error, validaciones fallidas */
+  --color-success: #28a745; /* Confirmaciones, operaciones exitosas */
+  --color-warning: #ff9800; /* Advertencias, alertas */
+  --color-info: #2196f3; /* Información general, tooltips */
+
+  /* ========= ESTADOS DE INFORMACIÓN (backgrounds) ========= */
+  --info-light: #e3f2fd; /* Fondo azul claro para alertas info */
+
+  /* ========= TIPOGRAFÍA ========= */
+  --font-family-primary: 'Poppins', sans-serif;
+  --font-family-secondary: 'Raleway', sans-serif;
+
+  /* Tamaños de fuente */
+  --font-size-h1: 32px; /* Títulos principales de página */
+  --font-size-h2: 24px; /* Títulos de sección */
+  --font-size-h3: 18px; /* Nombres de productos, subtítulos */
+  --font-size-body: 16px; /* Texto base del sitio */
+  --font-size-small: 14px; /* Descripciones, precios, labels */
+  --font-size-xs: 12px; /* Texto auxiliar, copyright */
+
+  /* Pesos de fuente */
+  --font-weight-bold: 700; /* Títulos principales destacados */
+  --font-weight-semibold: 600; /* Nombres de productos, botones */
+  --font-weight-medium: 500; /* Subtítulos, labels */
+  --font-weight-regular: 400; /* Texto base */
+
+  /* Alturas de línea */
+  --line-height-tight: 1.2; /* Títulos y headings */
+  --line-height-normal: 1.5; /* Texto estándar */
+  --line-height-loose: 1.6; /* Párrafos largos, contenido extenso */
+
+  /* ========= ESCALA DE ESPACIADO =========*/
+  --space-xs: 4px; /* Espaciado mínimo entre elementos relacionados */
+  --space-sm: 8px; /* Separación de componentes pequeños */
+  --space-md: 16px; /* Espaciado estándar (default) */
+  --space-lg: 24px; /* Secciones, grupos de contenido */
+  --space-xl: 32px; /* Separación de módulos principales */
+  --space-2xl: 48px; /* Espaciado entre secciones grandes */
+  --space-3xl: 64px; /* Padding de contenedores principales */
+
+  /* ========= RADIOS DE BORDE ========= */
+  --border-radius-sm: 6px; /* Inputs, campos de formulario */
+  --border-radius-md: 12px; /* Botones, cards pequeñas */
+  --border-radius-lg: 16px; /* Cards principales, modales */
+
+  /* ========= DIMENSIONES DE LAYOUT ========= */
+  --container-max-width: 1200px;
+  --product-card-width: 280px;
+  --sidebar-width: 320px;
+  --header-height: 64px;
+
+  /* ========= ANIMACIONES Y TRANSICIONES ========= */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.4s ease;
+
+  /* ========= EFECTOS VISUALES ========= */
+  --backdrop-blur: blur(10px);
+  --backdrop-blur-light: blur(6px);
+  --opacity-placeholder: 0.9;
+
+  /* ========= VARIABLES ESPECÍFICAS - LOGIN  ========= */
+  --bg-warm-1: #ffd19a; /* Naranja claro intermedio */
+  --bg-warm-2: #ffead1; /* Beige anaranjado */
+
+  /* ========= ESTRELLAS ========= */
+  --inactive-color: #5f5050;
+}
+
+/* ========= DARK MODE ========= */
+:root[data-theme='dark'] {
+  /* Fondos generales */
+  --bg-gradient-start: #0f1417;
+  --bg-gradient-middle: #101a20;
+  --bg-gradient-end: #0d1b22;
+
+  /* Paleta de texto invertida */
+  --text-primary: #f8f9fa; /* Texto principal */
+  --text-secondary: #d8dee5; /* Descripciones y subtítulos */
+  --text-tertiary: #b8c2cc; /* Información auxiliar */
+  --text-muted: #8fa1b2; /* Placeholders y texto deshabilitado */
+
+  /* Colores de marca */
+  --color-primary-orange: #ff9a1a;
+  --color-primary-dark: #e07f00;
+  --color-secondary-orange: #ffb347;
+  --color-secondary: #f8f9fa;
+
+  /* Superficies y bordes oscuros */
+  --card-background: #274653; /* Fondo de cards principales */
+  --card-background-alt: #1c2d35; /* Fondo alternativo más oscuro */
+  --border-light: #2f4956;
+  --border-medium: #3a5563;
+  --shadow-light: rgba(0, 0, 0, 0.45);
+  --shadow-medium: rgba(0, 0, 0, 0.6);
+
+  /* Header en modo oscuro */
+  --header-bg: rgba(15, 20, 23, 0.8);
+  --header-text: #f8f9fa;
+  --nav-bg: rgba(39, 70, 83, 0.7);
+
+  /* Estados en modo oscuro */
+  --color-error: #ff8c00; /* Naranja para errores */
+  --color-success: #4caf50; /* Verde más claro */
+  --color-warning: #ffb74d; /* Amarillo más claro para advertencias */
+  --color-info: #42a5f5; /* Azul más claro para información */
+
+  /* Estados de información (backgrounds dark mode) */
+  --info-light: #1e3a52; /* Fondo azul oscuro para alertas info */
+}
