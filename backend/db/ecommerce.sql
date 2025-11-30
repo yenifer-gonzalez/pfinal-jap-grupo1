@@ -239,6 +239,19 @@ CREATE TABLE IF NOT EXISTS `wishlists` (
 
 -- Data exporting was unselected.
 
+-- ========================================
+-- Insertar usuarios de prueba
+-- ========================================
+-- Usuario 1: test@ecommerce.com (role: user)
+-- Password: test123
+INSERT INTO users (username, email, password, role, first_name, last_name, phone, profile_photo, created_at, updated_at) VALUES
+('test@ecommerce.com', 'test@ecommerce.com', '$2b$10$PwyFV6jRQZteBb7qnmPF6ewWMGtV4Z5sdvePpQ5kDYeHuI/UkoKbi', 'user', 'Usuario', 'Prueba', '099123456', NULL, NOW(), NOW());
+
+-- Usuario 2: admin@ecommerce.com (role: admin)
+-- Password: test123
+INSERT INTO users (username, email, password, role, first_name, last_name, phone, profile_photo, created_at, updated_at) VALUES
+('admin@ecommerce.com', 'admin@ecommerce.com', '$2b$10$PwyFV6jRQZteBb7qnmPF6ewWMGtV4Z5sdvePpQ5kDYeHuI/UkoKbi', 'admin', 'Admin', 'Sistema', '099999999', NULL, NOW(), NOW());
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

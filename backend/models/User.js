@@ -51,7 +51,15 @@ class User {
    */
   static async create(userData) {
     try {
-      const { username, email, password, role = 'user', first_name, last_name, phone } = userData;
+      const {
+        username,
+        email,
+        password,
+        role = 'user',
+        first_name,
+        last_name,
+        phone,
+      } = userData;
 
       // Hash de la contraseña
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -68,7 +76,7 @@ class User {
         role,
         first_name || null,
         last_name || null,
-        phone || null
+        phone || null,
       ]);
 
       // Retornar el usuario creado
@@ -104,7 +112,7 @@ class User {
         last_name || null,
         phone || null,
         profile_photo || null,
-        id
+        id,
       ]);
 
       return await User.findById(id);

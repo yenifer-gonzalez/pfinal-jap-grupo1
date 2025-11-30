@@ -68,10 +68,13 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Interceptamos las peticiones para usar caché cuando sea posible
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
+
+  if (url.origin === 'http://localhost:3000') {
+    return;
+  }
 
   // Para la API: intentamos red primero, si falla usamos caché
   if (url.origin === 'https://japceibal.github.io') {
@@ -182,5 +185,19 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Para todo lo demás: intentamos internet, si falla usamos caché
-  event.respondWith(fetch(request).catch(() => caches.match(request)));
+  event.respondWith(
+    fetch(request).catch(() =>
+      caches.match(request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        // Último recurso: devolver un Response "de error"
+        return new Response('Recurso no disponible offline', {
+          status: 503,
+          statusText: 'Service Unavailable',
+        });
+      })
+    )
+  );
 });
