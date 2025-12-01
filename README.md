@@ -668,8 +668,8 @@ La aplicación utiliza MariaDB con un esquema relacional normalizado de **11 tab
 ### Integrantes
 
 - **Agustina de los Santos** - [@agusdelossantos](https://github.com/agusdelossantos) - Diseñadora UX/UI y Documentación
-- **Yenifer González** - [@yenifer-gonzalez](https://github.com/yenifer-gonzalez) - Desarrolladora Frontend
-- **Marcos Betancor** - [@marcosbeta23](https://github.com/marcosbeta23) - Desarrollador JavaScript Principal
+- **Yenifer González** - [@yenifer-gonzalez](https://github.com/yenifer-gonzalez) - Desarrolladora Backend y Frontend
+- **Marcos Betancor** - [@marcosbeta23](https://github.com/marcosbeta23) - Desarrollador Backend y JavaScript Principal
 - **Hernán Baldi** - [@hernan-baldi](https://github.com/hernan-baldi) - Funcionalidades de Perfil y Almacenamiento
 - **Nahuel Regueira** - [@NRDEV1771](https://github.com/NRDEV1771) - Funcionalidades de Productos y Calificaciones
 
